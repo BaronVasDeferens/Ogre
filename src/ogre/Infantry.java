@@ -44,7 +44,7 @@ public class Infantry extends ogre.Unit
                     unitWeapon.attack --;
                     defense--;
                     
-                    //Load a new image to reflect the new strnegth
+                    //Load a new image to reflect the new strength
                     switch (unitWeapon.attack)
                     {
                         case 2:
