@@ -17,8 +17,7 @@ public class Ogre extends ogre.Unit
     int treads;
     int treadsPerRow;
     int maxMovement;
-    
-    
+   
     LinkedList<Weapon> mainBattery = null;
     LinkedList<Weapon> secondaryBattery = null;
     LinkedList<Weapon> antiPersonnel = null;
@@ -30,7 +29,7 @@ public class Ogre extends ogre.Unit
         
         switch (mark)
         {
-            //Mark III
+            //Mark III Ogre: 1 main, 4 secondary, 8 ap, 2 missiles, 45 treads, 15 per row
             case 3:
             default:
                 treads = 45;
