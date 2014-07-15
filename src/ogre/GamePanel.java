@@ -36,20 +36,13 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
     //private static final int BLOCK_SIZE = 30; //in pixels
     
     //for the hex map
+    HexMap hexMap;
     public int hexSide = 64;
-    
-    final int BIG_DB_WIDTH = 2500;
-    public final int BIG_DB_HEIGHT = 2000;
-    
-    //private Graphics bigMapGraphics;
-    private Image bigMap;
-    
     public final int HEX_ROWS = 21;
     public final int HEX_COLS = 15;
-    
-    //Hex data
-    int [][] gridMap;
-    
+    public final int BIG_DB_WIDTH = 2500;
+    public final int BIG_DB_HEIGHT = 2000; 
+
     public final int VIEW_WINDOW_WIDTH = 800;
     public final int VIEW_WINDOW_HEIGHT = 600;
     
@@ -63,17 +56,14 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
     private Image dbImage = null;
     
     java.util.Random rando;
-    
-    //BufferedImage picture;
-    
-    LinkedList<java.awt.Polygon> clickMap;
+
     java.awt.Polygon selectedHex;
     
     //User-interaction flags
     boolean scrolling = false;
     int scrollingX, scrollingY;     //stores prior position of mouse to compare
     int currentWindowX, currentWindowY;   //stores current position of the upper corner of the view window
-    
+    float zoomFactor = 1.0F;
     
     //CONSTRUCTOR
     public GamePanel() 
@@ -93,12 +83,11 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         setBackground(Color.RED);
         setPreferredSize(new Dimension(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT));
         
-        clickMap = new LinkedList();
-        clickMap.clear();
+        hexMap = new HexMap(HEX_ROWS,HEX_COLS);
+        hexMap.setupMap(BIG_DB_WIDTH,BIG_DB_HEIGHT,100,100,64);
+    
         
         selectedHex = null;
-        
-        bigMap = setupHexMap();
         
         currentWindowX = 0;
         currentWindowY = 0;
@@ -224,26 +213,11 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
             dbg = dbImage.getGraphics();
         }
         
-        Graphics bigMapGraphics;
-        
-        if (bigMap != null)
-        {
-            bigMapGraphics = bigMap.getGraphics();
-        }
-        else
-        {
-            bigMap = setupHexMap();
-        }
-        
-        //bigMapGraphics.setClip(0,0,PANEL_WIDTH, PANEL_HEIGHT);
-        //bigMapGraphics.drawImage(dbImage, PANEL_WIDTH, PANEL_HEIGHT, this);
-        
-        
-        //Clip
-        
-            BufferedImage temp = (BufferedImage)bigMap;
-            temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
-            dbg.drawImage(temp,0,0,800,600, this);
+        Graphics bigMapGraphics = hexMap.getImage().getGraphics();
+        BufferedImage temp = hexMap.getImage();
+        temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
+
+        dbg.drawImage(temp,0,0,800,600, this);
         
   
         if (scrolling)
@@ -251,14 +225,9 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
 
             dbg.setColor(Color.RED);
             dbg.drawString("SCROLLING", 10,10);
-            //dbg.drawString("viewWindowX:"+viewWindowX, 10, 20);
-            //dbg.drawString("viewWindowY:"+viewWindowY, 10, 30);
-            
-            
-
-
             dbg.drawString("scrollingX:"+scrollingX, 10, 20);
             dbg.drawString("scrollingY:"+scrollingY, 10, 30);
+            dbg.drawString("zoom:" + zoomFactor,10,40);
             
             java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
             
@@ -283,19 +252,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
             }
            
         }
- 
         
-        //Highlight a hex
-        if(selectedHex != null)
-        {
-            dbg.setColor(Color.RED);
-            dbg.fillPolygon(selectedHex);
-            dbg.drawPolygon(selectedHex);
-        }
-        
-        //Draw 
-        
-        //DRAW 
         if (gameOver == true)
         {
             gameOverMsg(dbg);
@@ -391,75 +348,19 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         //Scroll DOWN, zoom IN
         if (e.getWheelRotation() >= 0)
         {           
-
-            //disabled for now
-//            switch (hexSide)
-//            {
-//                case 52:
-//                    hexSide = 64;
-//                    clickMap.clear();
-//                    break;
-//                case 44:
-//                    hexSide = 52;
-//                    clickMap.clear();
-//                    break;
-//                case 36:
-//                    hexSide = 44;
-//                    clickMap.clear();
-//                    break;
-//                case 34:
-//                    hexSide = 36;
-//                    clickMap.clear();
-//                    break;
-//                case 28:
-//                    hexSide = 34;
-//                    clickMap.clear();
-//                    break;
-//                case 20:
-//                    hexSide = 28;
-//                    clickMap.clear();
-//                    break;
-//                default:
-//                    break;
-//            }
-                    
+            if ((zoomFactor <= 1) && ((zoomFactor - .10) > 0))
+            {
+                zoomFactor -= .10;
+            }
         }
         
         //Scroll UP, zoom OUT
         else
         {
-            //disable for now
-//            switch (hexSide)
-//            {
-//               case 64:
-//                   hexSide = 52;
-//                   clickMap.clear();
-//                   break;
-//               case 52:
-//                    hexSide = 44;
-//                    clickMap.clear();
-//                    break;
-//                case 44:
-//                    hexSide = 36;
-//                    clickMap.clear();
-//                    break;
-//                case 36:
-//                    hexSide = 34;
-//                    clickMap.clear();
-//                    break;
-//                case 34:
-//                    hexSide = 28;
-//                    clickMap.clear();
-//                    break;
-//                case 28:
-//                     hexSide = 20;
-//                     clickMap.clear();
-//                    break;
-//                case 20:
-//                default:
-//                    break;
-//            }
-
+            if (( (zoomFactor < 1) && (zoomFactor + .10) <= 1))
+            {
+                zoomFactor += .10;
+            }
         }
     }
     
@@ -485,7 +386,26 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         //*LEFT* CLICK
         if (e.getButton() == MouseEvent.BUTTON1)
         {
-            
+            java.awt.Polygon candidate = hexMap.getPolygon(e.getX()+currentWindowX, e.getY()+currentWindowY);
+            if (candidate != null)
+            {
+                Hex thisHex = hexMap.getHexFromPoly(candidate);
+                
+                if (thisHex != null)
+                {
+                    if (thisHex.isSelected() == false)
+                    {
+                        thisHex.select();
+                        hexMap.updateMapImage();
+                    }
+                    else
+                    {
+                        thisHex.deselect();
+                        hexMap.updateMapImage();
+                    }    
+                }
+            }
+              
         }//mouse
         
         
@@ -499,81 +419,26 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
     @Override
     public void mousePressed(MouseEvent e)
     {
-        scrolling = true;
-        
-        java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
-        scrollingX = pInfo.getLocation().x;
-        scrollingY = pInfo.getLocation().y;
+        if (e.getButton() == MouseEvent.BUTTON3)
+        {
+            scrolling = true;
+
+            java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
+            scrollingX = pInfo.getLocation().x;
+            scrollingY = pInfo.getLocation().y;
+        }
     }
     
     
     @Override
     public void mouseReleased(MouseEvent e)
     {
-        scrolling = false;
+        if (e.getButton() == MouseEvent.BUTTON3)
+        {
+            scrolling = false;
+        }
     }
     
-    //SETUP HEX MAP
-    //Creates the big 2352x1680 dbImage
-    private BufferedImage setupHexMap()
-    {
-        
-        Image bigMapImage = createImage(BIG_DB_WIDTH, BIG_DB_HEIGHT);
-        
-        
-        if (bigMapImage == null)
-        {
-            //System.out.println("ERROR: bigMapImage is null");
-            return (null);
-        }
-        
-        Graphics bigMapGraphics = bigMapImage.getGraphics();
-        
-        //Clear background
-        bigMapGraphics.setColor(java.awt.Color.WHITE);
-        bigMapGraphics.fillRect(0,0,BIG_DB_WIDTH,BIG_DB_HEIGHT);
-       
-        int x_origin = 100;
-        int y_origin = 100;
-        int x = x_origin;
-        int y = y_origin;
-
-        //Draw hex field
-        for (int i = 1; i < HEX_ROWS+1; i++)
-        {
-           for (int j = 1; j < HEX_COLS+1; j++)
-           {
-               java.awt.Polygon p = new java.awt.Polygon();
-               p.reset();
-               
-               p.addPoint(x +(hexSide/2), y);
-               p.addPoint(x+(hexSide/2) + hexSide, y);
-               p.addPoint(x + 2*hexSide, (int)(.8660* hexSide + y));
-               p.addPoint(x+(hexSide/2) + hexSide, (int)(.8660 * 2 * hexSide + y));
-               p.addPoint(x+(hexSide/2),(int)(.8660*2*hexSide + y));
-               p.addPoint(x,y+(int)(.8660 * hexSide));
-               
-               bigMapGraphics.setColor(Color.BLACK);
-               //dbg.setColor(new Color(rando.nextInt(255),rando.nextInt(255),rando.nextInt(255)));
-               bigMapGraphics.drawPolygon(p);
-               //clickMap.add(p);
-               
-               y = y + (int)(2 * .8660 * hexSide);
-           }
-        
-            x = x + (hexSide/2) + hexSide;
-            
-            if ((i%2) > 0)
-               y = y_origin + (int)(.8660 * hexSide); 
-            else
-                y = y_origin;
-            
-        }    
-        
-        return (BufferedImage)(bigMapImage);
-        
-    }
-     
     
     
 }

@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 
 /**
  *
@@ -72,7 +73,7 @@ public class Unit
             InputStream fin = null;
             BufferedImage img = null;
             
-            fin = getClass().getResourceAsStream("resources/images/" + fileName);
+            fin = getClass().getResourceAsStream("images/" + fileName);
             
             try 
             {
