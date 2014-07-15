@@ -52,15 +52,17 @@ public class HexMap
                 hexList.add(hexArray[i][j]);
             }
         }
-        
 
-        
     }
     
     //CREATE MAP
-    //Creates an image of a map by drawing a hex field on it 
+    //Creates an image of a map by drawing a hex field on it
+    //OriginX/Y are the coordinates from which drawing shall begin (thr origin)
     public void setupMap(int width, int height, int originX, int originY, int hexSize)
     {
+        if (polyList != null)
+            polyList.clear();
+        
         hexagonSize = hexSize;     
         beginDrawingFromX = originX;
         beginDrawingFromY = originY;
@@ -108,13 +110,15 @@ public class HexMap
             else
                 y = originY;
             
-        }    
+        }  
+        
+        //updateMapImage();
                        
     }
     
     //GET UPDATED MAP IMAGE
     public void updateMapImage()
-    {
+    {        
         mapImage = new BufferedImage(mapImage.getWidth(), mapImage.getHeight(), BufferedImage.OPAQUE);
         
         Graphics newMapGraphics = mapImage.getGraphics();
@@ -144,7 +148,9 @@ public class HexMap
                if (hexArray[i-1][j-1].isSelected())
                {
                    newMapGraphics.setColor(Color.RED);
-                   newMapGraphics.fillPolygon(p);                
+                   newMapGraphics.fillPolygon(p);
+                   newMapGraphics.drawPolygon(p);
+                   
                }
                
                else
