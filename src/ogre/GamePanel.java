@@ -238,7 +238,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
             dbg.drawString("SCROLLING", 10,10);
             dbg.drawString("scrollingX:"+scrollingX, 10, 20);
             dbg.drawString("scrollingY:"+scrollingY, 10, 30);
-            dbg.drawString("zoom:" + zoomFactor,10,40);
+            dbg.drawString("hexSide:" + hexSide,10,40);
             
             java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
             
@@ -454,7 +454,42 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
     public void mouseClicked(MouseEvent e)
     {   
         //*LEFT* CLICK
-        if (e.getButton() == MouseEvent.BUTTON1)
+//        if (e.getButton() == MouseEvent.BUTTON1)
+//        {
+//            java.awt.Polygon candidate = hexMap.getPolygon(e.getX()+currentWindowX, e.getY()+currentWindowY);
+//            if (candidate != null)
+//            {
+//                Hex thisHex = hexMap.getHexFromPoly(candidate);
+//                
+//                if (thisHex != null)
+//                {
+//                    if (thisHex.isSelected() == false)
+//                    {
+//                        thisHex.select();
+//                        hexMap.updateMapImage();
+//                    }
+//                    else
+//                    {
+//                        thisHex.deselect();
+//                        hexMap.updateMapImage();
+//                    }    
+//                }
+//            }
+//              
+//        }//mouse
+        
+        
+        //*RIGHT* CLICK
+        if (e.getButton() == MouseEvent.BUTTON3)
+        {
+            
+        }//if RIGHT BUTTON
+    }  
+   
+    @Override
+    public void mousePressed(MouseEvent e)
+    {
+         if (e.getButton() == MouseEvent.BUTTON1)
         {
             java.awt.Polygon candidate = hexMap.getPolygon(e.getX()+currentWindowX, e.getY()+currentWindowY);
             if (candidate != null)
@@ -479,16 +514,6 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         }//mouse
         
         
-        //*RIGHT* CLICK
-        if (e.getButton() == MouseEvent.BUTTON3)
-        {
-            
-        }//if RIGHT BUTTON
-    }  
-   
-    @Override
-    public void mousePressed(MouseEvent e)
-    {
         if (e.getButton() == MouseEvent.BUTTON3)
         {
             scrolling = true;
