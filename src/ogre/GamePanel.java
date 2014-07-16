@@ -40,8 +40,8 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
     public int hexSide = 64;
     public final int HEX_ROWS = 21;
     public final int HEX_COLS = 15;
-    public final int BIG_DB_WIDTH = 2500;
-    public final int BIG_DB_HEIGHT = 2000; 
+    //public final int BIG_DB_WIDTH = 2500;
+    //public final int BIG_DB_HEIGHT = 2000; 
 
     public final int VIEW_WINDOW_WIDTH = 800;
     public final int VIEW_WINDOW_HEIGHT = 600;
@@ -84,7 +84,9 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         setPreferredSize(new Dimension(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT));
         
         hexMap = new HexMap(HEX_ROWS,HEX_COLS);
-        hexMap.setupMap(BIG_DB_WIDTH,BIG_DB_HEIGHT,100,100,64);
+        hexMap.setHexSize(hexSide);
+        hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
+        hexMap.setupMap();
     
         
         selectedHex = null;
@@ -215,7 +217,16 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         
         Graphics bigMapGraphics = hexMap.getImage().getGraphics();
         BufferedImage temp = hexMap.getImage();
-        temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
+
+        //make sure the new image is big enough
+        if (((currentWindowX + 800) <= temp.getWidth()) && ((currentWindowY + 600) <= temp.getHeight()))
+            temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
+        else
+        {
+            currentWindowX = 0;
+            currentWindowY = 0;
+            temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
+        }
 
         dbg.drawImage(temp,0,0,800,600, this);
         
@@ -232,13 +243,13 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
             java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
             
             //check for horizontal scroll
-            //Compare where the mouse was at initial click to where it is now
-            //if they're different AND the addition of the difference to the current position of the window
+            //Compare where the mouse was at initial click against its current location.
+            //If they're different AND the addition of the difference to the current position of the window
             //does not exeed the max size of the big map MINUS the size of the view window (or is less than zero)
             //apply the difference.
             if ((pInfo.getLocation().x != scrollingX) && 
                ((currentWindowX + pInfo.getLocation().x - scrollingX) >= 0) && 
-               ((currentWindowX + pInfo.getLocation().x - scrollingX) <= (BIG_DB_WIDTH - PANEL_WIDTH))) 
+               ((currentWindowX + pInfo.getLocation().x - scrollingX) <= (hexMap.getImage().getWidth() - PANEL_WIDTH))) 
             {
                 currentWindowX += (pInfo.getLocation().x - scrollingX)/5;
             }
@@ -246,7 +257,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
             //Same for vertical scroll
             if ((pInfo.getLocation().y != scrollingY) && 
                ((currentWindowY + pInfo.getLocation().y - scrollingY) >= 0) && 
-               ((currentWindowY + pInfo.getLocation().y - scrollingY) <= (BIG_DB_HEIGHT - PANEL_HEIGHT))) 
+               ((currentWindowY + pInfo.getLocation().y - scrollingY) <= (hexMap.getImage().getHeight() - PANEL_HEIGHT))) 
             {
                 currentWindowY += (pInfo.getLocation().y - scrollingY)/5;
             }
@@ -338,29 +349,88 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
     //*** MOUSE INPUT ***
     
     //MOUSE WHEEL MOVED
-    //Zooms in and out
+    //Zooms in and out by adjusting the hexSize variable to proscribed values
+    //NOTE: the inclusion of the same hexMap.setHexSize in each case SEEMS redundant and dumb, 
+    //but it prevents the user from unnecessarily updating the image when she attempt to zoom in further
+    //than max zoom (which casues flicker)
     @Override
     public void mouseWheelMoved(MouseWheelEvent e)
     {
-        
-        //System.out.println(e.getWheelRotation());
-        
+                
         //Scroll DOWN, zoom IN
         if (e.getWheelRotation() >= 0)
         {           
-            if ((zoomFactor <= 1) && ((zoomFactor - .10) > 0))
+            switch (hexSide)
             {
-                zoomFactor -= .10;
+                case 20:
+                    hexSide = 28;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 28:
+                    hexSide = 34;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 34:
+                    hexSide = 36;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 36:
+                    hexSide = 44;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 44:
+                    hexSide = 52;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 52:
+                    hexSide = 64;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                default:
+                    break;
             }
+            
+            //hexMap.setHexSize(hexSide);
+            //hexMap.setupMap();
         }
         
         //Scroll UP, zoom OUT
         else
         {
-            if (( (zoomFactor < 1) && (zoomFactor + .10) <= 1))
+            switch (hexSide)
             {
-                zoomFactor += .10;
+
+                case 28:
+                    hexSide = 20;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 34:
+                    hexSide = 28;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 36:
+                    hexSide = 34;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 44:
+                    hexSide = 36;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 52:
+                    hexSide = 44;
+                    hexMap.setHexSize(hexSide);
+                    break;
+                case 64:
+                    hexSide = 52;
+                    hexMap.setHexSize(hexSide);
+                    break;                    
+                default:
+                    break;
             }
+            
+            
+            
+            //hexMap.setupMap();
         }
     }
     
