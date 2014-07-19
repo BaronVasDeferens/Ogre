@@ -83,8 +83,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         setBackground(Color.RED);
         setPreferredSize(new Dimension(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT));
         
-        hexMap = new HexMap(HEX_ROWS,HEX_COLS);
-        hexMap.setHexSize(hexSide);
+        hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
         hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
         hexMap.setupMap();
     
@@ -95,7 +94,20 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         currentWindowY = 0;
         
         HeavyTank tank1 = new HeavyTank(1);
+        Howitzer how = new Howitzer(2);
+        GEV gev = new GEV(3);
+        Infantry troop1 = new Infantry(4);
+        MissileTank msl1 = new MissileTank(5);
+        Ogre ogremk3 = new Ogre(3);
+        CommandPost cmdPost = new CommandPost(7);
+        
         hexMap.addUnit(hexMap.getHexFromCoords(0,0), tank1);
+        hexMap.addUnit(hexMap.getHexFromCoords(0,1), how);
+        hexMap.addUnit(hexMap.getHexFromCoords(0,2), gev);
+        hexMap.addUnit(hexMap.getHexFromCoords(0,3), troop1);
+        hexMap.addUnit(hexMap.getHexFromCoords(0,4), msl1);
+        hexMap.addUnit(hexMap.getHexFromCoords(0,5), ogremk3);
+        hexMap.addUnit(hexMap.getHexFromCoords(0,6), cmdPost);
     }
 
     /**

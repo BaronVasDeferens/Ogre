@@ -33,7 +33,7 @@ public class HexMap
     int minimumMapWidth, minimumMapHeight;
     
     //Constructor
-    public HexMap(int rws, int cls)
+    public HexMap(int rws, int cls, int hexsize)
     {
         rows = rws;
         cols = cls;
@@ -57,6 +57,8 @@ public class HexMap
         hexagonSize = 64;
         minimumMapWidth = 800;
         minimumMapHeight = 600;
+        
+        setHexSize(hexsize);
         
     }
     

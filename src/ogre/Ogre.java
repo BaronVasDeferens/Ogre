@@ -27,6 +27,18 @@ public class Ogre extends ogre.Unit
     {
         super(666);
         
+        mainBattery = new LinkedList();
+        mainBattery.clear();
+        
+        secondaryBattery = new LinkedList();
+        secondaryBattery.clear();
+        
+        antiPersonnel = new LinkedList();
+        antiPersonnel.clear();
+        
+        missileBattery = new LinkedList();
+        missileBattery.clear();
+        
         switch (mark)
         {
             //Mark III Ogre: 1 main, 4 secondary, 8 ap, 2 missiles, 45 treads, 15 per row
@@ -54,6 +66,8 @@ public class Ogre extends ogre.Unit
                 //TWO missiles (one use)
                 missileBattery.add(new Weapon(6,5,3,false,"missile",0));
                 missileBattery.add(new Weapon(6,5,3,false,"missile",0));
+                
+                image = loadImage("ogre_mk3.png");
              
                 break;                
         }    
