@@ -93,6 +93,9 @@ public class GamePanel extends javax.swing.JPanel implements Runnable, KeyListen
         
         currentWindowX = 0;
         currentWindowY = 0;
+        
+        HeavyTank tank1 = new HeavyTank(1);
+        hexMap.addUnit(hexMap.getHexFromCoords(0,0), tank1);
     }
 
     /**

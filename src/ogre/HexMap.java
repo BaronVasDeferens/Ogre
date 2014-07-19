@@ -155,6 +155,24 @@ public class HexMap
                     newMapGraphics.setColor(Color.BLACK);
                     newMapGraphics.drawPolygon(p);
                }
+               
+               //Draw Units (if any)
+               if (hexArray[i-1][j-1].isOccupied())
+               {
+                   //Rescale and offset
+                   BufferedImage unitImage = hexArray[i-1][j-1].getUnit().getImage();
+                   
+                   int Xoffset, Yoffset, imageSize;
+                   
+                   Xoffset = (int)((2 * hexagonSize)/5.464);
+                   Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
+                   imageSize = (int)(2 * (1.732 * Xoffset));
+                   
+                   newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null);
+                   
+                   
+               }
+               
 //               newMapGraphics.setColor(Color.BLACK);
 //               newMapGraphics.drawPolygon(p);
                
@@ -224,6 +242,20 @@ public class HexMap
                     newMapGraphics.drawPolygon(p);
                }
 
+               //Draw Units (if any)
+               if (hexArray[i-1][j-1].isOccupied())
+               {
+                   //Rescale and offset
+                   BufferedImage unitImage = hexArray[i-1][j-1].getUnit().getImage();
+                   
+                   int Xoffset, Yoffset, imageSize;
+                   
+                   Xoffset = (int)((2 * hexagonSize)/5.464);
+                   Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
+                   imageSize = (int)(2 * (1.732 * Xoffset));
+                   
+                   newMapGraphics.drawImage(unitImage, x+Xoffset, y+Yoffset, imageSize, imageSize, null);
+               }
                
                y = y + (int)(2 * .8660 * hexagonSize);
            }
@@ -283,8 +315,28 @@ public class HexMap
         return null;
     }
     
+    public Hex getHexFromCoords(int rw, int cl)
+    {
+        if ((rw <= rows) && (rw >= 0) && (cl <= cols) && (cl >= 0))
+        {
+            return hexArray[rw][cl];
+        }
+        
+        else
+            return null;
+    }
+    
+    
     public BufferedImage getImage()
     {
         return (mapImage);
     }
+    
+    
+    //*** UNIT MANAGMENT ***
+    public void addUnit(Hex target, Unit toAdd)
+    {
+        target.setOccupingUnit(toAdd);
+    }
+    
 }

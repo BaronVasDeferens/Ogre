@@ -59,6 +59,14 @@ public class Hex
             return (false);
     }
     
+    public boolean isOccupied()
+    {
+        if (occupyingUnit == null)
+            return (false);
+        else
+            return (true);
+    }
+    
     public Unit getUnit()
     {
         return (occupyingUnit);

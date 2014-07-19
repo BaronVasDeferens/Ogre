@@ -113,6 +113,11 @@ public class Unit
                 break;
         }
     }
+   
+    public BufferedImage getImage()
+    {
+        return image;
+    }
     
 }
 
