@@ -175,8 +175,6 @@ public class HexMap
                    
                }
                
-//               newMapGraphics.setColor(Color.BLACK);
-//               newMapGraphics.drawPolygon(p);
                
                //associate a hex with this polygon
                associatePolygonWithHex(i-1,j-1,p);
@@ -336,9 +334,11 @@ public class HexMap
     
     
     //*** UNIT MANAGMENT ***
+    //Adds a unit to a hex. Checks for crater, existing unit
     public void addUnit(Hex target, Unit toAdd)
     {
-        target.setOccupingUnit(toAdd);
+        if ((target.isCrater() == false) && (target.isOccupied() == false))
+            target.setOccupingUnit(toAdd);
     }
     
 }
