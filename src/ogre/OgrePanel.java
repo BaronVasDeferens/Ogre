@@ -38,8 +38,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     //for the hex map
     HexMap hexMap;
     public int hexSide = 64;
-    public final int HEX_ROWS = 21;
-    public final int HEX_COLS = 15;
+    public final int HEX_ROWS = 15;
+    public final int HEX_COLS = 21;
 
     public final int VIEW_WINDOW_WIDTH = 800;
     public final int VIEW_WINDOW_HEIGHT = 600;
@@ -65,6 +65,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     
     LinkedList<Unit> allUnits = null;
     LinkedList<Unit> selectedUnits = null;
+    //LinkedList<Hex> adjacentHexes = null;
     
     //CONSTRUCTOR
     public OgrePanel() 
@@ -96,6 +97,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         allUnits.clear();
         selectedUnits = new LinkedList();
         selectedUnits.clear();
+        //adjacentHexes = new LinkedList();
+        //adjacentHexes.clear();
         
         HeavyTank tank1 = new HeavyTank(1);
         allUnits.add(tank1);
@@ -118,6 +121,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         CommandPost cmdPost = new CommandPost(7);
         allUnits.add(cmdPost);
         
+        
         hexMap.addUnit(hexMap.getHexFromCoords(0,0), tank1);
         hexMap.addUnit(hexMap.getHexFromCoords(1,1), how);
         hexMap.addUnit(hexMap.getHexFromCoords(2,2), gev);
@@ -125,6 +129,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         hexMap.addUnit(hexMap.getHexFromCoords(4,4), msl1);
         hexMap.addUnit(hexMap.getHexFromCoords(5,5), ogremk3);
         hexMap.addUnit(hexMap.getHexFromCoords(6,6), cmdPost);
+        
+        hexMap.updateMapImage();
     }
 
     /**
@@ -542,12 +548,12 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                 {
                     if (thisHex.isSelected() == false)
                     {
-                        thisHex.select();
+                        hexMap.select(thisHex);
                         hexMap.updateMapImage();
                     }
                     else
                     {
-                        thisHex.deselect();
+                        hexMap.deselect(thisHex);
                         hexMap.updateMapImage();
                     }    
                 }

@@ -26,6 +26,7 @@ public class HexMap
     
     LinkedList<Hex> hexList;
     LinkedList<Polygon> polyList;
+    LinkedList<Hex> adjacentHexes;
     
     BufferedImage mapImage;
     
@@ -43,6 +44,9 @@ public class HexMap
         
         polyList = new LinkedList();
         polyList.clear();
+        
+        adjacentHexes = new LinkedList();
+        adjacentHexes.clear();
         
         hexArray = new Hex[rows][cols];
         for (int i = 0; i < rows; i++)
@@ -84,14 +88,14 @@ public class HexMap
     private BufferedImage createNewImage()
     {
         
-        beginDrawingFromX = 2 * hexagonSize;
-        beginDrawingFromY = 2 * hexagonSize;
+        beginDrawingFromX = 4 * hexagonSize;
+        beginDrawingFromY = 4 * hexagonSize;
         
 
         //The formula for the image size is:
         //(hexSize * 1.5 * cols + ( 4 * hexSize)) by (hexSize * 1.5 * rows + ( 4 * hexSize))
-        int sizeX = (int)((hexagonSize * 1.5 * rows) + (4 * hexagonSize));
-        int sizeY = (int)((hexagonSize * 1.5 * cols) + (4 * hexagonSize));
+        int sizeX = (int)((hexagonSize * 2 * cols) + (4 * hexagonSize));
+        int sizeY = (int)((hexagonSize * 2 * rows) + (4 * hexagonSize));
         
         if (sizeX < minimumMapWidth)
             sizeX = minimumMapWidth;
@@ -125,12 +129,25 @@ public class HexMap
         
         int x = beginDrawingFromX;
         int y = beginDrawingFromY;
+        //int y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
 
         //Draw hex field
-        for (int i = 1; i < rows+1; i++)
+//        for (int i = 1; i < rows+1; i++)
+//        {
+//           for (int j = 1; j < cols+1; j++)
+//           {
+        for (int i = 0; i < rows; i++)
         {
-           for (int j = 1; j < cols+1; j++)
-           {
+           
+            
+           for (int j = 0; j < cols; j++)
+           {           
+               if ((j%2) != 0)
+                    y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
+               else
+                    y = beginDrawingFromY;
+               
+               
                java.awt.Polygon p = new java.awt.Polygon();
                p.reset();
                
@@ -141,28 +158,30 @@ public class HexMap
                p.addPoint(x+(hexagonSize/2),(int)(.8660*2*hexagonSize + y));
                p.addPoint(x,y+(int)(.8660 * hexagonSize));
                
+               if (adjacentHexes.contains(hexArray[i][j]))
+                {
+                    newMapGraphics.setColor(Color.GRAY);
+                    newMapGraphics.fillPolygon(p);
+                    newMapGraphics.setColor(Color.BLACK);
+                    newMapGraphics.drawPolygon(p);
+                }
                
                //Paint RED on selected hexes
-               if (hexArray[i-1][j-1].isSelected())
+               if (hexArray[i][j].isSelected())
                {
                    newMapGraphics.setColor(Color.RED);
                    newMapGraphics.fillPolygon(p);
-                   newMapGraphics.setColor(Color.BLACK);
-                   newMapGraphics.drawPolygon(p);
-                   
-               }
-               
-               else
-               {
-                    newMapGraphics.setColor(Color.BLACK);
-                    newMapGraphics.drawPolygon(p);
+                   //newMapGraphics.setColor(Color.BLACK);
+                   //newMapGraphics.drawPolygon(p);
+                
                }
                
                //Draw Units (if any)
-               if (hexArray[i-1][j-1].isOccupied())
+               if (hexArray[i][j].isOccupied())
+               //if (hexArray[i-1][j-1].isOccupied())
                {
                    //Rescale and offset
-                   BufferedImage unitImage = hexArray[i-1][j-1].getUnit().getImage();
+                   BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
                    
                    int Xoffset, Yoffset, imageSize;
                    
@@ -170,22 +189,37 @@ public class HexMap
                    Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
                    imageSize = (int)(2 * (1.732 * Xoffset));
                    
-                   newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null);
-                   
-                   
+                   newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null); 
                }
+               
+     
+                newMapGraphics.setColor(Color.BLACK);
+                newMapGraphics.drawPolygon(p);
+               
+               
+               newMapGraphics.setColor(Color.BLUE);
+               newMapGraphics.drawString("[" + (i) + "," + (j) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
+               
+               
                
                
                //associate a hex with this polygon
-               associatePolygonWithHex(i-1,j-1,p);
+               //associatePolygonWithHex(i-1,j-1,p);
+               associatePolygonWithHex(i,j,p);
                polyList.add(p);
                
-               y = y + (int)(2 * .8660 * hexagonSize);
-           }
+               //y = y + (int)(2 * .8660 * hexagonSize);
+               x = x + (hexagonSize/2) + hexagonSize;   
+               
+           }// for j (columns)
         
-            x = x + (hexagonSize/2) + hexagonSize;
-            
-            if ((i%2) > 0)
+           beginDrawingFromY += (int)2 *(.8660 * hexagonSize);
+           //y = y + (int)(2 * .8660 * hexagonSize); 
+           //x = x + (hexagonSize/2) + hexagonSize;
+            x = beginDrawingFromX;
+
+           
+            if ((i%2) != 0)
                y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
             else
                 y = beginDrawingFromY;
@@ -209,13 +243,21 @@ public class HexMap
         newMapGraphics.fillRect(0,0,mapImage.getWidth(), mapImage.getHeight());
 
         int x = beginDrawingFromX;
-        int y = beginDrawingFromY;
-
+        //int y = beginDrawingFromY;
+        int y = beginDrawingFromY;// + (int)(.8660 * hexagonSize); 
+        
         //Draw hex field
-        for (int i = 1; i < rows+1; i++)
+        for (int i = 0; i < rows; i++)
         {
-           for (int j = 1; j < cols+1; j++)
-           {
+           
+            
+           for (int j = 0; j < cols; j++)
+           {           
+               if ((j%2) != 0)
+                    y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
+               else
+                    y = beginDrawingFromY;
+               
                java.awt.Polygon p = new java.awt.Polygon();
                p.reset();
                
@@ -226,27 +268,29 @@ public class HexMap
                p.addPoint(x+(hexagonSize/2),(int)(.8660*2*hexagonSize + y));
                p.addPoint(x,y+(int)(.8660 * hexagonSize));
                
+               if (adjacentHexes.contains(hexArray[i][j]))
+                {
+                    newMapGraphics.setColor(Color.GRAY);
+                    newMapGraphics.fillPolygon(p);
+                    newMapGraphics.setColor(Color.BLACK);
+                    newMapGraphics.drawPolygon(p);
+                }
+               
                //Paint RED on selected hexes
-               if (hexArray[i-1][j-1].isSelected())
+               if (hexArray[i][j].isSelected())
                {
                    newMapGraphics.setColor(Color.RED);
                    newMapGraphics.fillPolygon(p);
-                   newMapGraphics.setColor(Color.BLACK);
-                   newMapGraphics.drawPolygon(p);
-                   
+                   //newMapGraphics.setColor(Color.BLACK);
+                   //newMapGraphics.drawPolygon(p);
+                
                }
                
-               else
-               {
-                    newMapGraphics.setColor(Color.BLACK);
-                    newMapGraphics.drawPolygon(p);
-               }
-
                //Draw Units (if any)
-               if (hexArray[i-1][j-1].isOccupied())
+               if (hexArray[i][j].isOccupied())
                {
                    //Rescale and offset
-                   BufferedImage unitImage = hexArray[i-1][j-1].getUnit().getImage();
+                   BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
                    
                    int Xoffset, Yoffset, imageSize;
                    
@@ -255,14 +299,30 @@ public class HexMap
                    imageSize = (int)(2 * (1.732 * Xoffset));
                    
                    newMapGraphics.drawImage(unitImage, x+Xoffset, y+Yoffset, imageSize, imageSize, null);
-               }
+               } 
                
-               y = y + (int)(2 * .8660 * hexagonSize);
+
+                newMapGraphics.setColor(Color.BLACK);
+                newMapGraphics.drawPolygon(p);
+               
+
+               
+               newMapGraphics.setColor(Color.BLUE);
+               newMapGraphics.drawString("[" + hexArray[i][j].getRow() + "," + hexArray[i][j].getCol() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
+               
+               
+               
+               x = x + (hexagonSize/2) + hexagonSize;
+               //y = y + (int)(2 * .8660 * hexagonSize);
            }
-        
-            x = x + (hexagonSize/2) + hexagonSize;
+         
+           beginDrawingFromY += (int)2 * (.8660 * hexagonSize);
+           
+           x = beginDrawingFromX;
+           y = y + (int)(2 * .8660 * hexagonSize); 
+           //x = x + (hexagonSize/2) + hexagonSize;
             
-            if ((i%2) > 0)
+            if ((i%2) != 0)
                y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
             else
                 y = beginDrawingFromY;
@@ -341,4 +401,96 @@ public class HexMap
             target.setOccupingUnit(toAdd);
     }
     
+    
+    
+    public void select(Hex thisOne)
+    {
+        thisOne.select();
+        adjacentHexes.addAll(getAdjacentHexes(thisOne));
+    }
+    
+    public void deselect(Hex thisOne)
+    {
+        thisOne.deselect();
+        adjacentHexes.removeAll(getAdjacentHexes(thisOne));
+    }
+    
+    
+    
+    
+    public LinkedList<Hex> getAdjacentHexes(Hex thisHex)
+    {
+        return (getAdjacentHexes(thisHex.getRow(),thisHex.getCol()));
+    }
+    
+    
+    public LinkedList<Hex> getAdjacentHexes(Polygon thisOne)
+    {
+        Iterator hexes = hexList.iterator();
+        Hex thisHex;
+        
+        while (hexes.hasNext())
+        {
+            thisHex = (Hex)hexes.next();
+            
+            if (thisHex.getPolygon() == thisOne)
+            {
+                return (getAdjacentHexes(thisHex.getRow(),thisHex.getCol()));
+            }
+        }
+        
+        return (null);
+        
+    }
+    
+    // ** GET ADJACENT HEXES
+    public LinkedList<Hex> getAdjacentHexes(int row, int col)
+    {
+        LinkedList<Hex> adjHexes = new LinkedList();
+        adjHexes.clear();
+        
+        //All hexes are adjacent to thsoe ABOVE AND BELOW (the ones in the same column, +- 1);
+        
+        //ABOVE
+        if ((row-1) >= 0)
+            adjHexes.add(hexArray[row-1][col]);
+        //BELOW
+        if ((row+1) <= (rows-1))
+            adjHexes.add(hexArray[row+1][col]);
+        //RIGHT
+        if ((col+1) <= (cols-1))
+            adjHexes.add(hexArray[row][col+1]);
+        //LEFT
+        if((col-1) >= 0)
+            adjHexes.add(hexArray[row][col-1]);
+        
+        //EVEN ROW RULES
+        if ((col%2) == 0)
+        {
+            
+            if (((row-1) >= 0) && ((col+1) <= (cols-1)))
+                adjHexes.add(hexArray[row-1][col+1]);
+            if (((row-1) >= 0) && ((col-1) >= 0))
+                adjHexes.add(hexArray[row-1][col-1]);
+            if((col-1) >= 0)
+                adjHexes.add(hexArray[row][col-1]);
+            if((col+1) <= (cols-1))
+                adjHexes.add(hexArray[row][col+1]);
+        }
+        
+        //ODD ROWS
+        else if (col%2 != 0)
+        {
+            if (((row+1) <= (rows-1)) && ((col+1) <= (cols-1)))
+                adjHexes.add(hexArray[row+1][col+1]);         
+            if (((row+1) <= (rows-1)) && ((col-1) >= 0))
+                adjHexes.add(hexArray[row+1][col-1]);
+            if((col+1) <= (cols-1))
+                adjHexes.add(hexArray[row][col+1]);
+            if ((col-1) >= 0)
+                adjHexes.add(hexArray[row][col-1]);
+        }
+        
+        return (adjHexes);
+    }
 }
