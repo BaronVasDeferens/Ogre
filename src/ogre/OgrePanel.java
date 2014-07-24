@@ -229,7 +229,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     {
         if (gameOver == false)
         {
-            
+            //hexMap.updateMapImage();
         }
     }//gameover != true
     
@@ -497,34 +497,16 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
    
    
     //MOUSE CLICKED
-    
+    //Invoked when the mouse button comes BACK UP
     @Override
     public void mouseClicked(MouseEvent e)
     {   
         //*LEFT* CLICK
-//        if (e.getButton() == MouseEvent.BUTTON1)
-//        {
-//            java.awt.Polygon candidate = hexMap.getPolygon(e.getX()+currentWindowX, e.getY()+currentWindowY);
-//            if (candidate != null)
-//            {
-//                Hex thisHex = hexMap.getHexFromPoly(candidate);
-//                
-//                if (thisHex != null)
-//                {
-//                    if (thisHex.isSelected() == false)
-//                    {
-//                        thisHex.select();
-//                        hexMap.updateMapImage();
-//                    }
-//                    else
-//                    {
-//                        thisHex.deselect();
-//                        hexMap.updateMapImage();
-//                    }    
-//                }
-//            }
-//              
-//        }//mouse
+        if (e.getButton() == MouseEvent.BUTTON1)
+        {
+            
+              
+        }//LEFT 
         
         
         //*RIGHT* CLICK

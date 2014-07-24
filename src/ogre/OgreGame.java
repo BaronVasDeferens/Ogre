@@ -12,12 +12,36 @@ package ogre;
  */
 public class OgreGame {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) 
+    boolean gameOver = false;
+    
+    int gameState = 0;
+    /*
+    STATE   PHASE
+           Pre-game setup
+    
+           Player 1 SETUP
+           Player 1 MOVE
+           Player 1 SHOOT
+           Player 1 SECOND MOVE
+    
+           Player 2 SETUP
+           Player 2 MOVE
+           Player 2 SHOOT
+           Player 2 SECOND MOVE
+    */     
+    
+    
+    //Default constructor
+    OgreGame()
     {
-        // TODO code application logic here
+
+    }
+    
+    public void main(String[] args) 
+    {
+        
+
+        
     }
     
 }

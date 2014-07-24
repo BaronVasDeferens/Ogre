@@ -26,6 +26,7 @@ public class HexMap
     
     LinkedList<Hex> hexList;
     LinkedList<Polygon> polyList;
+    LinkedList<Hex> selectedHexes;
     LinkedList<Hex> adjacentHexes;
     
     BufferedImage mapImage;
@@ -44,6 +45,9 @@ public class HexMap
         
         polyList = new LinkedList();
         polyList.clear();
+        
+        selectedHexes = new LinkedList();
+        selectedHexes.clear();
         
         adjacentHexes = new LinkedList();
         adjacentHexes.clear();
@@ -129,17 +133,10 @@ public class HexMap
         
         int x = beginDrawingFromX;
         int y = beginDrawingFromY;
-        //int y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
 
-        //Draw hex field
-//        for (int i = 1; i < rows+1; i++)
-//        {
-//           for (int j = 1; j < cols+1; j++)
-//           {
         for (int i = 0; i < rows; i++)
         {
            
-            
            for (int j = 0; j < cols; j++)
            {           
                if ((j%2) != 0)
@@ -158,65 +155,72 @@ public class HexMap
                p.addPoint(x+(hexagonSize/2),(int)(.8660*2*hexagonSize + y));
                p.addPoint(x,y+(int)(.8660 * hexagonSize));
                
-               if (adjacentHexes.contains(hexArray[i][j]))
-                {
-                    newMapGraphics.setColor(Color.GRAY);
-                    newMapGraphics.fillPolygon(p);
-                    newMapGraphics.setColor(Color.BLACK);
-                    newMapGraphics.drawPolygon(p);
-                }
-               
-               //Paint RED on selected hexes
-               if (hexArray[i][j].isSelected())
+               //Draw solid black crater
+               if (hexArray[i][j].isCrater())
                {
-                   newMapGraphics.setColor(Color.RED);
+                   newMapGraphics.setColor(Color.BLACK);
                    newMapGraphics.fillPolygon(p);
-                   //newMapGraphics.setColor(Color.BLACK);
-                   //newMapGraphics.drawPolygon(p);
-                
                }
                
-               //Draw Units (if any)
-               if (hexArray[i][j].isOccupied())
-               //if (hexArray[i-1][j-1].isOccupied())
+               else
                {
-                   //Rescale and offset
-                   BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
-                   
-                   int Xoffset, Yoffset, imageSize;
-                   
-                   Xoffset = (int)((2 * hexagonSize)/5.464);
-                   Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
-                   imageSize = (int)(2 * (1.732 * Xoffset));
-                   
-                   newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null); 
+                   //Adjacent colorization 
+                   if (adjacentHexes.contains(hexArray[i][j]))
+                     {
+                         newMapGraphics.setColor(Color.PINK);
+                         newMapGraphics.fillPolygon(p);
+                         newMapGraphics.setColor(Color.BLACK);
+                         newMapGraphics.drawPolygon(p);
+                         newMapGraphics.setColor(Color.PINK);
+                     }
+
+                    //Paint RED on selected hexes
+                    if (hexArray[i][j].isSelected())
+                    {
+                        newMapGraphics.setColor(Color.RED);
+                        newMapGraphics.fillPolygon(p);
+                    }
+
+                    //Draw Units (if any)
+                    if (hexArray[i][j].isOccupied())
+                    //if (hexArray[i-1][j-1].isOccupied())
+                    {
+                        //Rescale and offset
+                        BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
+
+                        int Xoffset, Yoffset, imageSize;
+
+                        Xoffset = (int)((2 * hexagonSize)/5.464);
+                        Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
+                        imageSize = (int)(2 * (1.732 * Xoffset));
+                        
+                        newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
+                        //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null); 
+                    }
+               
                }
                
-     
+               //Draw basic polygon
                 newMapGraphics.setColor(Color.BLACK);
                 newMapGraphics.drawPolygon(p);
                
-               
+               //Draw coordinates
                newMapGraphics.setColor(Color.BLUE);
                newMapGraphics.drawString("[" + (i) + "," + (j) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
                
-               
-               
-               
+
                //associate a hex with this polygon
-               //associatePolygonWithHex(i-1,j-1,p);
                associatePolygonWithHex(i,j,p);
                polyList.add(p);
                
-               //y = y + (int)(2 * .8660 * hexagonSize);
+               //scoot the pencil over
                x = x + (hexagonSize/2) + hexagonSize;   
                
            }// for j (columns)
         
+           //Reset for the next row
            beginDrawingFromY += (int)2 *(.8660 * hexagonSize);
-           //y = y + (int)(2 * .8660 * hexagonSize); 
-           //x = x + (hexagonSize/2) + hexagonSize;
-            x = beginDrawingFromX;
+           x = beginDrawingFromX;
 
            
             if ((i%2) != 0)
@@ -268,59 +272,69 @@ public class HexMap
                p.addPoint(x+(hexagonSize/2),(int)(.8660*2*hexagonSize + y));
                p.addPoint(x,y+(int)(.8660 * hexagonSize));
                
-               if (adjacentHexes.contains(hexArray[i][j]))
-                {
-                    newMapGraphics.setColor(Color.GRAY);
-                    newMapGraphics.fillPolygon(p);
-                    newMapGraphics.setColor(Color.BLACK);
-                    newMapGraphics.drawPolygon(p);
-                }
-               
-               //Paint RED on selected hexes
-               if (hexArray[i][j].isSelected())
+                //Draw solid black crater
+               if (hexArray[i][j].isCrater())
                {
-                   newMapGraphics.setColor(Color.RED);
+                   newMapGraphics.setColor(Color.BLACK);
                    newMapGraphics.fillPolygon(p);
-                   //newMapGraphics.setColor(Color.BLACK);
-                   //newMapGraphics.drawPolygon(p);
-                
                }
                
-               //Draw Units (if any)
-               if (hexArray[i][j].isOccupied())
-               {
-                   //Rescale and offset
-                   BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
-                   
-                   int Xoffset, Yoffset, imageSize;
-                   
-                   Xoffset = (int)((2 * hexagonSize)/5.464);
-                   Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
-                   imageSize = (int)(2 * (1.732 * Xoffset));
-                   
-                   newMapGraphics.drawImage(unitImage, x+Xoffset, y+Yoffset, imageSize, imageSize, null);
-               } 
-               
+               else
+               {                
+                    //Adjacent hex colorization
+                    if (adjacentHexes.contains(hexArray[i][j]))
+                    {
+                         newMapGraphics.setColor(Color.PINK);
+                         newMapGraphics.fillPolygon(p);
+                         newMapGraphics.setColor(Color.BLACK);
+                         newMapGraphics.drawPolygon(p);
+                         newMapGraphics.setColor(Color.PINK);
+                     }
 
-                newMapGraphics.setColor(Color.BLACK);
-                newMapGraphics.drawPolygon(p);
-               
+                    //Paint RED on selected hexes
+                    if (hexArray[i][j].isSelected())
+                    {
+                        newMapGraphics.setColor(Color.RED);
+                        newMapGraphics.fillPolygon(p);
+                        //newMapGraphics.setColor(Color.BLACK);
+                        //newMapGraphics.drawPolygon(p);
 
-               
+                    }
+
+                    //Draw Units (if any)
+                    if (hexArray[i][j].isOccupied())
+                    {
+                        //Rescale and offset
+                        BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
+;
+                        int Xoffset, Yoffset, imageSize;
+
+                        Xoffset = (int)((2 * hexagonSize)/5.464);
+                        Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
+                        imageSize = (int)(2 * (1.732 * Xoffset));
+                        
+                        newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
+                        //newMapGraphics.drawImage(unitImage, x+Xoffset, y+Yoffset, imageSize, imageSize, null);
+                    } 
+               }
+
+               //Draw basic polygon 
+               newMapGraphics.setColor(Color.BLACK);
+               newMapGraphics.drawPolygon(p);
+             
+               //Coordinates
                newMapGraphics.setColor(Color.BLUE);
                newMapGraphics.drawString("[" + hexArray[i][j].getRow() + "," + hexArray[i][j].getCol() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
                
-               
-               
+               //Move the pencil over
                x = x + (hexagonSize/2) + hexagonSize;
-               //y = y + (int)(2 * .8660 * hexagonSize);
+
            }
          
            beginDrawingFromY += (int)2 * (.8660 * hexagonSize);
            
            x = beginDrawingFromX;
            y = y + (int)(2 * .8660 * hexagonSize); 
-           //x = x + (hexagonSize/2) + hexagonSize;
             
             if ((i%2) != 0)
                y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
@@ -331,7 +345,6 @@ public class HexMap
     }
     
     //ASSOCIATE POLYGON WITH HEX
-    //
     private void associatePolygonWithHex(int rw, int cl, Polygon poly)
     {
         hexArray[rw][cl].setPolygon(poly);
@@ -405,14 +418,26 @@ public class HexMap
     
     public void select(Hex thisOne)
     {
+        selectedHexes.add(thisOne);
         thisOne.select();
         adjacentHexes.addAll(getAdjacentHexes(thisOne));
     }
     
     public void deselect(Hex thisOne)
     {
+        selectedHexes.remove(thisOne);
         thisOne.deselect();
-        adjacentHexes.removeAll(getAdjacentHexes(thisOne));
+        //adjacentHexes.removeAll(getAdjacentHexes(thisOne));
+        adjacentHexes.clear();
+        
+        Iterator iter = selectedHexes.iterator();
+        Hex current;
+        
+        while (iter.hasNext())
+        {
+            current = (Hex)iter.next();
+            adjacentHexes.addAll(getAdjacentHexes(current));
+        }
     }
     
     
