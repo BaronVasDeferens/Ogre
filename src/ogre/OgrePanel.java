@@ -531,12 +531,12 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                     if (thisHex.isSelected() == false)
                     {
                         hexMap.select(thisHex);
-                        hexMap.updateMapImage();
+                        //hexMap.updateMapImage();
                     }
                     else
                     {
                         hexMap.deselect(thisHex);
-                        hexMap.updateMapImage();
+                        //hexMap.updateMapImage();
                     }    
                 }
             }

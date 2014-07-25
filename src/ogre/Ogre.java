@@ -47,7 +47,7 @@ public class Ogre extends ogre.Unit
                 treads = 45;
                 treadsPerRow = 15;
                 maxMovement = 3;
-                
+                movement = maxMovement;
                 //ONE main battery
                 mainBattery.add(new Weapon(4,3,4,false, "OgreMainBattery", 0));
                 

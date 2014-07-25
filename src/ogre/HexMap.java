@@ -34,6 +34,8 @@ public class HexMap
     int beginDrawingFromX, beginDrawingFromY, hexagonSize;
     int minimumMapWidth, minimumMapHeight;
     
+    boolean showCoordinates = false;
+    
     //Constructor
     public HexMap(int rws, int cls, int hexsize)
     {
@@ -205,9 +207,11 @@ public class HexMap
                 newMapGraphics.drawPolygon(p);
                
                //Draw coordinates
-               newMapGraphics.setColor(Color.BLUE);
-               newMapGraphics.drawString("[" + (i) + "," + (j) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
-               
+                if (showCoordinates)
+                {
+                    newMapGraphics.setColor(Color.BLUE);
+                    newMapGraphics.drawString("[" + (i) + "," + (j) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
+                }
 
                //associate a hex with this polygon
                associatePolygonWithHex(i,j,p);
@@ -254,7 +258,6 @@ public class HexMap
         for (int i = 0; i < rows; i++)
         {
            
-            
            for (int j = 0; j < cols; j++)
            {           
                if ((j%2) != 0)
@@ -316,18 +319,21 @@ public class HexMap
                         newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
                         //newMapGraphics.drawImage(unitImage, x+Xoffset, y+Yoffset, imageSize, imageSize, null);
                     } 
-               }
+                }
 
-               //Draw basic polygon 
-               newMapGraphics.setColor(Color.BLACK);
-               newMapGraphics.drawPolygon(p);
+                //Draw basic polygon 
+                newMapGraphics.setColor(Color.BLACK);
+                newMapGraphics.drawPolygon(p);
              
                //Coordinates
-               newMapGraphics.setColor(Color.BLUE);
-               newMapGraphics.drawString("[" + hexArray[i][j].getRow() + "," + hexArray[i][j].getCol() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
-               
-               //Move the pencil over
-               x = x + (hexagonSize/2) + hexagonSize;
+                if (showCoordinates)
+                {
+                    newMapGraphics.setColor(Color.BLUE);
+                    newMapGraphics.drawString("[" + hexArray[i][j].getRow() + "," + hexArray[i][j].getCol() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
+                }
+                
+                //Move the pencil over
+                x = x + (hexagonSize/2) + hexagonSize;
 
            }
          
@@ -418,25 +424,36 @@ public class HexMap
     
     public void select(Hex thisOne)
     {
-        selectedHexes.add(thisOne);
-        thisOne.select();
-        adjacentHexes.addAll(getAdjacentHexes(thisOne));
+        if (thisOne.isOccupied())
+        {
+            selectedHexes.add(thisOne);
+            thisOne.select();
+            
+            adjacentHexes.addAll(getHexesWithinRange(thisOne,thisOne.getUnit().movement));
+            updateMapImage();
+        }
+
     }
     
     public void deselect(Hex thisOne)
     {
-        selectedHexes.remove(thisOne);
-        thisOne.deselect();
-        //adjacentHexes.removeAll(getAdjacentHexes(thisOne));
-        adjacentHexes.clear();
-        
-        Iterator iter = selectedHexes.iterator();
-        Hex current;
-        
-        while (iter.hasNext())
+        if (thisOne.isOccupied())
         {
-            current = (Hex)iter.next();
-            adjacentHexes.addAll(getAdjacentHexes(current));
+            selectedHexes.remove(thisOne);
+            thisOne.deselect();
+            //adjacentHexes.removeAll(getAdjacentHexes(thisOne));
+            adjacentHexes.clear();
+
+            Iterator iter = selectedHexes.iterator();
+            Hex current;
+
+            while (iter.hasNext())
+            {
+                current = (Hex)iter.next();
+                adjacentHexes.addAll(getHexesWithinRange(current,current.getUnit().movement));
+            }
+            
+            updateMapImage();
         }
     }
     
@@ -517,5 +534,35 @@ public class HexMap
         }
         
         return (adjHexes);
+    }
+    
+    public LinkedList<Hex> getHexesWithinRange(Hex fromHere, int distance)
+    {
+        LinkedList<Hex> tempAdjacents = new LinkedList();
+        LinkedList<Hex> returnList = new LinkedList();
+        tempAdjacents.clear();
+        returnList.clear();
+        
+        if ((fromHere != null) && (distance > 0))
+        {
+            tempAdjacents.addAll(getAdjacentHexes(fromHere));
+            
+            Iterator iter = tempAdjacents.iterator();
+            Hex thisHex;
+            
+            for (int i = 1; i < distance; i++)
+            {
+                while (iter.hasNext())
+                {
+                    thisHex = (Hex)iter.next();
+                    returnList.addAll(getAdjacentHexes(thisHex));
+                }
+                
+                tempAdjacents.addAll(returnList);
+                iter = tempAdjacents.iterator();
+            }
+        }
+        
+        return (returnList);
     }
 }
