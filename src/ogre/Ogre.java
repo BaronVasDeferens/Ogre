@@ -27,6 +27,8 @@ public class Ogre extends ogre.Unit
     {
         super(666);
         
+        unitType = "OGRE";
+        
         mainBattery = new LinkedList();
         mainBattery.clear();
         

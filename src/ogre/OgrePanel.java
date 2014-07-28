@@ -33,29 +33,23 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     private final int SLEEP_INTERVAL = 10;
     private static final int PANEL_WIDTH = 800;
     private static final int PANEL_HEIGHT = 600;
-    //private static final int BLOCK_SIZE = 30; //in pixels
-    
-    //for the hex map
-    HexMap hexMap;
-    public int hexSide = 64;
-    public final int HEX_ROWS = 15;
-    public final int HEX_COLS = 21;
-
     public final int VIEW_WINDOW_WIDTH = 800;
     public final int VIEW_WINDOW_HEIGHT = 600;
-    
     
     //DRAWING STUFF
     private Thread animator;
     private volatile boolean running = false;    
     private volatile boolean gameOver = false;
-    
     private Graphics dbg;
     private Image dbImage = null;
     
     java.util.Random rando;
-
     java.awt.Polygon selectedHex;
+    
+    HexMap hexMap;
+    int hexSide;
+    
+    OgreGame gameMaster;
     
     //User-interaction flags
     boolean scrolling = false;
@@ -64,8 +58,10 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     float zoomFactor = 1.0F;
     
     LinkedList<Unit> allUnits = null;
-    LinkedList<Unit> selectedUnits = null;
+    //LinkedList<Unit> selectedUnits = null;
     //LinkedList<Hex> adjacentHexes = null;
+    
+    int gamePhase = 11;
     
     //CONSTRUCTOR
     public OgrePanel() 
@@ -83,54 +79,12 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         rando = new java.util.Random();
         
         setBackground(Color.RED);
-        setPreferredSize(new Dimension(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT));
         
-        hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
-        hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
-        hexMap.setupMap();
-     
+        setPreferredSize(new Dimension(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT));
+
         currentWindowX = 0;
         currentWindowY = 0;
         
-        //Initialize lists
-        allUnits = new LinkedList();
-        allUnits.clear();
-        selectedUnits = new LinkedList();
-        selectedUnits.clear();
-        //adjacentHexes = new LinkedList();
-        //adjacentHexes.clear();
-        
-        HeavyTank tank1 = new HeavyTank(1);
-        allUnits.add(tank1);
-        
-        Howitzer how = new Howitzer(2);
-        allUnits.add(how);
-        
-        GEV gev = new GEV(3);
-        allUnits.add(gev);
-        
-        Infantry troop1 = new Infantry(4);
-        allUnits.add(troop1);
-        
-        MissileTank msl1 = new MissileTank(5);
-        allUnits.add(msl1);
-        
-        Ogre ogremk3 = new Ogre(3);
-        allUnits.add(ogremk3);
-        
-        CommandPost cmdPost = new CommandPost(7);
-        allUnits.add(cmdPost);
-        
-        
-        hexMap.addUnit(hexMap.getHexFromCoords(0,0), tank1);
-        hexMap.addUnit(hexMap.getHexFromCoords(1,1), how);
-        hexMap.addUnit(hexMap.getHexFromCoords(2,2), gev);
-        hexMap.addUnit(hexMap.getHexFromCoords(3,3), troop1);
-        hexMap.addUnit(hexMap.getHexFromCoords(4,4), msl1);
-        hexMap.addUnit(hexMap.getHexFromCoords(5,5), ogremk3);
-        hexMap.addUnit(hexMap.getHexFromCoords(6,6), cmdPost);
-        
-        hexMap.updateMapImage();
     }
 
     /**
@@ -157,6 +111,19 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     // End of variables declaration                   
 
     
+    public void setMaster(OgreGame msr)
+    {
+        gameMaster = msr;
+        startGame();
+    }
+    
+    public void setHexMap(HexMap hxmp)
+    {
+        hexMap = hxmp;
+        hexSide = hexMap.getHexSize();
+
+    }
+    
     //*** ADD NOTIFY
     //A mystery
     @Override
@@ -164,7 +131,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     {
         //Creates the peer, starts the game
         super.addNotify();
-        startGame();
+        //startGame();
     }
     
     @Override    
@@ -522,22 +489,100 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
          if (e.getButton() == MouseEvent.BUTTON1)
         {
             java.awt.Polygon candidate = hexMap.getPolygon(e.getX()+currentWindowX, e.getY()+currentWindowY);
+            
+            //Here, we determine the context of the click.
+            //Possibilities: 
+            /*  (MOVE PHASE): player selects the desired unit as a pre-cursor to movement.
+                (MOVE PHASE): player clicks on a hex within movement range to move it there. (CAN UNDO)
+                (MOVE PHASE): player clicks anywhere other than a hex within movement range to cancel the move.
+            */
             if (candidate != null)
             {
                 Hex thisHex = hexMap.getHexFromPoly(candidate);
-                
+
                 if (thisHex != null)
                 {
-                    if (thisHex.isSelected() == false)
+                   //TEST TEST TEST
+                    switch (gamePhase)
                     {
-                        hexMap.select(thisHex);
-                        //hexMap.updateMapImage();
+                        //MOVEMENT
+                        //During movement, ONLY ONE HEX MAY BE SELECTED AT A TIME.
+                        
+                        //Add checks for unit ownership later
+                        
+                        case 11:
+                            //DESELECT
+                            //re-clicking same unit to de-select it
+                            if (hexMap.selectedHexes.contains(thisHex))
+                            {
+                                hexMap.deselect(thisHex);
+                                hexMap.selectedHexes.clear();
+                            }
+                        
+                            
+                            else
+                            {
+                                //MOVE
+                                //Clicking a hex within movement range to move it there.
+                                if (hexMap.adjacentHexes.contains(thisHex))
+                                {
+                                    //FIX: dumb move
+                                    //FIX: edge case; Ogre moving into infantry or CP hex
+                                    //if (thisHex.isOccupied() == false)
+                                    //{    
+                                        //GameEvent(String tp, Unit agt, Hex src, Hex dest, int phase, String msg, int idee)
+                                        GameEvent moveEvent = new GameEvent("MOVE", hexMap.selectedHexes.peek().getUnit(), hexMap.selectedHexes.peek(), thisHex, gameMaster.getGamePhase(),"", true);
+
+                                        if (gameMaster.move(moveEvent))
+                                        {
+                                            hexMap.updateMapImage();
+                                        }
+                                    //}
+                                    
+                                    //collapse infantry into each other
+                                    /*else if (thisHex.getUnit().unitType.equals("INFANTRY") 
+                                    {        
+                                        if (hexMap.selectedHexes.peek() != null)
+                                        {
+                                        
+                                            (hexMap.selectedHexes.peek().getUnit().unitType.equals("INFANTRY")))
+                                            {
+                                                if (thisHex.getUnit().defense + hexMap.selectedHexes.peek().getUnit().defense <= 3)
+                                                {
+                                                    Unit combo = new Infantry(thisHex.getUnit().unitID, thisHex.getUnit().defense + hexMap.selectedHexes.peek().getUnit().defense);
+                                                    //remove the two inf units from the master lis
+                                                    allUnits.remove(thisHex.getUnit());
+                                                    allUnits.remove(hexMap.selectedHexes.peek().getUnit());
+                                                    //add the new 
+                                                    allUnits.add(combo);
+                                                    hexMap.selectedHexes.peek().setOccupingUnit(null);
+                                                    thisHex.setOccupingUnit(null);
+                                                    thisHex.setOccupingUnit(combo);
+                                                }
+                                    }
+                                 */   
+                                }
+                                
+                                //Previously unselected; player wishes to select
+                                else
+                                    hexMap.select(thisHex);
+                            }
+                            break;
+                        default:
+                            break;
+                       
                     }
-                    else
-                    {
-                        hexMap.deselect(thisHex);
-                        //hexMap.updateMapImage();
-                    }    
+                    
+//                    if (thisHex.isSelected() == false)
+//                    {
+//                        hexMap.select(thisHex);
+//                        //hexMap.updateMapImage();
+//                    }
+//                    else
+//                    {
+//                        hexMap.deselect(thisHex);
+//                        //hexMap.updateMapImage();
+//                    }    
                 }
             }
               

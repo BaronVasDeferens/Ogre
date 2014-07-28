@@ -27,6 +27,19 @@ public class Infantry extends ogre.Unit
         image = loadImage("infantry_3.png");
     }
     
+    public Infantry(int id, int def)
+    {
+        super(id);
+        unitName = "Infantry";
+        unitType = "INFANTRY";
+        
+        movement = 2;
+        defense = def;
+        unitWeapon = new Weapon(3, 1, false, "anti-tank", 0);
+        
+        image = loadImage("infantry_" + def + ".png");
+    }
+    
     //TAKE DAMAGE
     //Self-manages based on the result of the damage taken
     @Override

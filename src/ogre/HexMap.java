@@ -79,6 +79,11 @@ public class HexMap
         setupMap();
     }
     
+    public int getHexSize()
+    {
+        return (hexagonSize);
+    }
+    
     //SET MINIMUM MAP SIZE
     //ba-derp
     public void setMinimumMapSize(int minWidth, int minHeight)
@@ -166,6 +171,8 @@ public class HexMap
                
                else
                {
+                   newMapGraphics.setColor(Color.WHITE);
+                   
                    //Adjacent colorization 
                    if (adjacentHexes.contains(hexArray[i][j]))
                      {
@@ -284,6 +291,8 @@ public class HexMap
                
                else
                {                
+                    newMapGraphics.setColor(Color.WHITE);
+
                     //Adjacent hex colorization
                     if (adjacentHexes.contains(hexArray[i][j]))
                     {
@@ -309,7 +318,7 @@ public class HexMap
                     {
                         //Rescale and offset
                         BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
-;
+
                         int Xoffset, Yoffset, imageSize;
 
                         Xoffset = (int)((2 * hexagonSize)/5.464);
@@ -414,10 +423,16 @@ public class HexMap
     
     //*** UNIT MANAGMENT ***
     //Adds a unit to a hex. Checks for crater, existing unit
-    public void addUnit(Hex target, Unit toAdd)
+    public boolean addUnit(Hex target, Unit toAdd)
     {
         if ((target.isCrater() == false) && (target.isOccupied() == false))
+        {
             target.setOccupingUnit(toAdd);
+            updateMapImage();
+            return (true);
+        }
+        else
+            return (false);
     }
     
     

@@ -47,16 +47,9 @@ public class Hex
         return myPoly;
     }
     
-    public boolean setOccupingUnit(Unit unit)
+    public void setOccupingUnit(Unit unit)
     {
-        if (occupyingUnit == null)
-        {
-            occupyingUnit = unit;
-            return (true);
-        }
-        
-        else
-            return (false);
+        occupyingUnit = unit;
     }
     
     public boolean isOccupied()
