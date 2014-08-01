@@ -30,6 +30,7 @@ public class HexMap
     LinkedList<Hex> adjacentHexes;
     
     BufferedImage mapImage;
+    BufferedImage offScreenDraw;
     
     int beginDrawingFromX, beginDrawingFromY, hexagonSize;
     int minimumMapWidth, minimumMapHeight;
@@ -115,7 +116,7 @@ public class HexMap
         
         BufferedImage newImage = new BufferedImage(sizeX,sizeY,BufferedImage.OPAQUE);
         
-        System.out.println("Created new Image: " + sizeX + " x " + sizeY);
+        //System.out.println("Created new Image: " + sizeX + " x " + sizeY);
         
         return (newImage);
         
@@ -130,12 +131,12 @@ public class HexMap
             polyList.clear();
         
  
-        mapImage = createNewImage();
-        Graphics newMapGraphics = mapImage.getGraphics();
+        offScreenDraw = createNewImage();
+        Graphics newMapGraphics = offScreenDraw.getGraphics();
         
         //Clear background
         newMapGraphics.setColor(java.awt.Color.WHITE);
-        newMapGraphics.fillRect(0,0,mapImage.getWidth(),mapImage.getHeight());
+        newMapGraphics.fillRect(0,0,offScreenDraw.getWidth(),offScreenDraw.getHeight());
 
         
         int x = beginDrawingFromX;
@@ -240,7 +241,9 @@ public class HexMap
                 y = beginDrawingFromY;
             
         }  
-                               
+           
+        newMapGraphics.dispose();
+        mapImage = offScreenDraw;
     }
     
     //GET UPDATED MAP IMAGE
@@ -249,13 +252,13 @@ public class HexMap
     {                  
 
         //mapImage = new BufferedImage(mapImage.getWidth(), mapImage.getHeight(), BufferedImage.OPAQUE);
-        mapImage = createNewImage();
+        offScreenDraw = createNewImage();
         
-        Graphics newMapGraphics = mapImage.getGraphics();
+        Graphics newMapGraphics = offScreenDraw.getGraphics();
         
         //Clear background
         newMapGraphics.setColor(java.awt.Color.WHITE);
-        newMapGraphics.fillRect(0,0,mapImage.getWidth(), mapImage.getHeight());
+        newMapGraphics.fillRect(0,0,offScreenDraw.getWidth(), offScreenDraw.getHeight());
 
         int x = beginDrawingFromX;
         //int y = beginDrawingFromY;
@@ -357,6 +360,8 @@ public class HexMap
                 y = beginDrawingFromY;
         }
         
+        newMapGraphics.dispose();
+        mapImage = offScreenDraw;
     }
     
     //ASSOCIATE POLYGON WITH HEX
@@ -579,5 +584,20 @@ public class HexMap
         }
         
         return (returnList);
+    }
+    
+    //DESELECT ALL SELECTED HEXES
+    public void deselectAllSelectedHexes()
+    {
+        Iterator iter = selectedHexes.iterator();
+        Hex current;
+        
+        while (iter.hasNext())
+        {
+            current = (Hex)iter.next();
+            current.deselect();
+        }
+        
+        selectedHexes.clear();
     }
 }

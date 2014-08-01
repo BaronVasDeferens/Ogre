@@ -15,6 +15,9 @@ import java.util.Iterator;
  */
 public class OgreGame {
 
+    javax.swing.JFrame myFrame;
+    javax.swing.JList weaponList;
+    
     HexMap hexMap;
     public int hexSide = 64;
     public final int HEX_ROWS = 15;
@@ -23,6 +26,9 @@ public class OgreGame {
     public final int VIEW_WINDOW_HEIGHT = 600;
     
     OgrePanel ogrePanel;
+    javax.swing.JList WeaponSystemsList;
+    
+    Player playerOne, playerTwo, currentPlayer;
     
     boolean gameOver = false;
     
@@ -77,6 +83,14 @@ public class OgreGame {
     }
     
     
+    //Give Ogre game awarness of the frame in which it lives
+    public void attachComponents(javax.swing.JFrame myframe, javax.swing.JList jlist)
+    {
+        myFrame = myframe;
+        weaponList = jlist;
+    }
+    
+    
     
     //MOVE
     //Accepts a GameEvent ("MOVE") object, determines it validity 
@@ -92,7 +106,8 @@ public class OgreGame {
         else if ((!e.type.equals("MOVE")) || ((e.source.equals(e.destination))))
             return false;
         
-
+        //TODO: test for unit ownership        
+        
         if((e.agent.unitType.equals("INFANTRY")) && (e.destination.isOccupied()))
         {
             //COLLAPSE INFANTRY
@@ -125,27 +140,54 @@ public class OgreGame {
             }
             
             else
+            {
+                hexMap.deselectAllSelectedHexes();
+                hexMap.adjacentHexes.clear();
+                hexMap.updateMapImage();
                 return false;
+            }    
+        }
+        
+        //both hexes are occupied by non-interactive units. 
+        else if (e.destination.isOccupied())
+        {
+            hexMap.deselectAllSelectedHexes();
+            hexMap.adjacentHexes.clear();
+            hexMap.updateMapImage();
+            return (false);
         }
         
         //OGRE OVERRUN
         //goes here
 
         //BASIC MOVE
-        //From one occupied hex to an occupied one. Clean up.
+        //From one occupied hex to an unoccupied one. Clean up.
         else if (e.destination.isOccupied() == false)
         {
             hexMap.addUnit(e.destination, e.agent);
             e.source.setOccupingUnit(null);
             e.source.deselect();
+            
+            Iterator iter = hexMap.selectedHexes.iterator();
+            Hex cur;
+            while (iter.hasNext())
+            {
+                cur = (Hex)iter.next();
+                cur.deselect();
+            }
             hexMap.selectedHexes.clear();
             hexMap.adjacentHexes.clear();
             
             if (e.canUndoThis)
                 eventManager.addEvent(e);
+            
+            return (true);
+            
         }
         
-        return (true);
+        
+        
+        return (false);
     }
     
     
@@ -166,9 +208,38 @@ public class OgreGame {
     
     //ADVANCE GAME PHASE
     //Allows the UI to advance the game phase
+     /*
+    STATE   PHASE
+    00      Pre-game setup
+    
+    10      Player 1 SETUP
+    11      Player 1 MOVE
+    12      Player 1 SHOOT
+    13      Player 1 SECOND MOVE
+    
+    20      Player 2 SETUP
+    21      Player 2 MOVE
+    22      Player 2 SHOOT
+    23      Player 2 SECOND MOVE
+    */
     public void advanceGamePhase()
     {
+        gamePhase += 1;
         
+        switch (gamePhase)
+        {
+            //Pre-game setup -> P1 Setup
+            case 1:
+                gamePhase = 10;
+                break;
+            //P1 stup -> P1 move
+            case 11:
+                break;
+            case 12:
+                
+            default:
+                break;
+        }
     }
     
 }

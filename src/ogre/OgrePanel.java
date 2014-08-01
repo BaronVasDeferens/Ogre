@@ -30,7 +30,7 @@ import java.util.Enumeration;
 public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListener, MouseListener, MouseWheelListener {
 
     //CONSTANTS
-    private final int SLEEP_INTERVAL = 10;
+    private final int SLEEP_INTERVAL = 5;
     private static final int PANEL_WIDTH = 800;
     private static final int PANEL_HEIGHT = 600;
     public final int VIEW_WINDOW_WIDTH = 800;
@@ -44,7 +44,6 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     private Image dbImage = null;
     
     java.util.Random rando;
-    java.awt.Polygon selectedHex;
     
     HexMap hexMap;
     int hexSide;
@@ -57,7 +56,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     int currentWindowX, currentWindowY;   //stores current position of the upper corner of the view window
     float zoomFactor = 1.0F;
     
-    LinkedList<Unit> allUnits = null;
+    //LinkedList<Unit> allUnits = null;
     //LinkedList<Unit> selectedUnits = null;
     //LinkedList<Hex> adjacentHexes = null;
     
@@ -204,6 +203,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     //GAME RENDER
     private void gameRender()
     {
+        
         if (dbImage == null)
         {
             dbImage = createImage(VIEW_WINDOW_WIDTH, VIEW_WINDOW_HEIGHT);
@@ -220,12 +220,16 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
             dbg = dbImage.getGraphics();
         }
         
-        Graphics bigMapGraphics = hexMap.getImage().getGraphics();
+        
+        //Graphics bigMapGraphics = hexMap.getImage().getGraphics();
         BufferedImage temp = hexMap.getImage();
+        Graphics bigMapGraphics = temp.getGraphics();
 
         //make sure the new image is big enough
         if (((currentWindowX + 800) <= temp.getWidth()) && ((currentWindowY + 600) <= temp.getHeight()))
             temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
+        
+        //Otherwise set the viewing window to the upper left corner 
         else
         {
             currentWindowX = 0;
@@ -234,8 +238,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         }
 
         dbg.drawImage(temp,0,0,800,600, this);
+
         
-  
         if (scrolling)
         {
 
@@ -244,6 +248,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
             dbg.drawString("scrollingX:"+scrollingX, 10, 20);
             dbg.drawString("scrollingY:"+scrollingY, 10, 30);
             dbg.drawString("hexSide:" + hexSide,10,40);
+
             
             java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
             
@@ -273,6 +278,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         {
             gameOverMsg(dbg);
         }
+        
+        bigMapGraphics.dispose();
     }
     
     //PAINT COMPONENT
@@ -505,7 +512,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                    //TEST TEST TEST
                     switch (gamePhase)
                     {
-                        //MOVEMENT
+                        //MOVEMENT PHASE
                         //During movement, ONLY ONE HEX MAY BE SELECTED AT A TIME.
                         
                         //Add checks for unit ownership later
@@ -515,8 +522,9 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             //re-clicking same unit to de-select it
                             if (hexMap.selectedHexes.contains(thisHex))
                             {
-                                hexMap.deselect(thisHex);
-                                hexMap.selectedHexes.clear();
+                                hexMap.deselectAllSelectedHexes();
+                                hexMap.adjacentHexes.clear();
+                                hexMap.updateMapImage();
                             }
                         
                             
@@ -526,63 +534,49 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 //Clicking a hex within movement range to move it there.
                                 if (hexMap.adjacentHexes.contains(thisHex))
                                 {
+                                    //System.out.println("ADJ");
                                     //FIX: dumb move
                                     //FIX: edge case; Ogre moving into infantry or CP hex
                                     //if (thisHex.isOccupied() == false)
                                     //{    
-                                        //GameEvent(String tp, Unit agt, Hex src, Hex dest, int phase, String msg, int idee)
+                                        //GameEvent(String tp, Unit agentt, Hex source, Hex destination, int phase, String msg, int id)
                                         GameEvent moveEvent = new GameEvent("MOVE", hexMap.selectedHexes.peek().getUnit(), hexMap.selectedHexes.peek(), thisHex, gameMaster.getGamePhase(),"", true);
 
                                         if (gameMaster.move(moveEvent))
                                         {
                                             hexMap.updateMapImage();
                                         }
-                                    //}
-                                    
-                                    //collapse infantry into each other
-                                    /*else if (thisHex.getUnit().unitType.equals("INFANTRY") 
-                                    {        
-                                        if (hexMap.selectedHexes.peek() != null)
-                                        {
                                         
-                                            (hexMap.selectedHexes.peek().getUnit().unitType.equals("INFANTRY")))
-                                            {
-                                                if (thisHex.getUnit().defense + hexMap.selectedHexes.peek().getUnit().defense <= 3)
-                                                {
-                                                    Unit combo = new Infantry(thisHex.getUnit().unitID, thisHex.getUnit().defense + hexMap.selectedHexes.peek().getUnit().defense);
-                                                    //remove the two inf units from the master lis
-                                                    allUnits.remove(thisHex.getUnit());
-                                                    allUnits.remove(hexMap.selectedHexes.peek().getUnit());
-                                                    //add the new 
-                                                    allUnits.add(combo);
-                                                    hexMap.selectedHexes.peek().setOccupingUnit(null);
-                                                    thisHex.setOccupingUnit(null);
-                                                    thisHex.setOccupingUnit(combo);
-                                                }
-                                    }
-                                 */   
+                                        else
+                                        {
+                                            hexMap.deselectAllSelectedHexes();
+                                            hexMap.adjacentHexes.clear();
+                                            hexMap.updateMapImage();
+                                        }
+  
                                 }
                                 
                                 //Previously unselected; player wishes to select
-                                else
+                                else if (hexMap.selectedHexes.isEmpty())
+                                {
                                     hexMap.select(thisHex);
+                                    hexMap.updateMapImage();
+                                }
+                                
+                                //User clicked on an invalid hex-- PUNISH THEM
+                                else
+                                {
+                                    hexMap.deselectAllSelectedHexes();
+                                    hexMap.adjacentHexes.clear();
+                                    hexMap.updateMapImage();
+                                }
                             }
                             break;
                         default:
                             break;
                        
                     }
-                    
-//                    if (thisHex.isSelected() == false)
-//                    {
-//                        hexMap.select(thisHex);
-//                        //hexMap.updateMapImage();
-//                    }
-//                    else
-//                    {
-//                        hexMap.deselect(thisHex);
-//                        //hexMap.updateMapImage();
-//                    }    
+   
                 }
             }
               
@@ -597,6 +591,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
             scrollingX = pInfo.getLocation().x;
             scrollingY = pInfo.getLocation().y;
         }
+        
     }
     
     

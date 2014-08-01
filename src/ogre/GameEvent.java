@@ -7,6 +7,7 @@
 package ogre;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 
 /**
  *
@@ -40,5 +41,37 @@ public class GameEvent implements Serializable
         gamePhase = phase;
         message = msg;
         canUndoThis = undo;
+    }
+}
+
+class AttackEvent extends GameEvent
+{
+    LinkedList<Unit> attackingUnits;
+    Unit targetUnit;
+    Weapon targetWeapon;
+    
+    AttackEvent()
+    {
+        type = "ATTACK";
+        attackingUnits = null;
+        targetUnit = null;
+        targetWeapon = null;
+        canUndoThis = false;
+    }
+    
+    AttackEvent(LinkedList attackers, Unit defender, Weapon defenderWeapon)
+    {
+        this();
+        attackingUnits = attackers;
+        targetUnit = defender;
+        targetWeapon = defenderWeapon;
+    }
+}
+
+class DieRollEvent extends GameEvent
+{
+    DieRollEvent()
+    {
+        
     }
 }
