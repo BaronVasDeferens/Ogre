@@ -20,7 +20,7 @@ public class CommandPost extends ogre.Unit
         unitType = "CP";
         
         movement = 0;
-        defense = 0;
+        defense = 1;
         
         image = loadImage("command_post.png");
     }

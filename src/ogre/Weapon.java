@@ -15,20 +15,20 @@ public class Weapon
     String weaponName;
     int weaponID;
     
-    int attack;
+    int strength;
     int range;
     int defense;
     
-    boolean infantryOnly;   //TRUE if only effective against infantry (eg antipersonell guns)
+    boolean softTargetsOnly;   //TRUE if only effective against infantry/ CP (eg antipersonell guns)
     
     boolean disabled;
     
     //Non-Ogre weapon constructor
     public Weapon(int atk, int rng, boolean infOnly, String name, int id)
     {
-        attack = atk;
+        strength = atk;
         range = rng;
-        infantryOnly = infOnly;
+        softTargetsOnly = infOnly;
         weaponName = name;
         weaponID = id;
         
@@ -39,10 +39,10 @@ public class Weapon
     //Ogre weapon constructor
     public Weapon(int atk, int rng, int def, boolean infOnly, String name, int id)
     {
-        attack = atk;
+        strength = atk;
         range = rng;
         defense = def;
-        infantryOnly = infOnly;
+        softTargetsOnly = infOnly;
         weaponName = name;
         weaponID = id;
         

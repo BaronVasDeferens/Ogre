@@ -18,7 +18,7 @@ public class Player
     
     Player(String myName)
     {
-        name = new String(myName);
+        name = myName;
         units = new LinkedList();
         units.clear();
     }

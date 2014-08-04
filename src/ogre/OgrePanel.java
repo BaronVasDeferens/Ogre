@@ -501,7 +501,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
             //Possibilities: 
             /*  (MOVE PHASE): player selects the desired unit as a pre-cursor to movement.
                 (MOVE PHASE): player clicks on a hex within movement range to move it there. (CAN UNDO)
-                (MOVE PHASE): player clicks anywhere other than a hex within movement range to cancel the move.
+                (MOVE PHASE): player clicks anywhere other than an unoccupied hex within movement range to cancel the move.
             */
             if (candidate != null)
             {
@@ -524,6 +524,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             {
                                 hexMap.deselectAllSelectedHexes();
                                 hexMap.adjacentHexes.clear();
+                                gameMaster.updateUnitReadouts(null);
                                 hexMap.updateMapImage();
                             }
                         
@@ -534,40 +535,52 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 //Clicking a hex within movement range to move it there.
                                 if (hexMap.adjacentHexes.contains(thisHex))
                                 {
-                                    //System.out.println("ADJ");
-                                    //FIX: dumb move
-                                    //FIX: edge case; Ogre moving into infantry or CP hex
-                                    //if (thisHex.isOccupied() == false)
-                                    //{    
-                                        //GameEvent(String tp, Unit agentt, Hex source, Hex destination, int phase, String msg, int id)
-                                        GameEvent moveEvent = new GameEvent("MOVE", hexMap.selectedHexes.peek().getUnit(), hexMap.selectedHexes.peek(), thisHex, gameMaster.getGamePhase(),"", true);
+                                        //A selected hex may not necessarily belong to the current player. Check for ownership
+                                        if (gameMaster.currentPlayer.units.contains(hexMap.selectedHexes.peek().getUnit()))
+                                        {  
+                                            //GameEvent(String tp, Unit agentt, Hex source, Hex destination, int phase, String msg, int id)
+                                            GameEvent moveEvent = new GameEvent("MOVE", hexMap.selectedHexes.peek().getUnit(), hexMap.selectedHexes.peek(), thisHex, gameMaster.getGamePhase(),"", true);
 
-                                        if (gameMaster.move(moveEvent))
-                                        {
-                                            hexMap.updateMapImage();
+                                            if (gameMaster.move(moveEvent))
+                                            {
+                                                hexMap.updateMapImage();
+                                            }
+
+                                            else
+                                            {
+                                                hexMap.deselectAllSelectedHexes();
+                                                hexMap.adjacentHexes.clear();
+                                                hexMap.updateMapImage();
+                                            }
+                                            
+                                            gameMaster.updateUnitReadouts(null);
                                         }
-                                        
                                         else
-                                        {
-                                            hexMap.deselectAllSelectedHexes();
-                                            hexMap.adjacentHexes.clear();
-                                            hexMap.updateMapImage();
-                                        }
+                                            System.out.println("nacho cheese");
   
                                 }
                                 
+                                //SELCT UNIT
                                 //Previously unselected; player wishes to select
+                                //No selected hexes, thisHex is populated
                                 else if (hexMap.selectedHexes.isEmpty())
                                 {
                                     hexMap.select(thisHex);
+                                    
+                                    //Display stats and weapons in the on-screen list
+                                    gameMaster.updateUnitReadouts(thisHex.getUnit());
+                                        
+                                    
                                     hexMap.updateMapImage();
                                 }
                                 
+                                //DESELECT
                                 //User clicked on an invalid hex-- PUNISH THEM
                                 else
                                 {
                                     hexMap.deselectAllSelectedHexes();
                                     hexMap.adjacentHexes.clear();
+                                    gameMaster.updateUnitReadouts(null);
                                     hexMap.updateMapImage();
                                 }
                             }
@@ -586,6 +599,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         if (e.getButton() == MouseEvent.BUTTON3)
         {
             scrolling = true;
+            //hexMap.showCoordinates = true;
 
             java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
             scrollingX = pInfo.getLocation().x;
@@ -601,6 +615,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         if (e.getButton() == MouseEvent.BUTTON3)
         {
             scrolling = false;
+            //hexMap.showCoordinates = false;
         }
     }
     

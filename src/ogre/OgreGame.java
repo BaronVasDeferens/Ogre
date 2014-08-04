@@ -6,9 +6,8 @@
 
 package ogre;
 
-import java.util.LinkedList;
-import java.awt.Polygon;
-import java.util.Iterator;
+import java.util.*;
+import java.awt.*;
 /**
  *
  * @author Skot
@@ -16,8 +15,10 @@ import java.util.Iterator;
 public class OgreGame {
 
     javax.swing.JFrame myFrame;
-    javax.swing.JList weaponList;
-    
+    java.awt.List weaponList;
+    java.awt.Label unitNameLabel, unitStatsLabel, phaseLabel;
+    OgrePanel ogrePanel;
+        
     HexMap hexMap;
     public int hexSide = 64;
     public final int HEX_ROWS = 15;
@@ -25,9 +26,7 @@ public class OgreGame {
     public final int VIEW_WINDOW_WIDTH = 800;
     public final int VIEW_WINDOW_HEIGHT = 600;
     
-    OgrePanel ogrePanel;
-    javax.swing.JList WeaponSystemsList;
-    
+
     Player playerOne, playerTwo, currentPlayer;
     
     boolean gameOver = false;
@@ -36,7 +35,7 @@ public class OgreGame {
     Scenario scenario;
     LinkedList<Unit> allUnits;
     
-    int gamePhase = 11;
+    int gamePhase = -1;
     /*
     STATE   PHASE
     00      Pre-game setup
@@ -62,14 +61,24 @@ public class OgreGame {
         
         eventManager = new EventManager(this);
         
-        //Assume scenarion ZERO for now
-        scenario = new Scenario(0);
-        allUnits = scenario.getAllUnits();
+        //Assume scenarion ZERO (TEST) for now
+        playerOne = new Player("Skot");
+        playerTwo = new Player("Kyle");
+        
+        currentPlayer = playerOne;
+        
+        scenario = new Scenario(0, playerOne, playerTwo);
+
+        allUnits = new LinkedList();
+        allUnits.clear();
+        allUnits.addAll(playerOne.units);
+        allUnits.addAll(playerTwo.units);
         
         Iterator iterator = allUnits.iterator();
         Unit currentUnit;
         int putX = 0;
         
+        //DUMB PLACEMENT ROUTINE :: FOR TESTING ONLY
         while (iterator.hasNext())
         {
             currentUnit = (Unit)iterator.next();
@@ -80,14 +89,24 @@ public class OgreGame {
         ogrePanel = ogrPnl;
         ogrePanel.setHexMap(hexMap);
         ogrePanel.setMaster(this);
+        
     }
     
     
     //Give Ogre game awarness of the frame in which it lives
-    public void attachComponents(javax.swing.JFrame myframe, javax.swing.JList jlist)
+    public void attachComponents(javax.swing.JFrame myframe, java.awt.List list, java.awt.Label label,
+            java.awt.Label statsLabel, java.awt.Label phaselabel)
     {
         myFrame = myframe;
-        weaponList = jlist;
+        weaponList = list;
+        unitNameLabel = label;
+        unitStatsLabel = statsLabel;
+        phaseLabel = phaselabel;
+        
+        myFrame.setTitle("OGRE");
+        
+        advanceGamePhase();
+        
     }
     
     
@@ -125,6 +144,7 @@ public class OgreGame {
                     allUnits.remove(e.agent);
                     allUnits.remove(e.destination.getUnit()); 
                     allUnits.add(newUnit);
+                    currentPlayer.units.add(newUnit);
                     e.source.setOccupingUnit(null);
                     e.destination.setOccupingUnit(newUnit);
                     
@@ -212,12 +232,14 @@ public class OgreGame {
     STATE   PHASE
     00      Pre-game setup
     
-    10      Player 1 SETUP
+    1       Player 1 SETUP
+    2       Player 2 SETUP
+    
     11      Player 1 MOVE
     12      Player 1 SHOOT
     13      Player 1 SECOND MOVE
     
-    20      Player 2 SETUP
+
     21      Player 2 MOVE
     22      Player 2 SHOOT
     23      Player 2 SECOND MOVE
@@ -228,17 +250,98 @@ public class OgreGame {
         
         switch (gamePhase)
         {
+            case 0:
+                phaseLabel.setText("Phase: PREGAME SETUP");
+                break;
             //Pre-game setup -> P1 Setup
             case 1:
-                gamePhase = 10;
+                phaseLabel.setText("Phase: SETUP P1");
                 break;
-            //P1 stup -> P1 move
+            case 2:
+                phaseLabel.setText("Phase: SETUP P2");
+                break;
+            case 3:
+                gamePhase = 11;
+            //Player 1 MOVE
             case 11:
+                phaseLabel.setText("Phase: MOVE P1");
                 break;
+            //Player 1 SHOOT
             case 12:
-                
+                phaseLabel.setText("Phase: SHOOT P1");
+                break;
+            //player 1 second move
+            case 13:
+                phaseLabel.setText("Phase: SECOND MOVE P1");
+                break;
+            case 14:
+            case 20:
+                gamePhase = 21;
+            case 21:
+                phaseLabel.setText("Phase: MOVE P2");
+                break;
+            case 22:
+                phaseLabel.setText("Phase: SHOOT P2");
+                break;
+            case 23:
+                phaseLabel.setText("Phase: SECOND MOVE P2");
+                break;
+            case 24:
+                gamePhase = 11;
+                phaseLabel.setText("Phase: MOVE P1");
+                break;
             default:
                 break;
+        }
+    }
+    
+    public void updateUnitReadouts(Unit thisUnit)
+    {
+        if (thisUnit != null)
+        {
+            String readout;
+
+            //OGRE routine
+            if (thisUnit.unitType.equals("OGRE"))
+            {
+                Ogre thisOgre = (Ogre)thisUnit;
+
+                unitNameLabel.setText(thisOgre.unitName);
+                unitStatsLabel.setText("Move: " + thisOgre.getCurrentMovement());
+                weaponList.removeAll();
+
+                java.util.Iterator iter = thisOgre.getWeaponReadoutStrings().iterator();
+                String thisWeapon;
+
+                int index = 0;
+
+                while (iter.hasNext())
+                {
+                    thisWeapon = (String)iter.next();
+                    weaponList.add(thisWeapon,index);
+                    index++;
+                }
+            }
+            
+            else
+            {
+                readout = thisUnit.unitName;
+                unitNameLabel.setText(readout);
+                readout =  "Move: " + thisUnit.movement + "  Defense: " + thisUnit.defense;
+                unitStatsLabel.setText(readout);
+                
+                readout = "Strength: " + thisUnit.unitWeapon.strength + "  Range: " + thisUnit.unitWeapon.range;
+                weaponList.add(readout);
+            }
+        
+        }
+        
+        else
+        {
+            weaponList.removeAll();
+            unitNameLabel.setText("No Unit Selected");
+            unitStatsLabel.setText("");
+            
         }
     }
     

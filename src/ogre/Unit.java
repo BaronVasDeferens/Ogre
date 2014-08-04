@@ -22,6 +22,8 @@ public class Unit
     String unitType;        //eg tank, infantry, GEV, etc
     int unitID;             //unique ID          
 
+    Player controllingPlayer;
+    
     //Awareness of board position
     int xLocation;
     int yLocation;
@@ -55,12 +57,14 @@ public class Unit
         movementPostShooting = 0;
     }
     
-    //SET LOCATION
+    //SET LOCATION (X,Y)
     public void setLocation(int x, int y)
     {
         xLocation = x;
         yLocation = y;
     }
+    
+    //SET LOCATION (HEX)
     
     //LOAD IMAGE
     protected BufferedImage loadImage(String fileName)

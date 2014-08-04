@@ -12,6 +12,7 @@ package ogre;
  */
 public class Infantry extends ogre.Unit
 {
+    /*
     public Infantry(int id)
     {
         super(id);
@@ -26,6 +27,7 @@ public class Infantry extends ogre.Unit
         unitWeapon = new Weapon(3, 1, false, "anti-tank", 0);
         image = loadImage("infantry_3.png");
     }
+    */
     
     public Infantry(int id, int def)
     {
@@ -35,7 +37,7 @@ public class Infantry extends ogre.Unit
         
         movement = 2;
         defense = def;
-        unitWeapon = new Weapon(3, 1, false, "anti-tank", 0);
+        unitWeapon = new Weapon(def, 1, false, "anti-tank", 0);
         
         image = loadImage("infantry_" + def + ".png");
     }
@@ -52,13 +54,13 @@ public class Infantry extends ogre.Unit
                 break;
             case 'd':
                 //*** Strength reduced by one; if already 1, then death
-                if (unitWeapon.attack > 1)
+                if (unitWeapon.strength > 1)
                 {
-                    unitWeapon.attack --;
+                    unitWeapon.strength --;
                     defense--;
                     
                     //Load a new image to reflect the new strength
-                    switch (unitWeapon.attack)
+                    switch (unitWeapon.strength)
                     {
                         case 2:
                             image = loadImage("infantry_2.png");
