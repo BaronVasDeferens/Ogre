@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.awt.Polygon;
 import java.util.Iterator;
+import java.util.*;
 
 /**
  *
@@ -448,8 +449,6 @@ public class HexMap
         {
             selectedHexes.add(thisOne);
             thisOne.select();
-            
-            adjacentHexes.addAll(getHexesWithinRange(thisOne,thisOne.getUnit().movement));
             updateMapImage();
         }
 
@@ -460,24 +459,10 @@ public class HexMap
         if (thisOne.isOccupied())
         {
             selectedHexes.remove(thisOne);
-            thisOne.deselect();
-            //adjacentHexes.removeAll(getAdjacentHexes(thisOne));
-            adjacentHexes.clear();
-
-            Iterator iter = selectedHexes.iterator();
-            Hex current;
-
-            while (iter.hasNext())
-            {
-                current = (Hex)iter.next();
-                adjacentHexes.addAll(getHexesWithinRange(current,current.getUnit().movement));
-            }
-            
+            thisOne.deselect();           
             updateMapImage();
         }
     }
-    
-    
     
     
     public LinkedList<Hex> getAdjacentHexes(Hex thisHex)
@@ -506,6 +491,8 @@ public class HexMap
     }
     
     // ** GET ADJACENT HEXES
+    //Returns a list of up to six adjacent hexes to the one specified
+    //Based on the weird rules of hexes in 2D arrays
     public LinkedList<Hex> getAdjacentHexes(int row, int col)
     {
         LinkedList<Hex> adjHexes = new LinkedList();
@@ -529,7 +516,6 @@ public class HexMap
         //EVEN ROW RULES
         if ((col%2) == 0)
         {
-            
             if (((row-1) >= 0) && ((col+1) <= (cols-1)))
                 adjHexes.add(hexArray[row-1][col+1]);
             if (((row-1) >= 0) && ((col-1) >= 0))
@@ -556,29 +542,44 @@ public class HexMap
         return (adjHexes);
     }
     
+    
+    //GET HEXES WITHIN RANGE
+    //Retruns a list of hexes in a "shell" radius within range.
     public LinkedList<Hex> getHexesWithinRange(Hex fromHere, int distance)
     {
         LinkedList<Hex> tempAdjacents = new LinkedList();
         LinkedList<Hex> returnList = new LinkedList();
+        //prevents the same hex being called multiple THOUSANDS of times.
+        LinkedList<Hex> doneThese = new LinkedList(); 
+        
         tempAdjacents.clear();
         returnList.clear();
         
         if ((fromHere != null) && (distance > 0))
         {
+            //Add the first "shell" of 6 immediate neighbors
             tempAdjacents.addAll(getAdjacentHexes(fromHere));
+            returnList.addAll(tempAdjacents);
+            doneThese.add(fromHere);
             
             Iterator iter = tempAdjacents.iterator();
             Hex thisHex;
             
-            for (int i = 1; i < distance; i++)
+            for (int i = 0; i < distance-1; i++)
             {
                 while (iter.hasNext())
                 {
                     thisHex = (Hex)iter.next();
-                    returnList.addAll(getAdjacentHexes(thisHex));
+                    
+                    if (!doneThese.contains(thisHex))
+                    {
+                        returnList.addAll(getAdjacentHexes(thisHex));
+                        doneThese.add(thisHex);
+                    }
                 }
                 
                 tempAdjacents.addAll(returnList);
+
                 iter = tempAdjacents.iterator();
             }
         }
@@ -587,6 +588,7 @@ public class HexMap
     }
     
     //DESELECT ALL SELECTED HEXES
+    //Cycles through the selectedHexes list and deselects them all, clears the list
     public void deselectAllSelectedHexes()
     {
         Iterator iter = selectedHexes.iterator();
@@ -600,4 +602,44 @@ public class HexMap
         
         selectedHexes.clear();
     }
+    
+    //COMPUTE OVERLAPPING HEXES
+    //Gets the overlapping "hexes in common" with  multi-firing wepaon solution...or something.
+    //The "coomon zone of fire" hexes will be listed in the adjacentHexes list
+    public void computeOverlappingHexes(Player currentPlayer)
+    {
+       adjacentHexes.clear();
+       
+       Iterator iter = selectedHexes.iterator();
+       Hex thisHex;
+       
+       if (iter.hasNext())
+       {
+           thisHex = (Hex)iter.next();
+           //Obtain a friendly unit from the current selections
+           while ((!currentPlayer.units.contains(thisHex.occupyingUnit)) && iter.hasNext())
+           {
+               thisHex = (Hex)iter.next();
+           }
+           //Get a single zone of fire from the frindly unit...
+           if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
+           {
+                adjacentHexes.addAll(getHexesWithinRange(thisHex, thisHex.occupyingUnit.unitWeapon.range));
+           }
+       }
+       
+       while (iter.hasNext())
+       {
+           thisHex =(Hex)iter.next();
+           //...and get the "intersection" between the first unit's zone and the rest of the frinedly units' zones
+           if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
+           {
+                adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisHex.occupyingUnit.unitWeapon.range));
+           }
+       }
+       
+       
+       
+    }
 }
+

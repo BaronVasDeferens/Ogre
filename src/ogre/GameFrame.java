@@ -39,6 +39,7 @@ public class GameFrame extends javax.swing.JFrame {
         selectedUnitLabel = new java.awt.Label();
         selectedUnitStatsLabel = new java.awt.Label();
         phaseLabel = new java.awt.Label();
+        fireButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         LogInMenuItem = new javax.swing.JMenuItem();
@@ -75,11 +76,18 @@ public class GameFrame extends javax.swing.JFrame {
         );
 
         WeaponSystemsList.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        WeaponSystemsList.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                WeaponSystemsListItemStateChanged(evt);
+            }
+        });
 
         selectedUnitLabel.setText("No Unit Selected");
 
         phaseLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         phaseLabel.setText("phaseLabel");
+
+        fireButton.setText("ATTACK");
 
         jMenu1.setText("File");
 
@@ -113,10 +121,13 @@ public class GameFrame extends javax.swing.JFrame {
                     .addComponent(selectedUnitStatsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton2)
-                        .addGap(0, 142, Short.MAX_VALUE))
-                    .addComponent(phaseLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(phaseLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(fireButton, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ogrePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -125,7 +136,7 @@ public class GameFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(37, 37, 37)
                         .addComponent(phaseLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -135,10 +146,12 @@ public class GameFrame extends javax.swing.JFrame {
                         .addComponent(selectedUnitStatsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(WeaponSystemsList, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)))
+                            .addComponent(jButton2)
+                            .addComponent(fireButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1))
                     .addComponent(ogrePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(13, Short.MAX_VALUE))
         );
@@ -161,6 +174,24 @@ public class GameFrame extends javax.swing.JFrame {
         LoginFrame loginFrame = new LoginFrame();
         loginFrame.setVisible(true);
     }//GEN-LAST:event_LogInMenuItemActionPerformed
+
+    private void WeaponSystemsListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_WeaponSystemsListItemStateChanged
+
+        //Determine which "ode" we're in (list must be populated)
+        //If multi-select is on, we're USING weapons
+        //If multi-select is off, we're TARGETTING weapons
+        if (WeaponSystemsList.getItemCount() > 0)
+        {
+            if (WeaponSystemsList.isMultipleMode() == true)
+            {
+                System.out.println("on");
+            }
+            else
+            {
+                System.out.println("off");
+            }
+        }
+    }//GEN-LAST:event_WeaponSystemsListItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -205,6 +236,7 @@ public class GameFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem LogInMenuItem;
     private javax.swing.JMenuItem ViewMyGamesMenuItem;
     public java.awt.List WeaponSystemsList;
+    private javax.swing.JButton fireButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JMenu jMenu1;

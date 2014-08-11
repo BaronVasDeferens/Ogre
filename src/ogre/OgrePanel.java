@@ -509,15 +509,13 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
 
                 if (thisHex != null)
                 {
-                   //TEST TEST TEST
-                    switch (gamePhase)
+
+                    switch (gameMaster.getGamePhase())
                     {
-                        //MOVEMENT PHASE
-                        //During movement, ONLY ONE HEX MAY BE SELECTED AT A TIME.
-                        
-                        //Add checks for unit ownership later
-                        
+                        //MOVEMENT PHASE (PLAYER ONE)
+                        //During movement, ONLY ONE HEX MAY BE SELECTED AT A TIME.                        
                         case 11:
+                        case 21:
                             //DESELECT
                             //re-clicking same unit to de-select it
                             if (hexMap.selectedHexes.contains(thisHex))
@@ -539,7 +537,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         if (gameMaster.currentPlayer.units.contains(hexMap.selectedHexes.peek().getUnit()))
                                         {  
                                             //GameEvent(String tp, Unit agentt, Hex source, Hex destination, int phase, String msg, int id)
-                                            GameEvent moveEvent = new GameEvent("MOVE", hexMap.selectedHexes.peek().getUnit(), hexMap.selectedHexes.peek(), thisHex, gameMaster.getGamePhase(),"", true);
+                                            MoveEvent moveEvent = new MoveEvent("MOVE", hexMap.selectedHexes.peek().getUnit(), hexMap.selectedHexes.peek(), thisHex, gameMaster.getGamePhase(),"", true);
 
                                             if (gameMaster.move(moveEvent))
                                             {
@@ -560,12 +558,17 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
   
                                 }
                                 
-                                //SELCT UNIT
+                                //SELECT UNIT
                                 //Previously unselected; player wishes to select
                                 //No selected hexes, thisHex is populated
                                 else if (hexMap.selectedHexes.isEmpty())
                                 {
                                     hexMap.select(thisHex);
+                                    
+                                   //Add the surrounding hexes to adjacenHexes to display movement
+                                    if (thisHex.isOccupied())
+                                        hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement));
+                                        
                                     
                                     //Display stats and weapons in the on-screen list
                                     gameMaster.updateUnitReadouts(thisHex.getUnit());
@@ -585,6 +588,61 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 }
                             }
                             break;
+                        
+                        //SHOOTING PHASE (PLAYER ONE)
+                        //Multiple units may be selected. A single enemy unit may be selected.
+                        //In the event that the Ogre is selected as a DEFENDER, only single-unit attacks may be made
+                        //against the TRACKS; otherwise, all units may fire.
+                        //In the event that the Ogre is the attacker, only a single target may be selected. 
+                            
+                        //The key here is CONTEXT. Either player may have an ogre at their disposal.
+                        //At this stage, we'll just round up everthing the player has selected and send it all
+                        //to the gameMaster    
+                        case 12:
+                        case 22:
+                            //Select/Deselect hexes
+                            if (thisHex.occupyingUnit != null)
+                            {
+                                //Deselect current hex
+                                if (hexMap.selectedHexes.contains(thisHex))
+                                {
+                                    hexMap.deselect(thisHex);
+                                    gameMaster.updateUnitReadouts(null);
+                                }
+                                else
+                                {
+                                    hexMap.select(thisHex);
+                                    
+                                    //WHENEVER AN OGRE IS SELECTED:
+                                    //If the Ogre is friendly, direct the player to select the weapons she wants to use
+                                    //If the Ogre is an enemy, direct the player to select a system to target
+                                    if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                    {
+                                        gameMaster.updateOgreWeaponSelectionList((Ogre)thisHex.occupyingUnit);
+                                    }
+                                    //Otherwise, display normal unit stats
+                                    else
+                                        gameMaster.updateUnitReadouts(thisHex.getUnit());
+                                    
+                                }
+                                
+                                //If there is a friendly unit in thisHex, add its firing radius to the adjacentHexes
+                                if (gameMaster.currentPlayer.units.contains(thisHex.occupyingUnit))
+                                {
+                                    hexMap.computeOverlappingHexes(gameMaster.currentPlayer);
+                                    hexMap.updateMapImage();
+                                }
+                            }
+                            
+                            //else deselect all
+                            else
+                            {
+                                hexMap.deselectAllSelectedHexes();
+                                hexMap.adjacentHexes.clear();
+                            }
+                           
+                            break;
+                            
                         default:
                             break;
                        
@@ -595,7 +653,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
               
         }//mouse
         
-        
+        //Right click
         if (e.getButton() == MouseEvent.BUTTON3)
         {
             scrolling = true;

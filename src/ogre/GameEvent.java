@@ -16,8 +16,6 @@ import java.util.LinkedList;
 public class GameEvent implements Serializable
 {
     public String type;
-    public Unit agent;
-    public Hex source, destination;
     public int gamePhase;
     public String message;
     public boolean canUndoThis;
@@ -25,14 +23,33 @@ public class GameEvent implements Serializable
     GameEvent()
     {
         type = "none";
-        agent = null;
-        source = null;
-        destination = null;
-        gamePhase = 11;
+        gamePhase = 0;
         message = "";
     }
     
-    GameEvent(String tp, Unit agt, Hex src, Hex dest, int phase, String msg, boolean undo)
+    GameEvent(String tp, int phase, String msg, boolean undo)
+    {
+        type = tp;
+        gamePhase = phase;
+        message = msg;
+        canUndoThis = undo;
+    }
+}
+
+class MoveEvent extends GameEvent
+{
+    public Unit agent;
+    public Hex source, destination;
+    
+    MoveEvent()
+    {
+        super();
+        agent = null;
+        source = null;
+        destination = null; 
+    }
+    
+    public MoveEvent(String tp, Unit agt, Hex src, Hex dest, int phase, String msg, boolean undo)
     {
         type = tp;
         agent = agt;
@@ -46,25 +63,18 @@ public class GameEvent implements Serializable
 
 class AttackEvent extends GameEvent
 {
-    LinkedList<Unit> attackingUnits;
-    Unit targetUnit;
-    Weapon targetWeapon;
+    Player attacker, defender;
+    LinkedList<Unit> selectedUnits;
+    LinkedList<Weapon> selectedWeapons;
     
-    AttackEvent()
+    //GameEvent(String tp, int phase, String msg, boolean undo)   
+    AttackEvent(Player atkr, Player dfndr, LinkedList<Unit> slctdUnits, LinkedList<Weapon> slctdWeapons, int phase, String msg)
     {
-        type = "ATTACK";
-        attackingUnits = null;
-        targetUnit = null;
-        targetWeapon = null;
-        canUndoThis = false;
-    }
-    
-    AttackEvent(LinkedList attackers, Unit defender, Weapon defenderWeapon)
-    {
-        this();
-        attackingUnits = attackers;
-        targetUnit = defender;
-        targetWeapon = defenderWeapon;
+        super("ATTACK",phase,msg,false);
+        attacker = atkr;
+        defender = dfndr;
+        selectedUnits = slctdUnits;
+        selectedWeapons = slctdWeapons;
     }
 }
 

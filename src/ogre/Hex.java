@@ -52,6 +52,8 @@ public class Hex
         occupyingUnit = unit;
     }
     
+    //IS OCCUPIED (occupe!)
+    //Null/populated check, just prettier syntax
     public boolean isOccupied()
     {
         if (occupyingUnit == null)

@@ -7,6 +7,7 @@ The basic entity class.
 package ogre;
 
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
@@ -16,7 +17,7 @@ import javax.sound.sampled.*;
  *
  * @author Skot
  */
-public class Unit 
+public class Unit implements Serializable 
 {
     String unitName;        //Different from type?
     String unitType;        //eg tank, infantry, GEV, etc

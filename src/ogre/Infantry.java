@@ -35,7 +35,7 @@ public class Infantry extends ogre.Unit
         unitName = "Infantry";
         unitType = "INFANTRY";
         
-        movement = 2;
+        movement = 1;
         defense = def;
         unitWeapon = new Weapon(def, 1, false, "anti-tank", 0);
         

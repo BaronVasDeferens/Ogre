@@ -1,18 +1,19 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *  OGRE GAME class
+    
  */
 
 package ogre;
 
 import java.util.*;
 import java.awt.*;
+import java.io.Serializable;
 /**
  *
  * @author Skot
  */
-public class OgreGame {
+public class OgreGame implements Serializable
+{
 
     javax.swing.JFrame myFrame;
     java.awt.List weaponList;
@@ -34,6 +35,8 @@ public class OgreGame {
     EventManager eventManager;
     Scenario scenario;
     LinkedList<Unit> allUnits;
+    LinkedList<Weapon> selectedOgreWeapons;     //tracks which Ogre weapons are selected for FIRING
+    Weapon targettedOgreWeapon = null;          //which Ogre weapon has been selected for destruction
     
     int gamePhase = -1;
     /*
@@ -53,6 +56,7 @@ public class OgreGame {
     
     
     //Default constructor
+    //TODO: put the ogrePanel in attachComponents function below instead 
     OgreGame(OgrePanel ogrPnl)
     {
         hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
@@ -69,6 +73,9 @@ public class OgreGame {
         
         scenario = new Scenario(0, playerOne, playerTwo);
 
+        selectedOgreWeapons = new LinkedList();
+        selectedOgreWeapons.clear();
+        
         allUnits = new LinkedList();
         allUnits.clear();
         allUnits.addAll(playerOne.units);
@@ -82,7 +89,7 @@ public class OgreGame {
         while (iterator.hasNext())
         {
             currentUnit = (Unit)iterator.next();
-            hexMap.addUnit(hexMap.getHexFromCoords(putX,putX), currentUnit);
+            hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+3), currentUnit);
             putX++;
         }
         
@@ -114,17 +121,24 @@ public class OgreGame {
     //MOVE
     //Accepts a GameEvent ("MOVE") object, determines it validity 
     //and applies the appropriate changes to lists, maps.
-    public boolean move(GameEvent e)
+    public boolean move(MoveEvent e)
     {
         //Basic validations
-        if ((e.agent == null) || (e.destination == null) || (e.source == null))
+        if (e == null)
             return false;
         
+        else if ((e.agent == null) || (e.destination == null) || (e.source == null))
+        {
+            System.out.println("reason 1");
+            return false;
+        }
         //Validation
         //Is this actually a move? Are the source and destinations equal?
-        else if ((!e.type.equals("MOVE")) || ((e.source.equals(e.destination))))
+        else if ((!e.type.equals("MOVE")) || (e instanceof MoveEvent == false) || ((e.source.equals(e.destination))))
+        {
+            System.out.println("reason 2");
             return false;
-        
+        }
         //TODO: test for unit ownership        
         
         if((e.agent.unitType.equals("INFANTRY")) && (e.destination.isOccupied()))
@@ -164,6 +178,7 @@ public class OgreGame {
                 hexMap.deselectAllSelectedHexes();
                 hexMap.adjacentHexes.clear();
                 hexMap.updateMapImage();
+                
                 return false;
             }    
         }
@@ -173,7 +188,8 @@ public class OgreGame {
         {
             hexMap.deselectAllSelectedHexes();
             hexMap.adjacentHexes.clear();
-            hexMap.updateMapImage();
+            hexMap.updateMapImage();        
+            
             return (false);
         }
         
@@ -205,8 +221,6 @@ public class OgreGame {
             
         }
         
-        
-        
         return (false);
     }
     
@@ -217,6 +231,12 @@ public class OgreGame {
     public void undo()
     {
         eventManager.undo(gamePhase);
+    }
+    
+    //SHOOT
+    public void attack(Player attacker, Player defender, LinkedList<Unit> selectedUnits, LinkedList<Weapon> selectedWeapons)
+    {
+        
     }
     
     
@@ -248,6 +268,10 @@ public class OgreGame {
     {
         gamePhase += 1;
         
+        hexMap.deselectAllSelectedHexes();
+        hexMap.adjacentHexes.clear();
+        hexMap.updateMapImage();
+        
         switch (gamePhase)
         {
             case 0:
@@ -255,51 +279,67 @@ public class OgreGame {
                 break;
             //Pre-game setup -> P1 Setup
             case 1:
-                phaseLabel.setText("Phase: SETUP P1");
+                phaseLabel.setText("Phase: SETUP (" + playerOne.name + ")");
                 break;
             case 2:
-                phaseLabel.setText("Phase: SETUP P2");
+                phaseLabel.setText("Phase: SETUP (" + playerTwo.name + ")");
                 break;
             case 3:
                 gamePhase = 11;
             //Player 1 MOVE
             case 11:
-                phaseLabel.setText("Phase: MOVE P1");
+                phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
                 break;
             //Player 1 SHOOT
             case 12:
-                phaseLabel.setText("Phase: SHOOT P1");
+                phaseLabel.setText("Phase: SHOOT (" + playerOne.name + ")");
                 break;
             //player 1 second move
             case 13:
-                phaseLabel.setText("Phase: SECOND MOVE P1");
+                phaseLabel.setText("Phase: SECOND MOVE (" + playerOne.name + ")");
+                
+                //Commit the game state to the server here
+                switchCurrentPlayer();
                 break;
             case 14:
             case 20:
                 gamePhase = 21;
             case 21:
-                phaseLabel.setText("Phase: MOVE P2");
+                phaseLabel.setText("Phase: MOVE (" + playerTwo.name + ")");
                 break;
             case 22:
-                phaseLabel.setText("Phase: SHOOT P2");
+                phaseLabel.setText("Phase: SHOOT (" + playerTwo.name + ")");
                 break;
             case 23:
-                phaseLabel.setText("Phase: SECOND MOVE P2");
+                phaseLabel.setText("Phase: SECOND MOVE (" + playerTwo.name + ")");
+                
+                //Commit the game state to the server here
+                switchCurrentPlayer();
                 break;
             case 24:
                 gamePhase = 11;
-                phaseLabel.setText("Phase: MOVE P1");
+                phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
                 break;
             default:
                 break;
         }
     }
     
+    //SWITCH CURRENT PLAYER
+    //Derp. Only supports two players. Sad.
+    public void switchCurrentPlayer()
+    {
+        if (currentPlayer == playerOne)
+            currentPlayer = playerTwo;
+        else
+            currentPlayer = playerOne;
+    }
+    
     public void updateUnitReadouts(Unit thisUnit)
     {
         if (thisUnit != null)
         {
-            String readout;
+            String readout = "";
 
             //OGRE routine
             if (thisUnit.unitType.equals("OGRE"))
@@ -322,7 +362,7 @@ public class OgreGame {
                     index++;
                 }
             }
-            
+            //All other non-Ogre units
             else
             {
                 readout = thisUnit.unitName;
@@ -330,8 +370,11 @@ public class OgreGame {
                 readout =  "Move: " + thisUnit.movement + "  Defense: " + thisUnit.defense;
                 unitStatsLabel.setText(readout);
                 
-                readout = "Strength: " + thisUnit.unitWeapon.strength + "  Range: " + thisUnit.unitWeapon.range;
-                weaponList.add(readout);
+                if (thisUnit.unitWeapon != null)
+                {
+                    readout = "Strength: " + thisUnit.unitWeapon.strength + "  Range: " + thisUnit.unitWeapon.range;
+                    unitStatsLabel.setText(unitStatsLabel.getText() + " " + readout);
+                }
             }
         
         }
@@ -343,6 +386,83 @@ public class OgreGame {
             unitStatsLabel.setText("");
             
         }
+    }
+    
+    //UPDATE OGRE WEAPON SELECTION LIST
+    //Displays an Ogre's arsenal. 
+    //If the Ogre is friendly, display its arsenal and allow multiple selections to be made.
+    //If the ogre is an enemy, only allow a single system to be selected.
+    public void updateOgreWeaponSelectionList(Ogre thisOgre)
+    {
+        Iterator weaps;
+        Weapon thisWeapon;
+        //int pos = 0;
+        
+        weaponList.removeAll();
+        unitStatsLabel.setText("");
+        
+        //FRIENDLY OGRE: allow multiple selection
+        if (currentPlayer.units.contains(thisOgre))
+        {
+            unitNameLabel.setText(currentPlayer.name + "'s OGRE");
+            unitStatsLabel.setText("Select a weapon(s) to USE");
+            weaponList.setMultipleMode(true);
+            
+            weaps = thisOgre.mainBattery.iterator();
+            while (weaps.hasNext())
+            {
+                thisWeapon = (Weapon)weaps.next();
+                weaponList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+            }
+            
+            weaps = thisOgre.secondaryBattery.iterator();
+            while (weaps.hasNext())
+            {
+                thisWeapon = (Weapon)weaps.next();
+                weaponList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+            }
+            
+            weaps = thisOgre.missileBattery.iterator();
+            while (weaps.hasNext())
+            {
+                thisWeapon = (Weapon)weaps.next();
+                weaponList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+            }
+   
+        }
+        
+        //ENEMY OGRE: disallow multi-selection
+        else
+        {
+            unitNameLabel.setText("Enemy OGRE");
+            unitStatsLabel.setText("Select one weapon to TARGET");
+            weaponList.setMultipleMode(false);
+            
+            weaps = thisOgre.mainBattery.iterator();
+            while (weaps.hasNext())
+            {
+                thisWeapon = (Weapon)weaps.next();
+                weaponList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+            }
+            
+            weaps = thisOgre.secondaryBattery.iterator();
+            while (weaps.hasNext())
+            {
+                thisWeapon = (Weapon)weaps.next();
+                weaponList.add(thisWeapon.weaponName + " Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+            }
+            
+            weaps = thisOgre.missileBattery.iterator();
+            while (weaps.hasNext())
+            {
+                thisWeapon = (Weapon)weaps.next();
+                weaponList.add(thisWeapon.weaponName + " Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+            }
+            
+            weaponList.add("Treads: " + thisOgre.treads + "/" + thisOgre.maxTreads);
+            
+        }
+        
     }
     
 }
