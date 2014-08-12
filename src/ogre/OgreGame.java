@@ -37,6 +37,7 @@ public class OgreGame implements Serializable
     LinkedList<Unit> allUnits;
     LinkedList<Weapon> selectedOgreWeapons;     //tracks which Ogre weapons are selected for FIRING
     Weapon targettedOgreWeapon = null;          //which Ogre weapon has been selected for destruction
+    Ogre currentOgre = null;
     
     int gamePhase = -1;
     /*
@@ -61,6 +62,7 @@ public class OgreGame implements Serializable
     {
         hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
         hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
+        hexMap.setMaster(this);
         hexMap.setupMap();
         
         eventManager = new EventManager(this);
@@ -268,14 +270,20 @@ public class OgreGame implements Serializable
     {
         gamePhase += 1;
         
+        updateUnitReadouts(null);
+        
         hexMap.deselectAllSelectedHexes();
         hexMap.adjacentHexes.clear();
         hexMap.updateMapImage();
         
+        selectedOgreWeapons.clear();
+        targettedOgreWeapon = null;
+        currentOgre = null;
+        
         switch (gamePhase)
         {
             case 0:
-                phaseLabel.setText("Phase: PREGAME SETUP");
+                phaseLabel.setText("Phase: PRE-GAME SETUP");
                 break;
             //Pre-game setup -> P1 Setup
             case 1:
@@ -335,6 +343,9 @@ public class OgreGame implements Serializable
             currentPlayer = playerOne;
     }
     
+    //UPDATE UNIT READOUTS
+    //Non-Ogre units: change the labels to reflect unit stats and ownership
+    //Ogre units have their weapons populate the weaponList
     public void updateUnitReadouts(Unit thisUnit)
     {
         if (thisUnit != null)
@@ -345,8 +356,14 @@ public class OgreGame implements Serializable
             if (thisUnit.unitType.equals("OGRE"))
             {
                 Ogre thisOgre = (Ogre)thisUnit;
-
-                unitNameLabel.setText(thisOgre.unitName);
+                currentOgre = thisOgre;
+                
+                if (currentPlayer.units.contains(thisOgre))
+                    readout = currentPlayer.name + "'s ";
+                else
+                    readout = "Enemy ";
+                
+                unitNameLabel.setText(readout + thisOgre.unitName);
                 unitStatsLabel.setText("Move: " + thisOgre.getCurrentMovement());
                 weaponList.removeAll();
 
@@ -365,7 +382,11 @@ public class OgreGame implements Serializable
             //All other non-Ogre units
             else
             {
-                readout = thisUnit.unitName;
+                if (currentPlayer.units.contains(thisUnit))
+                    readout = currentPlayer.name + "'s " + thisUnit.unitName;
+                else
+                    readout = "Enemy "+ thisUnit.unitName;
+ 
                 unitNameLabel.setText(readout);
                 readout =  "Move: " + thisUnit.movement + "  Defense: " + thisUnit.defense;
                 unitStatsLabel.setText(readout);
@@ -394,8 +415,10 @@ public class OgreGame implements Serializable
     //If the ogre is an enemy, only allow a single system to be selected.
     public void updateOgreWeaponSelectionList(Ogre thisOgre)
     {
+        currentOgre = thisOgre;
+        
         Iterator weaps;
-        Weapon thisWeapon;
+        String thisWeapon;
         //int pos = 0;
         
         weaponList.removeAll();
@@ -404,32 +427,12 @@ public class OgreGame implements Serializable
         //FRIENDLY OGRE: allow multiple selection
         if (currentPlayer.units.contains(thisOgre))
         {
-            unitNameLabel.setText(currentPlayer.name + "'s OGRE");
-            unitStatsLabel.setText("Select a weapon(s) to USE");
+            unitNameLabel.setText(currentPlayer.name + "'s " + thisOgre.unitName);
+            unitStatsLabel.setText("Select weapon(s) to USE");
             weaponList.setMultipleMode(true);
             
-            weaps = thisOgre.mainBattery.iterator();
-            while (weaps.hasNext())
-            {
-                thisWeapon = (Weapon)weaps.next();
-                weaponList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
-            }
-            
-            weaps = thisOgre.secondaryBattery.iterator();
-            while (weaps.hasNext())
-            {
-                thisWeapon = (Weapon)weaps.next();
-                weaponList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
-            }
-            
-            weaps = thisOgre.missileBattery.iterator();
-            while (weaps.hasNext())
-            {
-                thisWeapon = (Weapon)weaps.next();
-                weaponList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
-            }
-   
         }
+
         
         //ENEMY OGRE: disallow multi-selection
         else
@@ -437,32 +440,16 @@ public class OgreGame implements Serializable
             unitNameLabel.setText("Enemy OGRE");
             unitStatsLabel.setText("Select one weapon to TARGET");
             weaponList.setMultipleMode(false);
-            
-            weaps = thisOgre.mainBattery.iterator();
-            while (weaps.hasNext())
-            {
-                thisWeapon = (Weapon)weaps.next();
-                weaponList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
-            }
-            
-            weaps = thisOgre.secondaryBattery.iterator();
-            while (weaps.hasNext())
-            {
-                thisWeapon = (Weapon)weaps.next();
-                weaponList.add(thisWeapon.weaponName + " Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
-            }
-            
-            weaps = thisOgre.missileBattery.iterator();
-            while (weaps.hasNext())
-            {
-                thisWeapon = (Weapon)weaps.next();
-                weaponList.add(thisWeapon.weaponName + " Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
-            }
-            
-            weaponList.add("Treads: " + thisOgre.treads + "/" + thisOgre.maxTreads);
-            
         }
         
+        
+        LinkedList<String> weapons = thisOgre.getEnumeratedSystemsList();
+        weaps = weapons.iterator();
+        while (weaps.hasNext())
+        {
+            thisWeapon = (String)weaps.next();
+            weaponList.add(thisWeapon);
+        }
     }
     
 }

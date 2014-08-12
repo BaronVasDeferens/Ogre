@@ -177,18 +177,49 @@ public class GameFrame extends javax.swing.JFrame {
 
     private void WeaponSystemsListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_WeaponSystemsListItemStateChanged
 
-        //Determine which "ode" we're in (list must be populated)
+        //Determine which "mode" we're in (list must be populated and in COMBAT PHASE)
         //If multi-select is on, we're USING weapons
         //If multi-select is off, we're TARGETTING weapons
-        if (WeaponSystemsList.getItemCount() > 0)
+        
+        //We are going to assume that the only way to access an Ogre is by having it be the last
+        //unit in hexMap.selectedHexes
+        
+        if ((WeaponSystemsList.getItemCount() > 0) && ((ogreGame.gamePhase == 12) || (ogreGame.gamePhase == 22)))
         {
+            //CurrentPLayer's OGRE: Using the weapons to FIRE
             if (WeaponSystemsList.isMultipleMode() == true)
             {
-                System.out.println("on");
+                if (ogreGame.currentOgre != null)
+                { 
+                    ogreGame.selectedOgreWeapons.clear();
+
+                    int indexes[] = WeaponSystemsList.getSelectedIndexes();
+                    for (int i = 0; i < indexes.length; i++)
+                    {
+                        //Add it if it isn't there; else remove it
+                        if (!ogreGame.selectedOgreWeapons.contains(ogreGame.currentOgre.getWeaponByID(indexes[i])))
+                        {
+                            ogreGame.selectedOgreWeapons.add(ogreGame.currentOgre.getWeaponByID(indexes[i]));
+                        }
+                        else
+                        {
+                            ogreGame.selectedOgreWeapons.remove(ogreGame.currentOgre.getWeaponByID(indexes[i]));
+                        }
+                       
+                    }
+                    
+                    ogreGame.hexMap.computeOverlappingHexes(ogreGame.currentPlayer);
+                }
             }
+            //currentPlayer is TARGETTING this weapon
             else
             {
-                System.out.println("off");
+                if (ogreGame.currentOgre != null)
+                {
+                    int indexes[] = WeaponSystemsList.getSelectedIndexes();
+                    ogreGame.targettedOgreWeapon = ogreGame.currentOgre.getWeaponByID(indexes[0]);
+                }
+
             }
         }
     }//GEN-LAST:event_WeaponSystemsListItemStateChanged

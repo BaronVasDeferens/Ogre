@@ -23,6 +23,8 @@ public class HexMap
 {
     int rows, cols;
     
+    OgreGame gameMaster;
+    
     Hex hexArray[][];
     
     LinkedList<Hex> hexList;
@@ -72,6 +74,13 @@ public class HexMap
         
         setHexSize(hexsize);
         
+    }
+    
+    //SET GAME MASTER
+    //give this object awareness of its owner
+    public void setMaster(OgreGame msr)
+    {
+        gameMaster = msr;
     }
     
     //SET HEXAGON SIZE
@@ -605,7 +614,7 @@ public class HexMap
     
     //COMPUTE OVERLAPPING HEXES
     //Gets the overlapping "hexes in common" with  multi-firing wepaon solution...or something.
-    //The "coomon zone of fire" hexes will be listed in the adjacentHexes list
+    //The "comon zone of fire" hexes will be listed in the adjacentHexes list
     public void computeOverlappingHexes(Player currentPlayer)
     {
        adjacentHexes.clear();
@@ -616,12 +625,13 @@ public class HexMap
        if (iter.hasNext())
        {
            thisHex = (Hex)iter.next();
-           //Obtain a friendly unit from the current selections
+           //Obtain a friendly unit from the current selections; cycle through til one is found
            while ((!currentPlayer.units.contains(thisHex.occupyingUnit)) && iter.hasNext())
            {
                thisHex = (Hex)iter.next();
            }
-           //Get a single zone of fire from the frindly unit...
+           
+           //Get a single zone of fire from the friendly unit...
            if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
            {
                 adjacentHexes.addAll(getHexesWithinRange(thisHex, thisHex.occupyingUnit.unitWeapon.range));
@@ -638,8 +648,46 @@ public class HexMap
            }
        }
        
+       //Add in any selectedOgreWeapons
        
        
+       iter = selectedHexes.iterator();
+       
+           
+        if (gameMaster.selectedOgreWeapons != null)
+        {
+            Iterator weaponIter = gameMaster.selectedOgreWeapons.iterator();
+            Weapon thisWeapon;
+            
+            while (iter.hasNext())
+            {
+                thisHex = (Hex)iter.next();
+
+                if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                {
+                    Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
+                    
+                    if ((weaponIter.hasNext()) && (adjacentHexes.size() <= 1))
+                    {
+                        thisWeapon = (Weapon)weaponIter.next();
+                        adjacentHexes.addAll(getHexesWithinRange(thisHex, thisWeapon.range));
+                    }
+                    
+                    while (weaponIter.hasNext())
+                    {
+                        thisWeapon = (Weapon)weaponIter.next();
+                        
+                        if (thisOgre.getWeapons().contains(thisWeapon))
+                        {
+                            adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisWeapon.range));
+                        }
+                    }
+                }
+            }
+       }
+        
+            updateMapImage();
     }
+    
 }
 

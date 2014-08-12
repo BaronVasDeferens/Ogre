@@ -7,6 +7,7 @@
 package ogre;
 
 import java.util.LinkedList;
+import java.util.Iterator;
 
 /**
  *
@@ -14,8 +15,8 @@ import java.util.LinkedList;
  */
 public class Ogre extends ogre.Unit
 {
-    int treads;
-    int maxTreads;
+    //int treads, maxTreads;
+    int treadID;
     int treadsPerRow;
     int maxMovement;
    
@@ -23,6 +24,10 @@ public class Ogre extends ogre.Unit
     LinkedList<Weapon> secondaryBattery = null;
     LinkedList<Weapon> antiPersonnel = null;
     LinkedList<Weapon> missileBattery = null;
+    Treads treads = null;
+    
+    
+    
     
     public Ogre(int mark)
     {
@@ -41,7 +46,8 @@ public class Ogre extends ogre.Unit
         
         missileBattery = new LinkedList();
         missileBattery.clear();
-        
+       
+                
         switch (mark)
         {
             //Mark III Ogre: 1 main, 4 secondary, 8 ap, 2 missiles, 45 treads, 15 per row
@@ -49,30 +55,33 @@ public class Ogre extends ogre.Unit
             default:
                 unitName = "Ogre MK III";
                 
-                treads = 45;
-                maxTreads = treads;
-                treadsPerRow = 15;
+                //treads = 45;
+                //maxTreads = treads;
+                //treadsPerRow = 15;
                 maxMovement = 3;
                 movement = maxMovement;
                 
                 //ONE main battery
-                mainBattery.add(new Weapon(4,3,4,false, "Main Battery", 0));
+                mainBattery.add(new Weapon(4,3,4,false, "Main Battery", 1));
                 
                 //FOUR secondary
                 for (int i = 0; i < 4; i++)
                 {
-                    secondaryBattery.add(new Weapon(3,2,3,false,"Secondary Battery",0));
+                    secondaryBattery.add(new Weapon(3,2,3,false,"Secondary Battery",i+2));
                 }
             
                 //EIGHT AP guns
                 for (int i = 0; i < 8; i++)
                 {
-                    antiPersonnel.add(new Weapon(3,2,3,true,"Anti-personnel",0));
+                    antiPersonnel.add(new Weapon(3,2,3,true,"Anti-personnel",i+6));
                 }
             
                 //TWO missiles (one use)
-                missileBattery.add(new Weapon(6,5,3,false,"Missile",0));
-                missileBattery.add(new Weapon(6,5,3,false,"Missile",0));
+                missileBattery.add(new Weapon(6,5,3,false,"Missile",14));
+                missileBattery.add(new Weapon(6,5,3,false,"Missile",15));
+                
+                //treadID = 16
+                treads = new Treads(45,15,16);
                 
                 image = loadImage("ogre_mk3.png");
              
@@ -84,15 +93,15 @@ public class Ogre extends ogre.Unit
     //Returns the Ogre's current movement allowance based on its remaining treads
     public int getCurrentMovement()
     {
-        return (treads/treadsPerRow);
+        return (treads.getCurrentMovement());
     }
     
     public int calculateReaminingTreadsInRow()
     {
-        if ((treads%treadsPerRow) == 0)
-            return (treadsPerRow);
+        if ((treads.remainingTreads%treads.treadsPerRow) == 0)
+            return (treads.treadsPerRow);
         else
-            return (treads%treadsPerRow);
+            return (treads.remainingTreads%treads.treadsPerRow);
                 
     }
     
@@ -104,6 +113,7 @@ public class Ogre extends ogre.Unit
         allWeapons.addAll(secondaryBattery);
         allWeapons.addAll(antiPersonnel);
         allWeapons.addAll(missileBattery);
+        allWeapons.add(treads);
         
         return (allWeapons);
     }
@@ -141,10 +151,92 @@ public class Ogre extends ogre.Unit
             returnList.add(str);
         }
         
-        str = "(" + treads + ")" + " Treads (" + calculateReaminingTreadsInRow() + " remain in row)";
+        str = "(" + treads.remainingTreads + ")" + " Treads (" + calculateReaminingTreadsInRow() + " remain in row)";
         returnList.add(str);
         
         return (returnList);
     }
     
+//GET ENUMERATED SYSTEMS STRING    
+//the sequence shall forever be: MAIN-SECONDARY-AP-MISSILES-TREADS
+    public LinkedList<String> getEnumeratedSystemsList()
+    {
+        LinkedList<String> returnList = new LinkedList();
+        Iterator iter = mainBattery.iterator();
+        Weapon thisWeapon;
+        
+        while (iter.hasNext())
+        {    
+            thisWeapon = (Weapon)iter.next();
+            
+            if (thisWeapon.disabled == false)
+            {
+               if (thisWeapon.dischargedThisRound == false)
+                   returnList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+                else
+                   returnList.add(thisWeapon.weaponName + " DISCHARGED");
+            }       
+            else
+               returnList.add("-- WEAPON DISABLED -- ");
+        }
+        
+        iter = secondaryBattery.iterator();
+        while (iter.hasNext())
+        {    
+            thisWeapon = (Weapon)iter.next();
+            
+            if (thisWeapon.disabled == false)
+            {
+               if (thisWeapon.dischargedThisRound == false)
+                   returnList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+                else
+                   returnList.add(thisWeapon.weaponName + " DISCHARGED");
+            }       
+            else
+               returnList.add("-- WEAPON DISABLED -- ");
+        }
+        
+        iter = antiPersonnel.iterator();
+        while (iter.hasNext())
+        {    
+            thisWeapon = (Weapon)iter.next();
+            
+            if (thisWeapon.disabled == false)
+            {
+               if (thisWeapon.dischargedThisRound == false)
+                   returnList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+                else
+                   returnList.add(thisWeapon.weaponName + " DISCHARGED");
+            }       
+            else
+               returnList.add("-- WEAPON DISABLED -- ");
+        }
+        
+        iter = missileBattery.iterator();
+        while (iter.hasNext())
+        {    
+            thisWeapon = (Weapon)iter.next();
+            
+            if (thisWeapon.disabled == false)
+            {
+               if (thisWeapon.dischargedThisRound == false)
+                   returnList.add(thisWeapon.weaponName + "  Strength: " + thisWeapon.strength + "  Range: " + thisWeapon.range + " Defense: " + thisWeapon.defense);
+                else
+                   returnList.add(thisWeapon.weaponName + " DISCHARGED");
+            }       
+            else
+               returnList.add("-- WEAPON DISABLED -- ");
+        }
+        
+        returnList.add(new String("Treads: " + treads.remainingTreads + "/" + treads.maxTreads));
+        
+        return returnList;
+    }
+    
+    
+    public Weapon getWeaponByID(int id)
+    {
+        LinkedList<Weapon> allWeapons = getWeapons();
+        return (allWeapons.get(id));
+    }
 }

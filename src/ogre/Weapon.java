@@ -22,6 +22,7 @@ public class Weapon
     boolean softTargetsOnly;   //TRUE if only effective against infantry/ CP (eg antipersonell guns)
     
     boolean disabled;
+    boolean dischargedThisRound = false;
     
     //Non-Ogre weapon constructor
     public Weapon(int atk, int rng, boolean infOnly, String name, int id)
@@ -49,4 +50,23 @@ public class Weapon
         disabled = false;
     }
     
+}
+
+class Treads extends Weapon
+{
+    int remainingTreads, maxTreads, treadsPerRow, treadId;
+
+    Treads(int max, int perRow, int trdId)
+    {
+        //(int atk, int rng, boolean infOnly, String name, int id)
+        super(0,0,true,"Treads",trdId);
+        remainingTreads = max;
+        maxTreads = max;
+        treadsPerRow = perRow;
+    }
+    
+    public int getCurrentMovement()
+    {
+        return (remainingTreads/treadsPerRow);
+    }
 }

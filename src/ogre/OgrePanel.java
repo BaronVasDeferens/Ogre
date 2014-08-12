@@ -554,7 +554,12 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             gameMaster.updateUnitReadouts(null);
                                         }
                                         else
+                                        {
                                             System.out.println("nacho cheese");
+                                            hexMap.deselectAllSelectedHexes();
+                                            hexMap.adjacentHexes.clear();
+                                            hexMap.updateMapImage();
+                                        }    
   
                                 }
                                 
@@ -589,7 +594,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             }
                             break;
                         
-                        //SHOOTING PHASE (PLAYER ONE)
+                        //*** SHOOTING PHASE
                         //Multiple units may be selected. A single enemy unit may be selected.
                         //In the event that the Ogre is selected as a DEFENDER, only single-unit attacks may be made
                         //against the TRACKS; otherwise, all units may fire.
@@ -603,12 +608,33 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             //Select/Deselect hexes
                             if (thisHex.occupyingUnit != null)
                             {
-                                //Deselect current hex
+                                //DESELECT current hex, clear readouts
                                 if (hexMap.selectedHexes.contains(thisHex))
                                 {
                                     hexMap.deselect(thisHex);
+                                    
+                                    //Check: is this an ogre? Is it owner or either targettedWeapon or ogreSelecetedWeapons?
+                                    if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                    {
+                                        //IS the targtted Weapon or OgreWeapons belong to this guy?
+                                        Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
+                                        
+                                        //If this is the ogre whose weapon is tragetted, clear the target
+                                        if (thisOgre.getWeapons().contains(gameMaster.targettedOgreWeapon))
+                                        {
+                                            gameMaster.targettedOgreWeapon = null;
+                                        }
+                                        //if this is the ogre whose weapons are being trained, clear them
+                                        else if (thisOgre.getWeapons().containsAll(gameMaster.selectedOgreWeapons))
+                                        {
+                                            gameMaster.selectedOgreWeapons.clear();
+                                        }
+                                    }
+                                    
                                     gameMaster.updateUnitReadouts(null);
                                 }
+                                
+                                //SELECT
                                 else
                                 {
                                     hexMap.select(thisHex);
@@ -618,6 +644,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     //If the Ogre is an enemy, direct the player to select a system to target
                                     if (thisHex.occupyingUnit.unitType.equals("OGRE"))
                                     {
+                                        //populate the list with this ogres weaons
                                         gameMaster.updateOgreWeaponSelectionList((Ogre)thisHex.occupyingUnit);
                                     }
                                     //Otherwise, display normal unit stats
