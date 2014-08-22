@@ -443,6 +443,8 @@ public class HexMap
         if ((target.isCrater() == false) && (target.isOccupied() == false))
         {
             target.setOccupingUnit(toAdd);
+            target.occupyingUnit.xLocation = target.getCol();
+            target.occupyingUnit.yLocation = target.getRow();
             updateMapImage();
             return (true);
         }

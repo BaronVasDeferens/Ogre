@@ -526,7 +526,6 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 hexMap.updateMapImage();
                             }
                         
-                            
                             else
                             {
                                 //MOVE
@@ -605,12 +604,123 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                         //to the gameMaster    
                         case 12:
                         case 22:
-                            //Select/Deselect hexes
+                           
+                            //A click upon an occupied hex...
                             if (thisHex.occupyingUnit != null)
                             {
-                                //DESELECT current hex, clear readouts
+                                //FRIENDLY UNIT CLICKED
+                                if (gameMaster.currentPlayer.units.contains(thisHex.occupyingUnit))
+                                {
+                                    //PREVIOUSLY SELECTED FRIENDLY
+                                    if (hexMap.selectedHexes.contains(thisHex))
+                                    {
+                                        //Action: deselect this hex...
+                                        hexMap.deselect(thisHex);
+                                        
+                                        //....Remove any Ogre weapons
+                                        if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                        {
+                                            Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
+                                            gameMaster.selectedOgreWeapons.removeAll(thisOgre.getWeapons());
+                                            gameMaster.currentOgre = null;
+                                            gameMaster.updateUnitReadouts(null);
+                                        }
+                                        
+                                        //...adjust firing pattern
+                                        hexMap.computeOverlappingHexes(gameMaster.currentPlayer);
+                                        hexMap.updateMapImage();
+                                        
+                                    }
+                                    
+                                    //PREVIOUSLY UN-SELECTED FRIENDLY UNIT
+                                    else
+                                    {
+                                        //Select it
+                                        hexMap.select(thisHex);
+                                        
+                                        hexMap.computeOverlappingHexes(gameMaster.currentPlayer);
+                                        hexMap.updateMapImage();
+                                        
+                                        //If OGRE, populate the weapon list
+                                        if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                        {
+                                            Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
+                                            gameMaster.updateOgreWeaponSelectionList(thisOgre);
+                                        }
+                                    }
+                                    
+                                }
+                                
+                                //ENEMY UNIT CLICKED
+                                //Only one enemy at a time may be selected during the combat phase!
+                                else
+                                {
+                                    //PREVIOUSLY SELECTED ENEMY
+                                    if (hexMap.selectedHexes.contains(thisHex))
+                                    {
+                                        //Action: remove selected hex, set currrentTarget and wepaons to null
+                                        hexMap.deselect(thisHex);
+                                        gameMaster.currentTarget = null;
+                                        
+                                        //Action: remove targettedWeapon 
+                                        if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                        {
+                                            gameMaster.targettedOgreWeapon = null;
+                                            gameMaster.currentOgre = null;
+                                            gameMaster.updateUnitReadouts(null);
+                                        }
+                                        
+                                        gameMaster.updateCurrentTarget(null);
+                                    }
+                                    
+                                    //PREVIOUSLY UN-SELECTED ENEMY
+                                    else
+                                    {
+                                        //Was there a prior target? 
+                                        if (gameMaster.currentTarget != null)
+                                        {
+                                            //Yes. Action: deselect prior target and reassign it to the one just clicked
+                                            
+                                            //TEST
+//                                            Hex tmpHex = hexMap.getHexFromCoords(gameMaster.currentTarget.xLocation, gameMaster.currentTarget.yLocation);
+//                                            if (tmpHex != null)
+//                                                System.out.println(tmpHex.getRow() + "," + tmpHex.getCol());
+                                            
+                                            hexMap.deselect(hexMap.getHexFromCoords(gameMaster.currentTarget.xLocation, gameMaster.currentTarget.yLocation));
+                                            hexMap.select(thisHex);
+                                            gameMaster.updateCurrentTarget(thisHex.occupyingUnit);
+                                            hexMap.updateMapImage();
+                                        }
+                                        
+                                        //No, no prior target. Action: acquire new currentTarget
+                                        else
+                                        {
+                                            hexMap.select(thisHex);
+                                            gameMaster.updateCurrentTarget(thisHex.occupyingUnit);
+                                            hexMap.updateMapImage();
+                                        }
+                                    }
+                                }
+                                
+                                
+                            }
+                        
+                            //An UNOCCUPIED hex has been clicked: DO NOTHING
+                            else
+                            {
+                                
+                            }
+                            /*
+                            if (thisHex.occupyingUnit != null)
+                            {
+                                //The current hex is already selected...
                                 if (hexMap.selectedHexes.contains(thisHex))
                                 {
+                                    //if it is the target of the current player's attack, clar currentTarget
+                                    if (gameMaster.currentTarget != null)
+                                        if (gameMaster.currentTarget.equals(thisHex.occupyingUnit))
+                                            gameMaster.updateCurrentTarget(null);
+                                    
                                     hexMap.deselect(thisHex);
                                     
                                     //Check: is this an ogre? Is it owner or either targettedWeapon or ogreSelecetedWeapons?
@@ -619,10 +729,11 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         //IS the targtted Weapon or OgreWeapons belong to this guy?
                                         Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
                                         
-                                        //If this is the ogre whose weapon is tragetted, clear the target
+                                        //If this is the ogre whose weapon is targetted, clear the target
                                         if (thisOgre.getWeapons().contains(gameMaster.targettedOgreWeapon))
                                         {
                                             gameMaster.targettedOgreWeapon = null;
+                                            gameMaster.updateCurrentTarget(null);
                                         }
                                         //if this is the ogre whose weapons are being trained, clear them
                                         else if (thisOgre.getWeapons().containsAll(gameMaster.selectedOgreWeapons))
@@ -634,22 +745,47 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     gameMaster.updateUnitReadouts(null);
                                 }
                                 
-                                //SELECT
+                                //SELECT a previously unslected hex
                                 else
                                 {
-                                    hexMap.select(thisHex);
-                                    
-                                    //WHENEVER AN OGRE IS SELECTED:
-                                    //If the Ogre is friendly, direct the player to select the weapons she wants to use
-                                    //If the Ogre is an enemy, direct the player to select a system to target
-                                    if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                    //Only one enemy target may be selected at a given time:
+                                    if (gameMaster.currentPlayer.units.contains(thisHex.occupyingUnit) == false)
                                     {
-                                        //populate the list with this ogres weaons
-                                        gameMaster.updateOgreWeaponSelectionList((Ogre)thisHex.occupyingUnit);
+                                        //IS ENEMY UNIT
+                                        //NO CURRENT TARGET
+                                        //Select the hex and update the target
+                                        if (gameMaster.currentTarget == null)
+                                        {
+                                            hexMap.select(thisHex);
+                                            gameMaster.updateCurrentTarget(thisHex.occupyingUnit);
+                                        }
+                                        
+                                        //...otherwise, remove the old target from selectedHexes and replace it with the new
+                                        else
+                                        {
+                                            hexMap.deselect(hexMap.getHexFromCoords(gameMaster.currentTarget.xLocation, gameMaster.currentTarget.yLocation));
+                                            hexMap.select(thisHex);
+                                            gameMaster.updateCurrentTarget(thisHex.occupyingUnit);
+                                            
+                                        }
                                     }
-                                    //Otherwise, display normal unit stats
+                                    
                                     else
-                                        gameMaster.updateUnitReadouts(thisHex.getUnit());
+                                    {
+                                        hexMap.select(thisHex);
+
+                                        //WHENEVER AN OGRE IS SELECTED:
+                                        //If the Ogre is friendly, direct the player to select the weapons she wants to use
+                                        //If the Ogre is an enemy, direct the player to select a system to target
+                                        if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                        {
+                                            //populate the list with this ogres weapons
+                                            gameMaster.updateOgreWeaponSelectionList((Ogre)thisHex.occupyingUnit);
+                                        }
+                                        //Otherwise, display normal unit stats
+                                        else
+                                            gameMaster.updateUnitReadouts(thisHex.getUnit());
+                                    }
                                     
                                 }
                                 
@@ -664,12 +800,13 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             //else deselect all
                             else
                             {
+                                gameMaster.updateCurrentTarget(null);
                                 hexMap.deselectAllSelectedHexes();
                                 hexMap.adjacentHexes.clear();
                             }
                            
                             break;
-                            
+                        */    
                         default:
                             break;
                        

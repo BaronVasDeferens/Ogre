@@ -7,6 +7,7 @@ package ogre;
 
 import java.util.*;
 import java.awt.*;
+import javax.swing.*;
 import java.io.Serializable;
 /**
  *
@@ -17,7 +18,8 @@ public class OgreGame implements Serializable
 
     javax.swing.JFrame myFrame;
     java.awt.List weaponList;
-    java.awt.Label unitNameLabel, unitStatsLabel, phaseLabel;
+    java.awt.Label unitNameLabel, unitStatsLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel;
+    JButton attackButton;
     OgrePanel ogrePanel;
         
     HexMap hexMap;
@@ -37,9 +39,11 @@ public class OgreGame implements Serializable
     LinkedList<Unit> allUnits;
     LinkedList<Weapon> selectedOgreWeapons;     //tracks which Ogre weapons are selected for FIRING
     Weapon targettedOgreWeapon = null;          //which Ogre weapon has been selected for destruction
+    Unit currentTarget;
+    
     Ogre currentOgre = null;
     
-    int gamePhase = -1;
+    int gamePhase = 10;
     /*
     STATE   PHASE
     00      Pre-game setup
@@ -54,8 +58,7 @@ public class OgreGame implements Serializable
     22      Player 2 SHOOT
     23      Player 2 SECOND MOVE
     */     
-    
-    
+   
     //Default constructor
     //TODO: put the ogrePanel in attachComponents function below instead 
     OgreGame(OgrePanel ogrPnl)
@@ -103,14 +106,17 @@ public class OgreGame implements Serializable
     
     
     //Give Ogre game awarness of the frame in which it lives
-    public void attachComponents(javax.swing.JFrame myframe, java.awt.List list, java.awt.Label label,
-            java.awt.Label statsLabel, java.awt.Label phaselabel)
+    public void attachComponents(javax.swing.JFrame myframe, java.awt.List list, Label label,
+            Label statsLabel, Label phaselabel, Label upperTargetLbl, Label currTargetLbl, JButton atkButton)
     {
         myFrame = myframe;
         weaponList = list;
         unitNameLabel = label;
         unitStatsLabel = statsLabel;
         phaseLabel = phaselabel;
+        upperCurrentTargetLabel = upperTargetLbl;
+        currentTargetLabel = currTargetLbl;
+        attackButton = atkButton;
         
         myFrame.setTitle("OGRE");
         
@@ -235,6 +241,52 @@ public class OgreGame implements Serializable
         eventManager.undo(gamePhase);
     }
     
+    
+    //UPDATE CURRENT TARGET
+    //Handles the ins and outs of updating the combat readouts
+    public void updateCurrentTarget(Unit thisUnit)
+    {
+        if (thisUnit == null)
+        {
+            currentTarget = null;
+            targettedOgreWeapon = null;
+            currentTargetLabel.setText("NONE");
+        }
+        
+        //An OGRE has been targetted.
+        else if (thisUnit.unitType.equals("OGRE"))
+        {
+            currentTarget = thisUnit;
+            Ogre thisOgre = (Ogre)thisUnit;
+            updateOgreWeaponSelectionList(thisOgre);
+            
+            //Set the default target weapon to the first entry on the list
+            if (targettedOgreWeapon == null)
+            {
+                targettedOgreWeapon = thisOgre.getWeaponByID(0);
+                weaponList.select(0);
+                currentTargetLabel.setText("Enemy Ogre: " + targettedOgreWeapon.weaponName);
+            }
+            
+            else
+            {
+                currentTargetLabel.setText("Enemy Ogre: " + targettedOgreWeapon.weaponName);
+            }
+        }
+        
+        else
+        {
+            currentTarget = thisUnit;
+            targettedOgreWeapon = null;
+            currentTargetLabel.setText(thisUnit.unitName);
+        }
+        
+        //ARM THE ATTACK BUTTON?
+        //If there is at least two units in the selected hexes list...
+        
+    }
+    
+    
     //SHOOT
     public void attack(Player attacker, Player defender, LinkedList<Unit> selectedUnits, LinkedList<Weapon> selectedWeapons)
     {
@@ -276,6 +328,7 @@ public class OgreGame implements Serializable
         hexMap.adjacentHexes.clear();
         hexMap.updateMapImage();
         
+        currentTarget = null;
         selectedOgreWeapons.clear();
         targettedOgreWeapon = null;
         currentOgre = null;
@@ -297,14 +350,33 @@ public class OgreGame implements Serializable
             //Player 1 MOVE
             case 11:
                 phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
+                
+                //Disable the attack readouts
+                attackButton.setVisible(false);
+                upperCurrentTargetLabel.setVisible(false);
+                currentTargetLabel.setVisible(false);
+                
                 break;
             //Player 1 SHOOT
             case 12:
                 phaseLabel.setText("Phase: SHOOT (" + playerOne.name + ")");
+                
+                //enable attack readouts
+                attackButton.setVisible(true);
+                attackButton.setEnabled(false);
+                upperCurrentTargetLabel.setVisible(true);
+                upperCurrentTargetLabel.setText("Current Target:");
+                currentTargetLabel.setVisible(true);
+                currentTargetLabel.setText("NONE");
                 break;
             //player 1 second move
             case 13:
                 phaseLabel.setText("Phase: SECOND MOVE (" + playerOne.name + ")");
+                
+                //Disable the attack readouts
+                attackButton.setVisible(false);
+                upperCurrentTargetLabel.setVisible(false);
+                currentTargetLabel.setVisible(false);
                 
                 //Commit the game state to the server here
                 switchCurrentPlayer();
@@ -314,12 +386,32 @@ public class OgreGame implements Serializable
                 gamePhase = 21;
             case 21:
                 phaseLabel.setText("Phase: MOVE (" + playerTwo.name + ")");
+                
+                //Disable the attack readouts
+                attackButton.setVisible(false);
+                upperCurrentTargetLabel.setVisible(false);
+                currentTargetLabel.setVisible(false);
+                
                 break;
             case 22:
                 phaseLabel.setText("Phase: SHOOT (" + playerTwo.name + ")");
+                
+                //enable attack readouts
+                attackButton.setVisible(true);
+                attackButton.setEnabled(false);
+                upperCurrentTargetLabel.setVisible(true);
+                upperCurrentTargetLabel.setText("Current Target:");
+                currentTargetLabel.setVisible(true);
+                currentTargetLabel.setText("NONE");
+                
                 break;
             case 23:
                 phaseLabel.setText("Phase: SECOND MOVE (" + playerTwo.name + ")");
+                
+                //Disable the attack readouts
+                attackButton.setVisible(false);
+                upperCurrentTargetLabel.setVisible(false);
+                currentTargetLabel.setVisible(false);
                 
                 //Commit the game state to the server here
                 switchCurrentPlayer();
@@ -410,7 +502,7 @@ public class OgreGame implements Serializable
     }
     
     //UPDATE OGRE WEAPON SELECTION LIST
-    //Displays an Ogre's arsenal. 
+    //Displays an Ogre's arsenal for COMBAT
     //If the Ogre is friendly, display its arsenal and allow multiple selections to be made.
     //If the ogre is an enemy, only allow a single system to be selected.
     public void updateOgreWeaponSelectionList(Ogre thisOgre)
@@ -428,9 +520,8 @@ public class OgreGame implements Serializable
         if (currentPlayer.units.contains(thisOgre))
         {
             unitNameLabel.setText(currentPlayer.name + "'s " + thisOgre.unitName);
-            unitStatsLabel.setText("Select weapon(s) to USE");
+            unitStatsLabel.setText("Select weapon(s) to FIRE");
             weaponList.setMultipleMode(true);
-            
         }
 
         
@@ -440,6 +531,11 @@ public class OgreGame implements Serializable
             unitNameLabel.setText("Enemy OGRE");
             unitStatsLabel.setText("Select one weapon to TARGET");
             weaponList.setMultipleMode(false);
+            
+            if (targettedOgreWeapon != null)
+            {
+                weaponList.select(targettedOgreWeapon.weaponID - 1);
+            }
         }
         
         
@@ -450,6 +546,9 @@ public class OgreGame implements Serializable
             thisWeapon = (String)weaps.next();
             weaponList.add(thisWeapon);
         }
+        
+        if (targettedOgreWeapon != null)
+            weaponList.select(targettedOgreWeapon.weaponID - 1);
     }
     
 }
