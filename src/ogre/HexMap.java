@@ -38,7 +38,7 @@ public class HexMap
     int beginDrawingFromX, beginDrawingFromY, hexagonSize;
     int minimumMapWidth, minimumMapHeight;
     
-    boolean showCoordinates = false;
+    boolean showCoordinates = true;
     
     //Constructor
     public HexMap(int rws, int cls, int hexsize)
@@ -203,8 +203,15 @@ public class HexMap
 
                     //Draw Units (if any)
                     if (hexArray[i][j].isOccupied())
-                    //if (hexArray[i-1][j-1].isOccupied())
                     {
+                        //if occupying unit is disabled, "keept it gray"
+                        if (hexArray[i][j].getUnit().isDisabled())
+                        {
+                            newMapGraphics.setColor(Color.GRAY);
+                            newMapGraphics.fillPolygon(p); 
+                        }
+
+
                         //Rescale and offset
                         BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
 
@@ -329,6 +336,13 @@ public class HexMap
                     //Draw Units (if any)
                     if (hexArray[i][j].isOccupied())
                     {
+                        //color gray to disbaled
+                        if (hexArray[i][j].getUnit().isDisabled())
+                        {
+                            newMapGraphics.setColor(Color.GRAY);
+                            newMapGraphics.fillPolygon(p); 
+                        }
+
                         //Rescale and offset
                         BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
 

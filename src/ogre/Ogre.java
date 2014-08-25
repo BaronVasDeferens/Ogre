@@ -77,8 +77,8 @@ public class Ogre extends ogre.Unit
                 }
             
                 //TWO missiles (one use)
-                missileBattery.add(new Weapon(6,5,3,false,"Missile",14));
-                missileBattery.add(new Weapon(6,5,3,false,"Missile",15));
+                missileBattery.add(new Weapon(6,5,3,false,"Missile",14,true));
+                missileBattery.add(new Weapon(6,5,3,false,"Missile",15,true));
                 
                 //treadID = 16
                 treads = new Treads(45,15,16);
@@ -225,7 +225,7 @@ public class Ogre extends ogre.Unit
                    returnList.add(thisWeapon.weaponName + " DISCHARGED");
             }       
             else
-               returnList.add("-- WEAPON DISABLED -- ");
+               returnList.add("-- WEAPON DESTROYED -- ");
         }
         
         returnList.add(new String("Treads: " + treads.remainingTreads + "/" + treads.maxTreads));
@@ -239,4 +239,44 @@ public class Ogre extends ogre.Unit
         LinkedList<Weapon> allWeapons = getWeapons();
         return (allWeapons.get(id));
     }
+    
+    
+    public int dischargeWeapon(Weapon thisWeapon)
+    {
+
+        if (thisWeapon != null)
+        {
+            if ((thisWeapon.disabled == false) && (thisWeapon.dischargedThisRound == false))
+            {
+                return(thisWeapon.discharge());
+            }
+        }
+        
+        return (0);
+    
+    }
+    
+    
+    //RESET WEAPONS
+    //Removes discharged flag from all weapons
+    public void resetWeapons()
+    {
+        Iterator allWeapons;
+        Weapon thisWeapon;
+       
+        allWeapons = getWeapons().iterator();
+         
+        while (allWeapons.hasNext())
+        {
+            thisWeapon = (Weapon)allWeapons.next();
+            
+            if (thisWeapon.disabled == false)
+            {
+                thisWeapon.dischargedThisRound = false;
+            }
+        }
+  
+    }
+    
+    
 }

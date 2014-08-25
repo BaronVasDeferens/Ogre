@@ -51,9 +51,12 @@ public class EventManager implements Serializable
                 MoveEvent undoEvent = new MoveEvent("MOVE", temp.agent, temp.destination, temp.source, 
                         gamephase, currentEvent.message, false);
                 
-                
+                //Pass the "reverse event" to the move function:
                 if (master.move(undoEvent))
                 {
+                    //If successful, allow this unit to move again
+                    temp.agent.hasMoved = false;
+                    //...and remove the prior move from the history
                     eventQueue.pollLast();
                     master.hexMap.updateMapImage();
                 }

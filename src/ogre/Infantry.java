@@ -45,14 +45,14 @@ public class Infantry extends ogre.Unit
     //TAKE DAMAGE
     //Self-manages based on the result of the damage taken
     @Override
-    public void takeDamage(char result)
+    public void takeDamage(String result)
     {
         switch (result)
         {
-            case 'n':
+            case "NE":
                 //no result
                 break;
-            case 'd':
+            case "D":
                 //*** Strength reduced by one; if already 1, then death
                 if (unitWeapon.strength > 1)
                 {
@@ -74,9 +74,8 @@ public class Infantry extends ogre.Unit
                 }
                 else
                     isAlive = false;
-                
                 break;
-            case 'x':
+            case "X":
                 //destroyed
                 isAlive = false;
                 break;

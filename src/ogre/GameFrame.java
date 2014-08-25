@@ -49,6 +49,7 @@ public class GameFrame extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jButton1.setText("UNDO");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -90,8 +91,13 @@ public class GameFrame extends javax.swing.JFrame {
         phaseLabel.setText("phaseLabel");
 
         attackButton.setText("ATTACK");
+        attackButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                attackButtonClicked(evt);
+            }
+        });
 
-        upperCurrentTargetLabel.setText("label1");
+        upperCurrentTargetLabel.setText("Current target:");
 
         currentTargetLabel.setText("label2");
 
@@ -131,11 +137,13 @@ public class GameFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2)
                         .addGap(8, 8, 8))
-                    .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(attackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(currentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(currentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
                 .addComponent(ogrePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -155,9 +163,9 @@ public class GameFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(WeaponSystemsList, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(21, 21, 21)
-                        .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(currentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(currentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(attackButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -221,6 +229,16 @@ public class GameFrame extends javax.swing.JFrame {
                     }
                     
                     ogreGame.hexMap.computeOverlappingHexes(ogreGame.currentPlayer);
+                    
+                    //Changing weapons means that a prior target is no longer viable
+                    if (ogreGame.currentTarget != null)
+                    {    
+                        if (ogreGame.hexMap.adjacentHexes.contains(ogreGame.currentTarget) == false)
+                        {
+                            ogreGame.hexMap.deselect(ogreGame.hexMap.getHexFromCoords(ogreGame.currentTarget.yLocation,ogreGame.currentTarget.xLocation));
+                            ogreGame.updateCurrentTarget(null);
+                        }
+                    }
                 }
             }
             //currentPlayer is TARGETTING an enemy Ogre's weapon
@@ -236,6 +254,12 @@ public class GameFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_WeaponSystemsListItemStateChanged
+
+    private void attackButtonClicked(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attackButtonClicked
+        //Oh noes! The attack button has been clicked! Something is going to happen now! BUT WHAT??!
+        //Submit the selected units, etc, for inspection to the OgreGame attack function
+        ogreGame.attack();
+    }//GEN-LAST:event_attackButtonClicked
 
     /**
      * @param args the command line arguments

@@ -23,5 +23,7 @@ public class CommandPost extends ogre.Unit
         defense = 1;
         
         image = loadImage("command_post.png");
+        
+        unitWeapon = new Weapon(0,0,true,"none",0);
     }
 }

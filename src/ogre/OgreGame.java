@@ -76,6 +76,9 @@ public class OgreGame implements Serializable
         
         currentPlayer = playerOne;
         
+        currentOgre = null;
+        targettedOgreWeapon = null;
+        
         scenario = new Scenario(0, playerOne, playerTwo);
 
         selectedOgreWeapons = new LinkedList();
@@ -163,6 +166,9 @@ public class OgreGame implements Serializable
                     
                     Unit newUnit = new Infantry(e.agent.unitID, (e.agent.defense + e.destination.getUnit().defense));
                     
+                    //set newUnit to have "moved"
+                    newUnit.hasMoved = true;
+                    
                     allUnits.remove(e.agent);
                     allUnits.remove(e.destination.getUnit()); 
                     allUnits.add(newUnit);
@@ -208,6 +214,8 @@ public class OgreGame implements Serializable
         //From one occupied hex to an unoccupied one. Clean up.
         else if (e.destination.isOccupied() == false)
         {
+            e.agent.hasMoved = true;
+            
             hexMap.addUnit(e.destination, e.agent);
             e.source.setOccupingUnit(null);
             e.source.deselect();
@@ -250,7 +258,11 @@ public class OgreGame implements Serializable
         {
             currentTarget = null;
             targettedOgreWeapon = null;
+            
+            updateOgreWeaponSelectionList(null);
+            
             currentTargetLabel.setText("NONE");
+            
         }
         
         //An OGRE has been targetted.
@@ -287,12 +299,358 @@ public class OgreGame implements Serializable
     }
     
     
-    //SHOOT
-    public void attack(Player attacker, Player defender, LinkedList<Unit> selectedUnits, LinkedList<Weapon> selectedWeapons)
+    //ATTACK
+    //Recall that all targets must be selected from within (revised) weapon radii, so shooters and target should be legal
+    //The attack button is lit when a few base criteria are met:
+    //currentTarget != null
+    //2 or more units in selectedHexes
+    //if an ogre is in play, either targettedOgreWeapons or selectedOgreWeapons are non-null values
+    public void attack()
     {
+        boolean AOK = true;
+        Iterator iter;
         
+        //Lets look for some GOTCHAs:
+        //NOt enough combatants (shouldn't happen)
+        if ((currentTarget == null) || (hexMap.selectedHexes.size() < 2))
+        {
+            System.out.println("ERROR (Attack): too few combatants: " + hexMap.selectedHexes.size());
+            AOK = false;
+        }
+        
+        //Target is an Ogre, but no specific system is targetted: shouldn't happen
+        else if ((currentTarget.unitType.equals("OGRE")) && (targettedOgreWeapon == null))
+        {
+            System.out.println("ERROR: (Attack): target is ogre but no weapon selected");
+            AOK = false;
+        }
+        
+        //Check to see if AP weapons are being used against hard targets
+        //if NOT(infantry OR CP) AND Ogre Weapons in play...
+        if ((!(currentTarget.unitType.equals("INFANTRY")) || (currentTarget.unitType.equals("CP"))) && (!selectedOgreWeapons.isEmpty()))
+        {
+            iter = selectedOgreWeapons.iterator();
+            Weapon thisWp;
+            
+            while (iter.hasNext())
+            {
+                thisWp = (Weapon)iter.next();
+                
+                if (thisWp.softTargetsOnly == true)
+                {
+                    System.out.println("ERROR (Attack): cannot use AP guns against hard targets. Nice try.");
+                    System.out.println(thisWp.weaponName + ":" + thisWp.softTargetsOnly);
+                    AOK = false;
+                }
+            }
+        }
+        
+        if (AOK)
+        {
+            //Everythings cool. Let's do some organizing:
+            
+            //Remove the currentTarget from the selected hexes
+            hexMap.selectedHexes.remove(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
+            
+            //Combat tallies
+            int defense = 0;
+            int strength = 0;
+            
+            if (currentTarget.unitType.equals("OGRE"))
+            {
+
+                //Treads may be attacked by single units only
+                //After removing the target unit from selectedHexes, only the attackers should remain...
+                if ((targettedOgreWeapon.weaponName.equals("TREADS")))
+                {
+                    defense = 1;
+                    
+                    if ((hexMap.selectedHexes.size() > 1))
+                    {
+                        System.out.println("ERROR (Attack): multiple units may not attack TREADS");
+                        AOK = false;
+                    }
+                }
+                
+                else
+                    defense = targettedOgreWeapon.defense;
+            }
+            else
+                defense = currentTarget.defense;
+            
+            
+            
+            iter = hexMap.selectedHexes.iterator();
+            Hex currentHex;
+            Unit currentUnit;
+            
+            //Total up the total attack strength for the basic units
+            while (iter.hasNext())
+            {
+                currentHex = (Hex)iter.next();
+                currentUnit = currentHex.occupyingUnit;
+                
+                if (currentUnit.unitType.equals("OGRE") == false)
+                    strength += currentUnit.dischargeWeapon();
+            }
+            
+            //Next, total up any Ogre weapons 
+            if (selectedOgreWeapons.isEmpty() == false)
+            {
+                Weapon currentWeapon;
+                iter = selectedOgreWeapons.iterator();
+                
+                while(iter.hasNext())
+                {
+                    currentWeapon = (Weapon)iter.next();
+                    if ((currentWeapon.disabled == false) && (currentWeapon.dischargedThisRound == false))
+                        strength += currentWeapon.discharge();
+                    else
+                    {
+                        System.out.println("ERROR (Attack): previously discharged/disabled weapon detected. Shame!");
+                        AOK = false;
+                    }
+                }
+            }
+            
+
+            //Analysis of the values...
+            
+            //Disallow zero defense (if NOT command post)
+            if ((defense <= 0) && (currentTarget.unitType.equals("CP") == false))
+            {
+                System.out.println("ERROR (Attack): defense values less than or equal to zero.");
+                AOK = false;
+            }
+            
+            if (strength <= 0)
+            {
+                System.out.println("ERROR (Attack): strength values less than or equal to zero.");
+                AOK = false;
+            }
+            
+            //Analysis of the ratio...
+            
+            if (AOK)
+            {          
+                float ratio = 0;
+                
+                if (currentTarget.equals("CP"))
+                {
+                    ratio = strength;
+                }
+                
+                //Attacks against treads resolve at 1:1
+                else if (currentTarget.unitType.equals("OGRE"))
+                {
+                    if (targettedOgreWeapon != null)
+                    {
+                        if (targettedOgreWeapon.weaponName.equals("TREADS"))
+                        {
+                            ratio = 1;
+                        }
+                    }
+                }
+                
+                else
+                {
+                    ratio = (float)strength/defense;
+                    
+                    //Less than 1:2, NO EFFECT
+                    if (ratio < .5)
+                    {
+                        System.out.println("Attack FAILS (too weak)!");
+                        ratio = 0;
+                    }
+                    
+                    //(1:2) Greater than .5 but less than 1 
+                    else if ((ratio >= .5) && (ratio < 1))
+                    {
+                        ratio = (float).5;
+                    }
+                    
+                    else
+                    {
+                        ratio = (int)ratio;
+                    }
+                    
+                    System.out.println("RATIO: " + ratio);
+                }
+                
+                //Obtain a result based on ratio...
+                String result = combatResult(ratio);
+                
+                System.out.println("RESULT: " + result);
+                
+                if (!result.equals("ERR"))
+                {
+                    //Non-Ogre
+                    if (currentTarget.unitType.equals("OGRE") == false)
+                    {
+                        currentTarget.takeDamage(result);
+                        
+                        //check for unit death
+                        if (currentTarget.isAlive == false)
+                        {
+                            hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
+                            hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).setOccupingUnit(null);
+                            System.out.println(currentTarget.unitName + " DESTROYED");
+                        }
+                    }
+                    
+                    //Ogre weapon
+                    else
+                    {
+                        
+                    }
+                    
+                    hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
+                    hexMap.deselectAllSelectedHexes();
+                    hexMap.adjacentHexes.clear();
+                    currentTarget = null;
+                    selectedOgreWeapons.clear();
+                    targettedOgreWeapon = null;
+                    updateCurrentTarget(null);
+                    
+                    attackButton.setEnabled(false);
+                    updateUnitReadouts(null);
+                    
+                    hexMap.updateMapImage();
+                    
+                }
+                
+                else
+                    System.out.println("ERROR: bad combat result.");
+            }
+            
+        }
     }
     
+    
+    public String combatResult(float ratio)
+    {
+        Random d6 = new Random();
+        int dieRoll = d6.nextInt(6) + 1;
+        String result = "ERR";
+
+        //less than 
+        if (ratio < .5)
+            result = "NE";
+
+        //1:2
+        else if (ratio < 1)
+        {
+            switch (dieRoll)
+            {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    result = "NE";
+                    break;
+                case 5:
+                    result = "D";
+                    break;
+                case 6:
+                    result = "X";
+                    break;
+                default:
+                    break;
+            }  
+        }
+
+        //1:1
+        else if (ratio == 1)
+        {
+            switch (dieRoll)
+            {
+                case 1:
+                case 2:
+                    result = "NE";
+                    break;
+                case 3:
+                case 4:
+                    result = "D";
+                    break;
+                case 5:
+                case 6:
+                    result = "X";
+                    break;
+                default:
+                    break;
+            } 
+        }
+
+        //2:1
+        else if (ratio == 2)
+        {
+            switch (dieRoll)
+            {
+                case 1:
+                    result = "NE";
+                    break;
+                case 2:
+                case 3:
+                    result = "D";
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    result = "X";
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //3:1
+        else if (ratio == 3)
+        {
+            switch (dieRoll)
+            {
+                case 1:
+                case 2:
+                    result = "D";
+                    break;
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    result = "X";
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //4:1
+        else if (ratio == 4)
+        {
+            switch (dieRoll)
+            {
+                case 1:
+                    result = "D";
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    result = "X";
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //5:1 or better
+        else
+        {
+            result = "X";
+        }
+
+        return (result);
+    }
     
     public int getGamePhase()
     {
@@ -378,8 +736,12 @@ public class OgreGame implements Serializable
                 upperCurrentTargetLabel.setVisible(false);
                 currentTargetLabel.setVisible(false);
                 
+                allUnits.removeAll(playerOne.units);
+                allUnits.addAll(playerOne.readyForNextTurn());
+                
                 //Commit the game state to the server here
                 switchCurrentPlayer();
+                
                 break;
             case 14:
             case 20:
@@ -413,8 +775,12 @@ public class OgreGame implements Serializable
                 upperCurrentTargetLabel.setVisible(false);
                 currentTargetLabel.setVisible(false);
                 
+                allUnits.removeAll(playerTwo.units);
+                allUnits.addAll(playerTwo.readyForNextTurn());
+                
                 //Commit the game state to the server here
                 switchCurrentPlayer();
+                
                 break;
             case 24:
                 gamePhase = 11;
@@ -507,48 +873,57 @@ public class OgreGame implements Serializable
     //If the ogre is an enemy, only allow a single system to be selected.
     public void updateOgreWeaponSelectionList(Ogre thisOgre)
     {
-        currentOgre = thisOgre;
-        
-        Iterator weaps;
-        String thisWeapon;
-        //int pos = 0;
-        
-        weaponList.removeAll();
-        unitStatsLabel.setText("");
-        
-        //FRIENDLY OGRE: allow multiple selection
-        if (currentPlayer.units.contains(thisOgre))
+        if (thisOgre == null)
         {
-            unitNameLabel.setText(currentPlayer.name + "'s " + thisOgre.unitName);
-            unitStatsLabel.setText("Select weapon(s) to FIRE");
-            weaponList.setMultipleMode(true);
+            currentOgre = null;
+            weaponList.removeAll();
+            unitStatsLabel.setText("");
         }
-
         
-        //ENEMY OGRE: disallow multi-selection
         else
         {
-            unitNameLabel.setText("Enemy OGRE");
-            unitStatsLabel.setText("Select one weapon to TARGET");
-            weaponList.setMultipleMode(false);
-            
-            if (targettedOgreWeapon != null)
+            currentOgre = thisOgre;
+
+            Iterator weaps;
+            String thisWeapon;
+            //int pos = 0;
+
+            weaponList.removeAll();
+            unitStatsLabel.setText("");
+
+            //FRIENDLY OGRE: allow multiple selection
+            if (currentPlayer.units.contains(thisOgre))
             {
-                weaponList.select(targettedOgreWeapon.weaponID - 1);
+                unitNameLabel.setText(currentPlayer.name + "'s " + thisOgre.unitName);
+                unitStatsLabel.setText("Select weapon(s) to FIRE");
+                weaponList.setMultipleMode(true);
             }
+
+
+            //ENEMY OGRE: disallow multi-selection
+            else
+            {
+                unitNameLabel.setText("Enemy OGRE");
+                unitStatsLabel.setText("Select one weapon to TARGET");
+                weaponList.setMultipleMode(false);
+
+                if (targettedOgreWeapon != null)
+                {
+                    weaponList.select(targettedOgreWeapon.weaponID - 1);
+                }
+            }
+
+
+            LinkedList<String> weapons = thisOgre.getEnumeratedSystemsList();
+            weaps = weapons.iterator();
+            while (weaps.hasNext())
+            {
+                thisWeapon = (String)weaps.next();
+                weaponList.add(thisWeapon);
+            }
+
+            if (targettedOgreWeapon != null)
+                weaponList.select(targettedOgreWeapon.weaponID - 1);
         }
-        
-        
-        LinkedList<String> weapons = thisOgre.getEnumeratedSystemsList();
-        weaps = weapons.iterator();
-        while (weaps.hasNext())
-        {
-            thisWeapon = (String)weaps.next();
-            weaponList.add(thisWeapon);
-        }
-        
-        if (targettedOgreWeapon != null)
-            weaponList.select(targettedOgreWeapon.weaponID - 1);
     }
-    
 }
