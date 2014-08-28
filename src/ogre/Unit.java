@@ -114,7 +114,7 @@ public class Unit implements Serializable
                 else
                 {
                     disabled = true;
-                    disabledTurns = 2;
+                    disabledTurns = 3;
                 }    
                 break;
             case "X":

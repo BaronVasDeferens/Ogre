@@ -205,7 +205,7 @@ public class HexMap
                     if (hexArray[i][j].isOccupied())
                     {
                         //if occupying unit is disabled, "keept it gray"
-                        if (hexArray[i][j].getUnit().isDisabled())
+                        if ((hexArray[i][j].getUnit().isDisabled()) && ((hexArray[i][j].isSelected() == false)))
                         {
                             newMapGraphics.setColor(Color.GRAY);
                             newMapGraphics.fillPolygon(p); 
@@ -337,7 +337,7 @@ public class HexMap
                     if (hexArray[i][j].isOccupied())
                     {
                         //color gray to disbaled
-                        if (hexArray[i][j].getUnit().isDisabled())
+                        if ((hexArray[i][j].getUnit().isDisabled()) && ((hexArray[i][j].isSelected() == false)))
                         {
                             newMapGraphics.setColor(Color.GRAY);
                             newMapGraphics.fillPolygon(p); 
@@ -365,7 +365,7 @@ public class HexMap
                 if (showCoordinates)
                 {
                     newMapGraphics.setColor(Color.BLUE);
-                    newMapGraphics.drawString("[" + hexArray[i][j].getRow() + "," + hexArray[i][j].getCol() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
+                    newMapGraphics.drawString("[" + hexArray[i][j].getCol() + "," + hexArray[i][j].getRow() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
                 }
                 
                 //Move the pencil over
@@ -456,7 +456,7 @@ public class HexMap
     {
         if ((target.isCrater() == false) && (target.isOccupied() == false))
         {
-            target.setOccupingUnit(toAdd);
+            target.setOccupyingUnit(toAdd);
             target.occupyingUnit.xLocation = target.getCol();
             target.occupyingUnit.yLocation = target.getRow();
             updateMapImage();

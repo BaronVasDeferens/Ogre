@@ -30,38 +30,18 @@ public class Scenario
             //Player Two: Ogre, attacker
             case 0:
             default:
-                HeavyTank tank1 = new HeavyTank(1);
-                allUnits.add(tank1);
-                player1.units.add(tank1);
-
-                Howitzer how = new Howitzer(2);
-                allUnits.add(how);
-                player1.units.add(how);
-
-                GEV gev = new GEV(3);
-                allUnits.add(gev);
-                player1.units.add(gev);
-
-                Infantry troop1 = new Infantry(4,1);
-                allUnits.add(troop1);
-                player1.units.add(troop1);
-
-                Infantry troop2 = new Infantry(8,2);
-                allUnits.add(troop2);
-                player1.units.add(troop2);
                 
-                MissileTank msl1 = new MissileTank(5);
-                allUnits.add(msl1);
-                player1.units.add(msl1);
+                //TEST SCENARIO
+                player1.units.add(new Infantry(4,1));
+                player1.units.add(new Infantry(8,2));
+                player1.units.add(new Infantry(9,3));
 
-                CommandPost cmdPost = new CommandPost(7);
-                allUnits.add(cmdPost);
-                player1.units.add(cmdPost);
-                
                 //Add player two's single ogre unit
-                Ogre ogre3 = new Ogre(3);
-                allUnits.add(ogre3);
-                player2.units.add(ogre3);
+                player2.units.add(new Ogre(3));
+                
+                //Add all to AllUnits
+                allUnits.addAll(player1.units);
+                allUnits.addAll(player2.units);
                 
                 break;
         }

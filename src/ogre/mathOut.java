@@ -14,14 +14,21 @@ public class mathOut {
     
     public static void main(String ... args)
     {
-        float ratio;
+        int movement;
+        int maxMove = 3;
+        int maxTreads = 45;
+        int treadsPerRow = 15;
+        int remainingTreads = maxTreads;
+        int lostTreads = maxTreads - remainingTreads;
         
-        for (int i = 1; i < 10; i++)
+        for (int i = maxTreads; i >= 0; i--)
         {
-            ratio = (float)5 / i;
-            System.out.print("5/" + i + " : " + ratio);
-            System.out.print("\t (int)" + (int)ratio);
-            System.out.println();
+            lostTreads = maxTreads - remainingTreads;
+            movement = maxMove - (lostTreads/treadsPerRow);
+            System.out.println("(" + remainingTreads + ") " + "LOST: " + (lostTreads) + "  MOVE: " + movement);
+            
+            remainingTreads--;
+
         }
     }
 }

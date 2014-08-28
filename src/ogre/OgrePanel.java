@@ -211,7 +211,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         
         if (dbImage == null)
         {
-            System.out.println("ERROR: dbImage is null");
+            gameMaster.reportArea.append("ERROR: dbImage is null");
             return;
         }
         
@@ -314,7 +314,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         
         catch (Exception e)
         {
-            System.out.println("Graphics context error:" + e);
+            gameMaster.reportArea.append("Graphics context error:" + e);
         }
         
         
@@ -538,6 +538,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             //GameEvent(String tp, Unit agentt, Hex source, Hex destination, int phase, String msg, int id)
                                             MoveEvent moveEvent = new MoveEvent("MOVE", hexMap.selectedHexes.peek().getUnit(), hexMap.selectedHexes.peek(), thisHex, gameMaster.getGamePhase(),"", true);
 
+                                            //Submit the move event to the gameMaster...
                                             if (gameMaster.move(moveEvent))
                                             {
                                                 hexMap.updateMapImage();
@@ -554,7 +555,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         }
                                         else
                                         {
-                                            System.out.println("nacho cheese");
+                                            //gameMaster.reportArea.append("nacho cheese");
                                             hexMap.deselectAllSelectedHexes();
                                             hexMap.adjacentHexes.clear();
                                             hexMap.updateMapImage();
@@ -571,8 +572,15 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     
                                    //Add the surrounding hexes to adjacenHexes to display movement
                                     if (thisHex.isOccupied())
-                                        hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement));
-                                        
+                                    {
+                                        if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                        {
+                                            Ogre tempOgre = (Ogre)thisHex.occupyingUnit;
+                                            hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement()));
+                                        }
+                                        else    
+                                            hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement));
+                                    }    
                                     
                                     //Display stats and weapons in the on-screen list
                                     gameMaster.updateUnitReadouts(thisHex.getUnit());
@@ -645,8 +653,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         //If this unt is NOT disabled NOR already fired, select it 
                                         if (thisHex.occupyingUnit.disabled == false)
                                         {    
-                                            //TODO:
-                                            //If it is a non-ogre unit which has not fired, select it:
+   
                                             if (thisHex.occupyingUnit.unitType.equals("OGRE") == false)
                                             {
                                                 if (thisHex.occupyingUnit.unitWeapon.dischargedThisRound == false)
@@ -714,7 +721,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             //TEST
                                             Hex tmpHex = hexMap.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation);
                                             if (tmpHex == null)
-                                                System.out.println("nothing there, boss");
+                                                gameMaster.reportArea.append("nothing there, boss");
                                             
                                             //All targets MUST be in the attack radius (adjacentHexes) to be legitimate targets
                                             if (hexMap.adjacentHexes.contains(thisHex))

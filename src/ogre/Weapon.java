@@ -95,13 +95,29 @@ public class Weapon
     public void resetForEndOfTurn()
     {
         dischargedThisRound = false;
-    }        
+    }   
+    
+    //TAKE DAMAGE
+    public void takeDamage(String code, int str)
+    {
+        switch (code)
+        {
+            case "NE":
+            case "D":
+                break;
+            case "X":
+                disable();
+                break;
+            default:
+                break;                
+        }
+    }
     
 }
 
 class Treads extends Weapon
 {
-    int remainingTreads, maxTreads, treadsPerRow, treadId;
+    int remainingTreads, maxTreads, treadsPerRow, lostTreads, treadId;
 
     Treads(int max, int perRow, int trdId)
     {
@@ -110,10 +126,51 @@ class Treads extends Weapon
         remainingTreads = max;
         maxTreads = max;
         treadsPerRow = perRow;
+        lostTreads = 0;
     }
     
-    public int getCurrentMovement()
+    public int getLostOverRow()
     {
-        return (remainingTreads/treadsPerRow);
+        return (lostTreads/treadsPerRow);
+        
+        //Here is the proof, if you don't believe it:
+        /*
+        int movement;
+        int maxMove = 3;
+        int maxTreads = 45;
+        int treadsPerRow = 15;
+        int remainingTreads = maxTreads;
+        int lostTreads = maxTreads - remainingTreads;
+        
+        for (int i = maxTreads; i >= 0; i--)
+        {
+            lostTreads = maxTreads - remainingTreads;
+            movement = maxMove - (lostTreads/treadsPerRow);
+            System.out.println("(" + remainingTreads + ") " + "LOST: " + (lostTreads) + "  MOVE: " + movement);
+            
+            remainingTreads--;
+
+        }
+        
+        */
+        
+    }
+    
+    //TAKE DAMAGE
+    @Override
+    public void takeDamage(String code, int str)
+    {
+        switch (code)
+        {
+            case "NE":
+            case "D":
+                break;
+            case "X":
+                remainingTreads -= str;
+                lostTreads = maxTreads - remainingTreads;
+                break;
+            default:
+                break;                
+        }
     }
 }

@@ -93,7 +93,7 @@ public class Ogre extends ogre.Unit
     //Returns the Ogre's current movement allowance based on its remaining treads
     public int getCurrentMovement()
     {
-        return (treads.getCurrentMovement());
+        return (maxMovement - (treads.getLostOverRow()));
     }
     
     public int calculateReaminingTreadsInRow()

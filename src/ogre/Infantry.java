@@ -54,13 +54,11 @@ public class Infantry extends ogre.Unit
                 break;
             case "D":
                 //*** Strength reduced by one; if already 1, then death
-                if (unitWeapon.strength > 1)
-                {
-                    unitWeapon.strength --;
+                    unitWeapon.strength--;
                     defense--;
-                    
+
                     //Load a new image to reflect the new strength
-                    switch (unitWeapon.strength)
+                    switch (defense)
                     {
                         case 2:
                             image = loadImage("infantry_2.png");
@@ -68,12 +66,13 @@ public class Infantry extends ogre.Unit
                         case 1:
                             image = loadImage("infantry_1.png");
                             break;
+                        case 0:
+                            isAlive = false;
+                            break;
                         default:
                             break;
                     }
-                }
-                else
-                    isAlive = false;
+
                 break;
             case "X":
                 //destroyed

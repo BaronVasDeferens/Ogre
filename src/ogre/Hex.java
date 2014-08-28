@@ -47,7 +47,7 @@ public class Hex
         return myPoly;
     }
     
-    public void setOccupingUnit(Unit unit)
+    public void setOccupyingUnit(Unit unit)
     {
         occupyingUnit = unit;
     }

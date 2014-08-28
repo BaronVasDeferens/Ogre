@@ -78,7 +78,6 @@ public class Player implements Serializable
             }
         }
         
-        
         units.removeAll(deadUnits);
         return (units);
     }

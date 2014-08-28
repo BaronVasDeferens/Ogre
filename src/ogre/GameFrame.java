@@ -20,7 +20,7 @@ public class GameFrame extends javax.swing.JFrame {
     public GameFrame() {
         initComponents();
         ogreGame = new OgreGame(ogrePanel1);
-        ogreGame.attachComponents(this, WeaponSystemsList, selectedUnitLabel, selectedUnitStatsLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel, attackButton);
+        ogreGame.attachComponents(this, WeaponSystemsList, selectedUnitLabel, selectedUnitStatsLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel, attackButton, reportArea);
     }
 
     /**
@@ -32,16 +32,18 @@ public class GameFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        upperCurrentTargetLabel = new java.awt.Label();
+        undoButton = new javax.swing.JButton();
+        advancePhaseButton = new javax.swing.JButton();
         ogrePanel1 = new ogre.OgrePanel();
         WeaponSystemsList = new java.awt.List();
         selectedUnitLabel = new java.awt.Label();
         selectedUnitStatsLabel = new java.awt.Label();
         phaseLabel = new java.awt.Label();
         attackButton = new javax.swing.JButton();
-        upperCurrentTargetLabel = new java.awt.Label();
         currentTargetLabel = new java.awt.Label();
+        outputArea = new javax.swing.JScrollPane();
+        reportArea = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         LogInMenuItem = new javax.swing.JMenuItem();
@@ -51,17 +53,19 @@ public class GameFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        jButton1.setText("UNDO");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        upperCurrentTargetLabel.setText("Current target:");
+
+        undoButton.setText("UNDO");
+        undoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                undoButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("NEXT PHASE");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        advancePhaseButton.setText("NEXT PHASE");
+        advancePhaseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                advancePhaseButtonActionPerformed(evt);
             }
         });
 
@@ -97,9 +101,14 @@ public class GameFrame extends javax.swing.JFrame {
             }
         });
 
-        upperCurrentTargetLabel.setText("Current target:");
-
+        currentTargetLabel.setMaximumSize(new java.awt.Dimension(38, 20));
         currentTargetLabel.setText("label2");
+
+        reportArea.setEditable(false);
+        reportArea.setColumns(20);
+        reportArea.setRows(5);
+        reportArea.setRequestFocusEnabled(false);
+        outputArea.setViewportView(reportArea);
 
         jMenu1.setText("File");
 
@@ -131,20 +140,20 @@ public class GameFrame extends javax.swing.JFrame {
                     .addComponent(WeaponSystemsList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(selectedUnitLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(selectedUnitStatsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(phaseLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
+                    .addComponent(phaseLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+                    .addComponent(outputArea)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(undoButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2)
-                        .addGap(8, 8, 8))
+                        .addComponent(advancePhaseButton))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(attackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(currentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(currentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(18, 18, 18)
+                        .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ogrePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -162,16 +171,18 @@ public class GameFrame extends javax.swing.JFrame {
                         .addComponent(selectedUnitStatsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(WeaponSystemsList, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(21, 21, 21)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(currentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28)
+                        .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(currentTargetLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(attackButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(outputArea, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)))
+                            .addComponent(advancePhaseButton)
+                            .addComponent(undoButton)))
                     .addComponent(ogrePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(13, Short.MAX_VALUE))
         );
@@ -179,15 +190,15 @@ public class GameFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void undoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoButtonActionPerformed
         // TODO add your handling code here:
         ogreGame.undo();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_undoButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void advancePhaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_advancePhaseButtonActionPerformed
         // TODO add your handling code here:
         ogreGame.advanceGamePhase();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_advancePhaseButtonActionPerformed
 
     private void LogInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogInMenuItemActionPerformed
         // TODO add your handling code here:
@@ -304,17 +315,19 @@ public class GameFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem LogInMenuItem;
     private javax.swing.JMenuItem ViewMyGamesMenuItem;
     public java.awt.List WeaponSystemsList;
+    private javax.swing.JButton advancePhaseButton;
     public static javax.swing.JButton attackButton;
     public java.awt.Label currentTargetLabel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     public static ogre.OgrePanel ogrePanel1;
+    private javax.swing.JScrollPane outputArea;
     private java.awt.Label phaseLabel;
+    private javax.swing.JTextArea reportArea;
     private java.awt.Label selectedUnitLabel;
     private java.awt.Label selectedUnitStatsLabel;
+    private javax.swing.JButton undoButton;
     public java.awt.Label upperCurrentTargetLabel;
     // End of variables declaration//GEN-END:variables
 }

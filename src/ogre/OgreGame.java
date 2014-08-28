@@ -19,6 +19,7 @@ public class OgreGame implements Serializable
     javax.swing.JFrame myFrame;
     java.awt.List weaponList;
     java.awt.Label unitNameLabel, unitStatsLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel;
+    JTextArea reportArea;
     JButton attackButton;
     OgrePanel ogrePanel;
         
@@ -110,7 +111,7 @@ public class OgreGame implements Serializable
     
     //Give Ogre game awarness of the frame in which it lives
     public void attachComponents(javax.swing.JFrame myframe, java.awt.List list, Label label,
-            Label statsLabel, Label phaselabel, Label upperTargetLbl, Label currTargetLbl, JButton atkButton)
+            Label statsLabel, Label phaselabel, Label upperTargetLbl, Label currTargetLbl, JButton atkButton, JTextArea repArea)
     {
         myFrame = myframe;
         weaponList = list;
@@ -120,6 +121,7 @@ public class OgreGame implements Serializable
         upperCurrentTargetLabel = upperTargetLbl;
         currentTargetLabel = currTargetLbl;
         attackButton = atkButton;
+        reportArea = repArea;
         
         myFrame.setTitle("OGRE");
         
@@ -140,28 +142,30 @@ public class OgreGame implements Serializable
         
         else if ((e.agent == null) || (e.destination == null) || (e.source == null))
         {
-            System.out.println("reason 1");
+            //reportArea.append("reason 1");
             return false;
         }
+        
         //Validation
         //Is this actually a move? Are the source and destinations equal?
         else if ((!e.type.equals("MOVE")) || (e instanceof MoveEvent == false) || ((e.source.equals(e.destination))))
         {
-            System.out.println("reason 2");
+            //reportArea.append("reason 2");
             return false;
         }
         //TODO: test for unit ownership        
         
+        //COLLAPSE INFANTRY
         if((e.agent.unitType.equals("INFANTRY")) && (e.destination.isOccupied()))
         {
-            //COLLAPSE INFANTRY
             //Consolidate two units into one, provided they are: 1) both infantry; 
             //2) combined defense values equal 3 or less
-            if (e.destination.getUnit().unitType.equals("INFANTRY"))
+            //3) both belong to the operating player
+            if ((e.destination.getUnit().unitType.equals("INFANTRY") && (currentPlayer.units.contains(e.destination.occupyingUnit)) && currentPlayer.units.contains(e.source.occupyingUnit)))
             {
                 if ((e.agent.defense + e.destination.getUnit().defense) <= 3)
                 {
-                    //HOW DO WE "UNDO" THIS?
+                    //TODO: HOW DO WE "UNDO" THIS?
                     //Create a subclass of the GameEvent?
                     
                     Unit newUnit = new Infantry(e.agent.unitID, (e.agent.defense + e.destination.getUnit().defense));
@@ -169,21 +173,31 @@ public class OgreGame implements Serializable
                     //set newUnit to have "moved"
                     newUnit.hasMoved = true;
                     
+                    //remove both "old" units from units lists
+                    currentPlayer.units.remove(e.agent);
                     allUnits.remove(e.agent);
-                    allUnits.remove(e.destination.getUnit()); 
+                    e.agent = null;
+                    e.source.setOccupyingUnit(null);
+                    
+                    currentPlayer.units.remove(e.destination.occupyingUnit);
+                    allUnits.remove(e.destination.occupyingUnit);                   
+                    e.destination.setOccupyingUnit(null);
+                    
+                    
                     allUnits.add(newUnit);
                     currentPlayer.units.add(newUnit);
-                    e.source.setOccupingUnit(null);
-                    e.destination.setOccupingUnit(newUnit);
+                    
+                    hexMap.addUnit(e.destination, newUnit);
+                    //e.destination.setOccupyingUnit(newUnit);
+
+                    reportArea.append("I think the destination is: " + e.destination.getCol() + "," + e.destination.getRow());
+                    reportArea.append("new unit @ " + hexMap.getHexFromCoords(newUnit.yLocation, newUnit.xLocation).getCol() + "," + hexMap.getHexFromCoords(newUnit.yLocation, newUnit.yLocation).getRow());
                     
                     e.source.deselect();
-                    hexMap.selectedHexes.clear();
+                    hexMap.deselectAllSelectedHexes();
                     hexMap.adjacentHexes.clear();
                     
-                    //hexMap.updateMapImage();
-                    
                     return(true);
-                    
                 }
             }
             
@@ -217,7 +231,7 @@ public class OgreGame implements Serializable
             e.agent.hasMoved = true;
             
             hexMap.addUnit(e.destination, e.agent);
-            e.source.setOccupingUnit(null);
+            e.source.setOccupyingUnit(null);
             e.source.deselect();
             
             Iterator iter = hexMap.selectedHexes.iterator();
@@ -314,14 +328,14 @@ public class OgreGame implements Serializable
         //NOt enough combatants (shouldn't happen)
         if ((currentTarget == null) || (hexMap.selectedHexes.size() < 2))
         {
-            System.out.println("ERROR (Attack): too few combatants: " + hexMap.selectedHexes.size());
+            reportArea.append("ERROR (Attack): too few combatants: " + hexMap.selectedHexes.size());
             AOK = false;
         }
         
         //Target is an Ogre, but no specific system is targetted: shouldn't happen
         else if ((currentTarget.unitType.equals("OGRE")) && (targettedOgreWeapon == null))
         {
-            System.out.println("ERROR: (Attack): target is ogre but no weapon selected");
+            reportArea.append("ERROR: (Attack): target is ogre but no weapon selected\n");
             AOK = false;
         }
         
@@ -338,8 +352,8 @@ public class OgreGame implements Serializable
                 
                 if (thisWp.softTargetsOnly == true)
                 {
-                    System.out.println("ERROR (Attack): cannot use AP guns against hard targets. Nice try.");
-                    System.out.println(thisWp.weaponName + ":" + thisWp.softTargetsOnly);
+                    reportArea.append("ERROR (Attack): cannot use AP guns against hard targets.\n");
+                    reportArea.append(thisWp.weaponName + ":" + thisWp.softTargetsOnly + "\n");
                     AOK = false;
                 }
             }
@@ -367,7 +381,7 @@ public class OgreGame implements Serializable
                     
                     if ((hexMap.selectedHexes.size() > 1))
                     {
-                        System.out.println("ERROR (Attack): multiple units may not attack TREADS");
+                        reportArea.append("ERROR (Attack): multiple units may not attack TREADS.\n");
                         AOK = false;
                     }
                 }
@@ -407,7 +421,7 @@ public class OgreGame implements Serializable
                         strength += currentWeapon.discharge();
                     else
                     {
-                        System.out.println("ERROR (Attack): previously discharged/disabled weapon detected. Shame!");
+                        reportArea.append("ERROR (Attack): previously discharged/disabled weapon detected.\n");
                         AOK = false;
                     }
                 }
@@ -419,13 +433,13 @@ public class OgreGame implements Serializable
             //Disallow zero defense (if NOT command post)
             if ((defense <= 0) && (currentTarget.unitType.equals("CP") == false))
             {
-                System.out.println("ERROR (Attack): defense values less than or equal to zero.");
+                reportArea.append("ERROR (Attack): defense values less than or equal to zero.\n");
                 AOK = false;
             }
             
             if (strength <= 0)
             {
-                System.out.println("ERROR (Attack): strength values less than or equal to zero.");
+                reportArea.append("ERROR (Attack): strength values less than or equal to zero.\n");
                 AOK = false;
             }
             
@@ -447,19 +461,26 @@ public class OgreGame implements Serializable
                     {
                         if (targettedOgreWeapon.weaponName.equals("TREADS"))
                         {
-                            ratio = 1;
+                            strength = 1;
+                            defense = 1;
+                        }
+                        
+                        else
+                        {
+                            defense = targettedOgreWeapon.defense;
                         }
                     }
                 }
                 
-                else
-                {
-                    ratio = (float)strength/defense;
+
+                    ratio = (float)(strength/defense);
+                
+                    reportArea.append((strength + ":" + defense + "\n"));
                     
                     //Less than 1:2, NO EFFECT
                     if (ratio < .5)
                     {
-                        System.out.println("Attack FAILS (too weak)!");
+                        reportArea.append("Attack FAILS (too weak)!\n");
                         ratio = 0;
                     }
                     
@@ -474,13 +495,13 @@ public class OgreGame implements Serializable
                         ratio = (int)ratio;
                     }
                     
-                    System.out.println("RATIO: " + ratio);
-                }
+                    //reportArea.append("RATIO: " + ratio + "\n");
+                
                 
                 //Obtain a result based on ratio...
                 String result = combatResult(ratio);
                 
-                System.out.println("RESULT: " + result);
+                reportArea.append("RESULT: " + result + "\n");
                 
                 if (!result.equals("ERR"))
                 {
@@ -492,16 +513,28 @@ public class OgreGame implements Serializable
                         //check for unit death
                         if (currentTarget.isAlive == false)
                         {
+                            reportArea.append("killed unit @ " + hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).getCol() + "," + hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).getRow() +"\n");
                             hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
-                            hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).setOccupingUnit(null);
-                            System.out.println(currentTarget.unitName + " DESTROYED");
+                            hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).setOccupyingUnit(null);
+                            reportArea.append(currentTarget.unitName + " DESTROYED\n");
                         }
                     }
                     
                     //Ogre weapon
                     else
                     {
-                        
+                       targettedOgreWeapon.takeDamage(result, strength);
+                       
+                       if (result.equals("X"))
+                       {
+                           if (targettedOgreWeapon.weaponName.equals("TREADS"))
+                           {
+                               reportArea.append("Ogre loses " + strength + " treads\n");
+                           }
+                           
+                           else
+                               reportArea.append(targettedOgreWeapon.weaponName + " DESTROYED\n");
+                       }
                     }
                     
                     hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
@@ -520,7 +553,7 @@ public class OgreGame implements Serializable
                 }
                 
                 else
-                    System.out.println("ERROR: bad combat result.");
+                    reportArea.append("ERROR: bad combat result.\n");
             }
             
         }
@@ -680,6 +713,8 @@ public class OgreGame implements Serializable
     {
         gamePhase += 1;
         
+        //reportArea.append("Next phase...\n");
+        
         updateUnitReadouts(null);
         
         hexMap.deselectAllSelectedHexes();
@@ -710,9 +745,9 @@ public class OgreGame implements Serializable
                 phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
                 
                 //Disable the attack readouts
-                attackButton.setVisible(false);
-                upperCurrentTargetLabel.setVisible(false);
-                currentTargetLabel.setVisible(false);
+                attackButton.setEnabled(false);
+                upperCurrentTargetLabel.setText("");
+                currentTargetLabel.setText("");
                 
                 break;
             //Player 1 SHOOT
@@ -720,11 +755,8 @@ public class OgreGame implements Serializable
                 phaseLabel.setText("Phase: SHOOT (" + playerOne.name + ")");
                 
                 //enable attack readouts
-                attackButton.setVisible(true);
                 attackButton.setEnabled(false);
-                upperCurrentTargetLabel.setVisible(true);
                 upperCurrentTargetLabel.setText("Current Target:");
-                currentTargetLabel.setVisible(true);
                 currentTargetLabel.setText("NONE");
                 break;
             //player 1 second move
@@ -732,38 +764,36 @@ public class OgreGame implements Serializable
                 phaseLabel.setText("Phase: SECOND MOVE (" + playerOne.name + ")");
                 
                 //Disable the attack readouts
-                attackButton.setVisible(false);
-                upperCurrentTargetLabel.setVisible(false);
-                currentTargetLabel.setVisible(false);
+                attackButton.setEnabled(false);
+                upperCurrentTargetLabel.setText("");
+                currentTargetLabel.setText("");
                 
-                allUnits.removeAll(playerOne.units);
-                allUnits.addAll(playerOne.readyForNextTurn());
+                //allUnits.removeAll(playerOne.units);
+                //allUnits.addAll(playerOne.readyForNextTurn());
                 
-                //Commit the game state to the server here
-                switchCurrentPlayer();
+
                 
                 break;
             case 14:
+                //Commit the game state to the server here
+                switchCurrentPlayer();
             case 20:
                 gamePhase = 21;
             case 21:
                 phaseLabel.setText("Phase: MOVE (" + playerTwo.name + ")");
                 
                 //Disable the attack readouts
-                attackButton.setVisible(false);
-                upperCurrentTargetLabel.setVisible(false);
-                currentTargetLabel.setVisible(false);
+                attackButton.setEnabled(false);
+                upperCurrentTargetLabel.setText("");
+                currentTargetLabel.setText("");
                 
                 break;
             case 22:
                 phaseLabel.setText("Phase: SHOOT (" + playerTwo.name + ")");
                 
                 //enable attack readouts
-                attackButton.setVisible(true);
                 attackButton.setEnabled(false);
-                upperCurrentTargetLabel.setVisible(true);
                 upperCurrentTargetLabel.setText("Current Target:");
-                currentTargetLabel.setVisible(true);
                 currentTargetLabel.setText("NONE");
                 
                 break;
@@ -771,18 +801,19 @@ public class OgreGame implements Serializable
                 phaseLabel.setText("Phase: SECOND MOVE (" + playerTwo.name + ")");
                 
                 //Disable the attack readouts
-                attackButton.setVisible(false);
-                upperCurrentTargetLabel.setVisible(false);
-                currentTargetLabel.setVisible(false);
+                attackButton.setEnabled(false);
+                upperCurrentTargetLabel.setText("");
+                currentTargetLabel.setText("");
                 
-                allUnits.removeAll(playerTwo.units);
-                allUnits.addAll(playerTwo.readyForNextTurn());
-                
-                //Commit the game state to the server here
-                switchCurrentPlayer();
+                //allUnits.removeAll(playerTwo.units);
+                //allUnits.addAll(playerTwo.readyForNextTurn());
+ 
                 
                 break;
             case 24:
+                               
+                //Commit the game state to the server here
+                switchCurrentPlayer();
                 gamePhase = 11;
                 phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
                 break;
@@ -795,10 +826,18 @@ public class OgreGame implements Serializable
     //Derp. Only supports two players. Sad.
     public void switchCurrentPlayer()
     {
+        allUnits.removeAll(playerOne.units);
+        allUnits.addAll(playerOne.readyForNextTurn());
+        
+        allUnits.removeAll(playerTwo.units);
+        allUnits.addAll(playerTwo.readyForNextTurn());
+        
         if (currentPlayer == playerOne)
             currentPlayer = playerTwo;
         else
             currentPlayer = playerOne;
+        
+        reportArea.append(currentPlayer.name + "'s turn!\n");
     }
     
     //UPDATE UNIT READOUTS
