@@ -37,6 +37,25 @@ public class Player implements Serializable
         units = unitList;
     }
     
+    //REDAY FOR SECOND MOVE
+    //Prepares the appropriate units for their second move
+    public void readyForSecondMove()
+    {
+        Iterator iter = units.iterator();
+        Unit thisUnit;
+        
+        while (iter.hasNext())
+        {
+            thisUnit = (Unit)iter.next();
+            
+            if ((thisUnit.movementPostShooting > 0) && (thisUnit.disabled == false))
+            {
+                thisUnit.hasMoved = false;
+            }
+        }
+    }
+    
+    
     //READY FOR NEXT TURN
     //Inbetween house-keeping; returns values to "ready states." Returns a linked list of units
     //ready for the next turn.

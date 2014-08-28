@@ -190,8 +190,8 @@ public class OgreGame implements Serializable
                     hexMap.addUnit(e.destination, newUnit);
                     //e.destination.setOccupyingUnit(newUnit);
 
-                    reportArea.append("I think the destination is: " + e.destination.getCol() + "," + e.destination.getRow());
-                    reportArea.append("new unit @ " + hexMap.getHexFromCoords(newUnit.yLocation, newUnit.xLocation).getCol() + "," + hexMap.getHexFromCoords(newUnit.yLocation, newUnit.yLocation).getRow());
+                    //reportArea.append("I think the destination is: " + e.destination.getCol() + "," + e.destination.getRow());
+                    //reportArea.append("new unit @ " + hexMap.getHexFromCoords(newUnit.yLocation, newUnit.xLocation).getCol() + "," + hexMap.getHexFromCoords(newUnit.yLocation, newUnit.yLocation).getRow());
                     
                     e.source.deselect();
                     hexMap.deselectAllSelectedHexes();
@@ -393,40 +393,41 @@ public class OgreGame implements Serializable
                 defense = currentTarget.defense;
             
             
-            
-            iter = hexMap.selectedHexes.iterator();
-            Hex currentHex;
-            Unit currentUnit;
-            
-            //Total up the total attack strength for the basic units
-            while (iter.hasNext())
+            if (AOK)
             {
-                currentHex = (Hex)iter.next();
-                currentUnit = currentHex.occupyingUnit;
-                
-                if (currentUnit.unitType.equals("OGRE") == false)
-                    strength += currentUnit.dischargeWeapon();
-            }
-            
-            //Next, total up any Ogre weapons 
-            if (selectedOgreWeapons.isEmpty() == false)
-            {
-                Weapon currentWeapon;
-                iter = selectedOgreWeapons.iterator();
-                
-                while(iter.hasNext())
+                iter = hexMap.selectedHexes.iterator();
+                Hex currentHex;
+                Unit currentUnit;
+
+                //Total up the total attack strength for the basic units
+                while (iter.hasNext())
                 {
-                    currentWeapon = (Weapon)iter.next();
-                    if ((currentWeapon.disabled == false) && (currentWeapon.dischargedThisRound == false))
-                        strength += currentWeapon.discharge();
-                    else
+                    currentHex = (Hex)iter.next();
+                    currentUnit = currentHex.occupyingUnit;
+
+                    if (currentUnit.unitType.equals("OGRE") == false)
+                        strength += currentUnit.dischargeWeapon();
+                }
+
+                //Next, total up any Ogre weapons 
+                if (selectedOgreWeapons.isEmpty() == false)
+                {
+                    Weapon currentWeapon;
+                    iter = selectedOgreWeapons.iterator();
+
+                    while(iter.hasNext())
                     {
-                        reportArea.append("ERROR (Attack): previously discharged/disabled weapon detected.\n");
-                        AOK = false;
+                        currentWeapon = (Weapon)iter.next();
+                        if ((currentWeapon.disabled == false) && (currentWeapon.dischargedThisRound == false))
+                            strength += currentWeapon.discharge();
+                        else
+                        {
+                            reportArea.append("ERROR (Attack): previously discharged/disabled weapon detected.\n");
+                            AOK = false;
+                        }
                     }
                 }
-            }
-            
+            }    
 
             //Analysis of the values...
             
@@ -554,6 +555,23 @@ public class OgreGame implements Serializable
                 
                 else
                     reportArea.append("ERROR: bad combat result.\n");
+            }
+            
+            //AOK == false
+            else
+            {
+                hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
+                hexMap.deselectAllSelectedHexes();
+                hexMap.adjacentHexes.clear();
+                currentTarget = null;
+                selectedOgreWeapons.clear();
+                targettedOgreWeapon = null;
+                updateCurrentTarget(null);
+
+                attackButton.setEnabled(false);
+                updateUnitReadouts(null);
+
+                hexMap.updateMapImage();
             }
             
         }
@@ -763,6 +781,8 @@ public class OgreGame implements Serializable
             case 13:
                 phaseLabel.setText("Phase: SECOND MOVE (" + playerOne.name + ")");
                 
+                playerOne.readyForSecondMove();
+                
                 //Disable the attack readouts
                 attackButton.setEnabled(false);
                 upperCurrentTargetLabel.setText("");
@@ -799,6 +819,8 @@ public class OgreGame implements Serializable
                 break;
             case 23:
                 phaseLabel.setText("Phase: SECOND MOVE (" + playerTwo.name + ")");
+                
+                playerTwo.readyForSecondMove();
                 
                 //Disable the attack readouts
                 attackButton.setEnabled(false);

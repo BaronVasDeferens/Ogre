@@ -35,9 +35,11 @@ public class Scenario
                 player1.units.add(new Infantry(4,1));
                 player1.units.add(new Infantry(8,2));
                 player1.units.add(new Infantry(9,3));
-
+                player1.units.add(new GEV(88));
+                player1.units.add(new GEV(99));
                 //Add player two's single ogre unit
                 player2.units.add(new Ogre(3));
+                player2.units.add(new Howitzer(33));
                 
                 //Add all to AllUnits
                 allUnits.addAll(player1.units);

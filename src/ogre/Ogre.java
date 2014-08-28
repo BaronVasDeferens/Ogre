@@ -125,29 +125,70 @@ public class Ogre extends ogre.Unit
         LinkedList<String> returnList = new LinkedList();
         returnList.clear();
         
+        Iterator iter;
+        Weapon thisWeapon;
+        int remaining = 0;
+        
         String str;
         
         if (mainBattery.isEmpty() == false)
         {
-            str = "(" + mainBattery.size() + ") Main Battery / Strength: " + mainBattery.peek().strength + " / Range: " + mainBattery.peek().range + " / Defense: " + mainBattery.peek().defense;
+            iter = mainBattery.iterator();
+            while (iter.hasNext())
+            {    
+                thisWeapon = (Weapon)iter.next();
+                if (thisWeapon.disabled == false)
+                    remaining++;
+            }
+            
+            str = "(" + remaining + ") Main Battery / Strength: " + mainBattery.peek().strength + " / Range: " + mainBattery.peek().range + " / Defense: " + mainBattery.peek().defense;
             returnList.add(str);
         }
+        
+        remaining = 0;
         
         if (secondaryBattery.isEmpty() == false)
         {
-            str = "(" + secondaryBattery.size() + ") Seconadry Battery / Strength: " + secondaryBattery.peek().strength + " / Range: " + secondaryBattery.peek().range + " / Defense: " + secondaryBattery.peek().defense;
+            iter = secondaryBattery.iterator();
+            while (iter.hasNext())
+            {    
+                thisWeapon = (Weapon)iter.next();
+                if (thisWeapon.disabled == false)
+                    remaining++;
+            }
+            str = "(" + remaining + ") Seconadry Battery / Strength: " + secondaryBattery.peek().strength + " / Range: " + secondaryBattery.peek().range + " / Defense: " + secondaryBattery.peek().defense;
             returnList.add(str);
         }
+        
+        remaining = 0;
         
         if (antiPersonnel.isEmpty() == false)
         {
-            str = "(" + antiPersonnel.size() + ") Anti-personnel / Strength: " + antiPersonnel.peek().strength + " / Range: " + antiPersonnel.peek().range + " / Defense: " + antiPersonnel.peek().defense;
+            iter = antiPersonnel.iterator();
+            while (iter.hasNext())
+            {    
+                thisWeapon = (Weapon)iter.next();
+                if (thisWeapon.disabled == false)
+                    remaining++;
+            }  
+            
+            str = "(" + remaining + ") Anti-personnel / Strength: " + antiPersonnel.peek().strength + " / Range: " + antiPersonnel.peek().range + " / Defense: " + antiPersonnel.peek().defense;
             returnList.add(str);
         }
         
+        remaining = 0;    
+            
         if (missileBattery.isEmpty() == false)
         {
-            str = "(" + missileBattery.size() + ") Missile / Strength: " + missileBattery.peek().strength + " / Range: " + missileBattery.peek().range + " / Defense: " + missileBattery.peek().defense;
+            iter = missileBattery.iterator();
+            while (iter.hasNext())
+            {    
+                thisWeapon = (Weapon)iter.next();
+                if (thisWeapon.disabled == false)
+                    remaining++;
+            }
+            
+            str = "(" +remaining + ") Missile / Strength: " + missileBattery.peek().strength + " / Range: " + missileBattery.peek().range + " / Defense: " + missileBattery.peek().defense;
             returnList.add(str);
         }
         

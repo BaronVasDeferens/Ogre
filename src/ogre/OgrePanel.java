@@ -553,12 +553,16 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             
                                             gameMaster.updateUnitReadouts(null);
                                         }
+                                        
+                                        //Unit selected was not theirs, but status should be printed:
                                         else
                                         {
                                             //gameMaster.reportArea.append("nacho cheese");
                                             hexMap.deselectAllSelectedHexes();
                                             hexMap.adjacentHexes.clear();
                                             hexMap.updateMapImage();
+                                            
+                                            gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
                                         }    
   
                                 }
@@ -585,7 +589,6 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     //Display stats and weapons in the on-screen list
                                     gameMaster.updateUnitReadouts(thisHex.getUnit());
                                         
-                                    
                                     hexMap.updateMapImage();
                                 }
                                 
@@ -692,6 +695,10 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 //Only one enemy at a time may be selected during the combat phase!
                                 else
                                 {
+                                    //TEST TEST TEST
+                                    //display emeny capabilities
+                                    gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
+
                                     //PREVIOUSLY SELECTED ENEMY
                                     if (hexMap.selectedHexes.contains(thisHex))
                                     {
@@ -768,6 +775,63 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 gameMaster.attackButton.setEnabled(false);
                             
                             break;
+                            
+                        case 13:
+                        case 23:
+                            
+                            //SECOND MOVE (for GEVs and others)
+                            //User clicks on an occupied hex...
+                            if (thisHex.isOccupied())
+                            {
+                                if (hexMap.selectedHexes.contains(thisHex))
+                                {
+                                    hexMap.deselect(thisHex);
+                                    hexMap.deselectAllSelectedHexes();
+                                    hexMap.adjacentHexes.clear();
+                                    hexMap.updateMapImage();
+                                }
+                                
+                                else if (thisHex.occupyingUnit.movementPostShooting > 0)
+                                {
+                                    if ((thisHex.occupyingUnit.hasMoved == false) && (hexMap.selectedHexes.isEmpty()))
+                                    {
+                                        hexMap.select(thisHex);
+                                        hexMap.adjacentHexes = hexMap.getHexesWithinRange(thisHex, thisHex.occupyingUnit.movementPostShooting);
+                                        hexMap.updateMapImage();
+                                    }
+                                }
+                            }
+                        
+                            //User has clicked on an unoccupied hex-- it is within range?
+                            else
+                            {
+                                //Yes-- it is within range. MOVE it
+                                if (hexMap.adjacentHexes.contains(thisHex))
+                                {
+                                    //(String tp, Unit agt, Hex src, Hex dest, int phase, String msg, boolean undo)
+                                    MoveEvent postShootMove = new MoveEvent("MOVE",hexMap.selectedHexes.peekLast().occupyingUnit, hexMap.selectedHexes.peekLast(),thisHex, gameMaster.getGamePhase(),"",true);
+                                    
+                                    if (gameMaster.move(postShootMove))
+                                    {
+                                        hexMap.updateMapImage();
+                                    }
+                                    
+                                    else
+                                    {
+                                        hexMap.deselectAllSelectedHexes();
+                                        hexMap.adjacentHexes.clear();
+                                        hexMap.updateMapImage();
+                                    }
+                                }
+                                
+                                //NO-- deselect
+                                else
+                                {
+                                    hexMap.deselectAllSelectedHexes();
+                                    hexMap.adjacentHexes.clear();
+                                }
+                                    
+                            }
                             
                         default:
                             break;

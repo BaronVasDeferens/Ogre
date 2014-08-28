@@ -122,7 +122,7 @@ class Treads extends Weapon
     Treads(int max, int perRow, int trdId)
     {
         //(int atk, int rng, boolean infOnly, String name, int id)
-        super(0,0,1,true,"Treads",trdId);
+        super(0,0,1,true,"TREADS",trdId);
         remainingTreads = max;
         maxTreads = max;
         treadsPerRow = perRow;
