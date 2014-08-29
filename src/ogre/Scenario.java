@@ -20,9 +20,7 @@ public class Scenario
     0           no victory conditions set
     1           destroy enemy HQ / neutralize Ogre
     */
-    
-    
-    
+     
     LinkedList<Unit> allUnits;
     
     Scenario(int selection, Player player1, Player player2)
@@ -39,13 +37,15 @@ public class Scenario
             default:
                 
                 //TEST SCENARIO
-                player1.units.add(new Infantry(4,1));
+                player1.units.add(new Infantry(6,1));
+                player1.units.add(new HeavyTank(2));
                 player1.units.add(new Infantry(8,2));
                 player1.units.add(new Infantry(9,3));
                 player1.units.add(new GEV(88));
                 player1.units.add(new GEV(99));
                 
                 //Add player two's single ogre unit
+                player2.units.add(new Ogre(3));
                 player2.units.add(new Ogre(3));
                 player2.units.add(new Howitzer(33));
                 

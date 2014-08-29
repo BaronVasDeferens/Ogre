@@ -517,8 +517,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                         case 11:
                         case 21:
                             //DESELECT
-                            //Clicked on nothing
-                            if ((thisHex.isOccupied() == false) && (hexMap.adjacentHexes.contains(thisHex) == false))
+                            //Clicked on an unoccupied hex outside of movement radius, or re-clicking same unit to de-select it
+                            if (((thisHex.isOccupied() == false) && (hexMap.adjacentHexes.contains(thisHex) == false)) || (hexMap.selectedHexes.contains(thisHex)))
                             {
                                 hexMap.deselectAllSelectedHexes();
                                 hexMap.adjacentHexes.clear();
@@ -527,15 +527,6 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 hexMap.updateMapImage();
                             }
                             
-                            //re-clicking same unit to de-select it
-                            else if (hexMap.selectedHexes.contains(thisHex))
-                            {
-                                hexMap.deselectAllSelectedHexes();
-                                hexMap.adjacentHexes.clear();
-                                gameMaster.updateUnitReadouts(null);
-                                gameMaster.updateOgreWeaponSelectionList(null);
-                                hexMap.updateMapImage();
-                            }
                         
                             else
                             {
@@ -595,11 +586,11 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             if (thisHex.occupyingUnit.unitType.equals("OGRE"))
                                             {
                                                 Ogre tempOgre = (Ogre)thisHex.occupyingUnit;
-                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement()));
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement(),false));
                                             }
                                             else 
                                             {
-                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement));
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement,false));
                                             }
                                         }
                                             
@@ -823,24 +814,32 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                         case 13:
                         case 23:
                             
-                            //SECOND MOVE (for GEVs and others)
+                            //*** SECOND MOVE (for GEVs and others)
                             //User clicks on an occupied hex...
                             if (thisHex.isOccupied())
                             {
-                                if (hexMap.selectedHexes.contains(thisHex))
+                                //...which was already selected: DESELECT
+                                //...which was not already selected-- it's already occupied (can't move here)
+                                if ((hexMap.selectedHexes.contains(thisHex)) || (hexMap.selectedHexes.isEmpty() == false))
                                 {
                                     hexMap.deselect(thisHex);
                                     hexMap.deselectAllSelectedHexes();
                                     hexMap.adjacentHexes.clear();
+                                    
+                                    gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
+                                    
                                     hexMap.updateMapImage();
                                 }
-                                
+                                  
+                                //...is a valid post-shooting mover...
                                 else if (thisHex.occupyingUnit.movementPostShooting > 0)
                                 {
+                                    //...which hasn't moved...
                                     if ((thisHex.occupyingUnit.hasMoved == false) && (hexMap.selectedHexes.isEmpty()))
                                     {
                                         hexMap.select(thisHex);
-                                        hexMap.adjacentHexes = hexMap.getHexesWithinRange(thisHex, thisHex.occupyingUnit.movementPostShooting);
+                                        gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
+                                        hexMap.adjacentHexes = hexMap.getHexesWithinRange(thisHex, thisHex.occupyingUnit.movementPostShooting,false);
                                         hexMap.updateMapImage();
                                     }
                                 }
@@ -849,10 +848,10 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 {
                                     gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
                                     
-                                    if (thisHex.occupyingUnit.unitType.equals("OGRE") == false)
-                                    {
-                                        gameMaster.updateOgreWeaponSelectionList(null);
-                                    }
+//                                    if (thisHex.occupyingUnit.unitType.equals("OGRE") == false)
+//                                    {
+//                                        gameMaster.updateOgreWeaponSelectionList(null);
+//                                    }
                          
                                 }
                             }
@@ -870,6 +869,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     
                                     if (gameMaster.move(postShootMove))
                                     {
+                                        hexMap.deselectAllSelectedHexes();
+                                        hexMap.adjacentHexes.clear();
                                         hexMap.updateMapImage();
                                     }
                                     
@@ -884,12 +885,14 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 //NO-- deselect
                                 else
                                 {
+                                    hexMap.deselect(thisHex);
                                     hexMap.deselectAllSelectedHexes();
                                     hexMap.adjacentHexes.clear();
-                                }
-                                    
+                                    gameMaster.updateUnitReadouts(null);
+                                    hexMap.updateMapImage();
+                                }     
                             }
-                            
+                            break;
                         default:
                             break;
                        

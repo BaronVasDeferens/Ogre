@@ -45,7 +45,7 @@ public class HexMap
     int beginDrawingFromX, beginDrawingFromY, hexagonSize;
     int minimumMapWidth, minimumMapHeight;
     
-    public boolean showCoordinates = true;
+    public boolean showCoordinates = false;
     
     //Constructor
     public HexMap(int rws, int cls, int hexsize)
@@ -81,6 +81,10 @@ public class HexMap
         
         setHexSize(hexsize);
         
+        //TODO:
+        //This doesn't belong here! Move it after testing
+        makeCrater(hexArray[1][1]);
+        
     }
     
     //SET GAME MASTER
@@ -108,6 +112,25 @@ public class HexMap
     {
         minimumMapWidth = minWidth;
         minimumMapHeight = minHeight;
+    }
+    
+    //MAKE CRATER
+    public void makeCrater(Hex target)
+    {
+        if (target != null)
+        {
+            target.isCrater = true;
+        }
+    }
+    
+    //ADD RIDGE
+    public void addRidge(Hex h1, int f1, Hex h2, int f2)
+    {
+        if ((h1 != null) && (h2 != null))
+        {
+            h1.addRidge(h1, f1, h2, f2);
+            h2.addRidge(h2, f2, h1, f1);
+        }
     }
     
     //CREATE MAP
@@ -343,7 +366,7 @@ public class HexMap
                     //Draw Units (if any)
                     if (hexArray[i][j].isOccupied())
                     {
-                        //color gray to disbaled
+                        //color gray to disabled
                         if ((hexArray[i][j].getUnit().isDisabled()) && ((hexArray[i][j].isSelected() == false)))
                         {
                             newMapGraphics.setColor(Color.GRAY);
@@ -577,20 +600,43 @@ public class HexMap
     
     //GET HEXES WITHIN RANGE
     //Retruns a list of hexes in a "shell" radius within range.
-    public LinkedList<Hex> getHexesWithinRange(Hex fromHere, int distance)
+    //If the ignoreTerrain flag is set to false, then craters (and ridges) are taken into consideration
+    public LinkedList<Hex> getHexesWithinRange(Hex fromHere, int distance, boolean ignoreTerrain)
     {
         LinkedList<Hex> tempAdjacents = new LinkedList();
         LinkedList<Hex> returnList = new LinkedList();
-        //prevents the same hex being called multiple THOUSANDS of times.
-        LinkedList<Hex> doneThese = new LinkedList(); 
+        LinkedList<Hex> doneThese = new LinkedList(); //prevents the same hex being called multiple THOUSANDS of times.
         
         tempAdjacents.clear();
         returnList.clear();
         
         if ((fromHere != null) && (distance > 0))
         {
-            //Add the first "shell" of 6 immediate neighbors
-            tempAdjacents.addAll(getAdjacentHexes(fromHere));
+            
+            if (ignoreTerrain == true)
+            {
+                //Add the first "shell" of 6 immediate neighbors
+                tempAdjacents.addAll(getAdjacentHexes(fromHere));
+            }
+            
+            //We should NOT include any hex which is a crater
+            else
+            {
+                Iterator tit = getAdjacentHexes(fromHere).iterator();
+                Hex tmpHex;
+                
+                while (tit.hasNext())
+                {
+                    tmpHex = (Hex)tit.next();
+                    
+                    if (!tmpHex.isCrater)
+                    {
+                        tempAdjacents.add(tmpHex);
+                    }
+                }
+            }
+
+
             returnList.addAll(tempAdjacents);
             doneThese.add(fromHere);
             
@@ -603,7 +649,12 @@ public class HexMap
                 {
                     thisHex = (Hex)iter.next();
                     
-                    if (!doneThese.contains(thisHex))
+                    if ((thisHex.isCrater) && (ignoreTerrain == false))
+                    {
+                        //skip it
+                    }
+                    
+                    else if (!doneThese.contains(thisHex))
                     {
                         returnList.addAll(getAdjacentHexes(thisHex));
                         doneThese.add(thisHex);
@@ -657,7 +708,7 @@ public class HexMap
            //Get a single zone of fire from the friendly unit...
            if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
            {
-                adjacentHexes.addAll(getHexesWithinRange(thisHex, thisHex.occupyingUnit.unitWeapon.range));
+                adjacentHexes.addAll(getHexesWithinRange(thisHex, thisHex.occupyingUnit.unitWeapon.range,true));
            }
        }
        
@@ -667,7 +718,7 @@ public class HexMap
            //...and get the "intersection" between the first unit's zone and the rest of the frinedly units' zones
            if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
            {
-                adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisHex.occupyingUnit.unitWeapon.range));
+                adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisHex.occupyingUnit.unitWeapon.range, true));
            }
        }
        
@@ -693,7 +744,7 @@ public class HexMap
                     if ((weaponIter.hasNext()) && (adjacentHexes.size() <= 1))
                     {
                         thisWeapon = (Weapon)weaponIter.next();
-                        adjacentHexes.addAll(getHexesWithinRange(thisHex, thisWeapon.range));
+                        adjacentHexes.addAll(getHexesWithinRange(thisHex, thisWeapon.range, true));
                     }
                     
                     while (weaponIter.hasNext())
@@ -702,7 +753,7 @@ public class HexMap
                         
                         if (thisOgre.getWeapons().contains(thisWeapon))
                         {
-                            adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisWeapon.range));
+                            adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisWeapon.range, true));
                         }
                     }
                 }

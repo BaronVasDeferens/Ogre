@@ -149,12 +149,12 @@ public class Unit implements Serializable
         disabled = false;
     }
     
-    //DISABLE
-    //Who an ever know the mysteries of this weird function?!?!
-    public void disable()
-    {
-        disabled = true;
-    }
+//    //DISABLE
+//    //Who an ever know the mysteries of this weird function?!?!
+//    public void disable()
+//    {
+//        disabled = true;
+//    }
     
     //DISABLE
     //Set the number of turns before this unit come back online
@@ -168,7 +168,8 @@ public class Unit implements Serializable
     {
         hasMoved = false;
         
-        disabledTurns--;
+        if (disabledTurns > 0)
+            disabledTurns--;
         
         if (disabledTurns <= 0)
         {

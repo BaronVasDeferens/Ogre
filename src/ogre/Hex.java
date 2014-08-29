@@ -7,6 +7,7 @@
 package ogre;
 
 import java.awt.Polygon;
+import java.util.LinkedList;
 
 /**
  *
@@ -17,24 +18,24 @@ public class Hex
 
     private int row, col;
     private Polygon myPoly;
-    int [] ridgeFaces;
     public Unit occupyingUnit;
-    private boolean isCrater;
+    boolean isCrater;
     private boolean isSelected;
+    
+    public LinkedList<Ridge> ridges;
     
     public Hex(int rws, int cls, boolean crater)
     {
         row = rws;
         col = cls;
-        
-        ridgeFaces = new int[6];
-        //System.arraycopy(ridges, 0, ridgeFaces, 0, 6);
-        
+                
         occupyingUnit = null;
         myPoly = null;
         
         isCrater = crater;
         isSelected = false;
+        
+        ridges = null;
     }
     
     public void setPolygon(Polygon poly)
@@ -95,5 +96,35 @@ public class Hex
     public int getCol()
     {
         return (col);
+    }
+    
+    public void addRidge(Hex h1, int face1, Hex h2, int face2)
+    {
+        if (ridges == null)
+        {
+            ridges = new LinkedList();
+            ridges.clear();
+        }
+        
+        ridges.add(new Ridge (h1,face1,h2,face2));
+    }
+    
+    public LinkedList<Ridge>  getRidges()
+    {
+        return ridges;
+    }
+}
+
+class Ridge
+{
+    public Hex hexA, hexB;
+    int faceA, faceB;
+    
+    Ridge(Hex hexOne, int faceOne, Hex hexTwo, int faceTwo)
+    {
+        hexA = hexOne;
+        faceA = faceOne;
+        hexB = hexTwo;
+        faceB = faceTwo;
     }
 }
