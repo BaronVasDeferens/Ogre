@@ -517,12 +517,23 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                         case 11:
                         case 21:
                             //DESELECT
-                            //re-clicking same unit to de-select it
-                            if (hexMap.selectedHexes.contains(thisHex))
+                            //Clicked on nothing
+                            if ((thisHex.isOccupied() == false) && (hexMap.adjacentHexes.contains(thisHex) == false))
                             {
                                 hexMap.deselectAllSelectedHexes();
                                 hexMap.adjacentHexes.clear();
                                 gameMaster.updateUnitReadouts(null);
+                                gameMaster.updateOgreWeaponSelectionList(null);
+                                hexMap.updateMapImage();
+                            }
+                            
+                            //re-clicking same unit to de-select it
+                            else if (hexMap.selectedHexes.contains(thisHex))
+                            {
+                                hexMap.deselectAllSelectedHexes();
+                                hexMap.adjacentHexes.clear();
+                                gameMaster.updateUnitReadouts(null);
+                                gameMaster.updateOgreWeaponSelectionList(null);
                                 hexMap.updateMapImage();
                             }
                         
@@ -572,24 +583,46 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 //No selected hexes, thisHex is populated, hasn't moved
                                 else if ((hexMap.selectedHexes.isEmpty()) && (thisHex.occupyingUnit.hasMoved == false) && (thisHex.occupyingUnit.isDisabled() == false))
                                 {
-                                    hexMap.select(thisHex);
                                     
                                    //Add the surrounding hexes to adjacenHexes to display movement
                                     if (thisHex.isOccupied())
                                     {
-                                        if (thisHex.occupyingUnit.unitType.equals("OGRE"))
-                                        {
-                                            Ogre tempOgre = (Ogre)thisHex.occupyingUnit;
-                                            hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement()));
+                                        if (gameMaster.currentPlayer.units.contains(thisHex.occupyingUnit))
+                                        {    
+                                            hexMap.select(thisHex);
+                                            gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
+                                            
+                                            if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                            {
+                                                Ogre tempOgre = (Ogre)thisHex.occupyingUnit;
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement()));
+                                            }
+                                            else 
+                                            {
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement));
+                                            }
                                         }
-                                        else    
-                                            hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement));
+                                            
+                                        
+                                        //enemy unit
+                                        else
+                                        {
+                                            if (thisHex.occupyingUnit.unitType.equals("OGRE") == false)
+                                            {
+                                                gameMaster.updateOgreWeaponSelectionList(null);
+                                            }
+                                        }
                                     }    
                                     
                                     //Display stats and weapons in the on-screen list
                                     gameMaster.updateUnitReadouts(thisHex.getUnit());
                                         
                                     hexMap.updateMapImage();
+                                }
+                                
+                                else if (thisHex.isOccupied())
+                                {
+                                    gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
                                 }
                                 
                                 //DESELECT
@@ -653,6 +686,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     //PREVIOUSLY UN-SELECTED FRIENDLY UNIT
                                     else
                                     {
+                                        gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
+                                        
                                         //If this unt is NOT disabled NOR already fired, select it 
                                         if (thisHex.occupyingUnit.disabled == false)
                                         {    
@@ -677,6 +712,12 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
 
                                                     hexMap.updateMapImage();
                                                 }
+                                                
+                                                //else, update the display
+                                                else
+                                                {
+                                                    gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
+                                                }
                                             }
                                             
                                             //If OGRE, populate the weapon list
@@ -696,7 +737,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 else
                                 {
                                     //TEST TEST TEST
-                                    //display emeny capabilities
+                                    //display enemy capabilities
                                     gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
 
                                     //PREVIOUSLY SELECTED ENEMY
@@ -758,7 +799,10 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             //An UNOCCUPIED hex has been clicked: DO NOTHING
                             else
                             {
-                                
+                                hexMap.deselectAllSelectedHexes();
+                                hexMap.adjacentHexes.clear();
+                                gameMaster.updateUnitReadouts(null);
+                                hexMap.updateMapImage();
                             }
                             
                             
@@ -800,11 +844,24 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         hexMap.updateMapImage();
                                     }
                                 }
+                                
+                                else
+                                {
+                                    gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
+                                    
+                                    if (thisHex.occupyingUnit.unitType.equals("OGRE") == false)
+                                    {
+                                        gameMaster.updateOgreWeaponSelectionList(null);
+                                    }
+                         
+                                }
                             }
                         
                             //User has clicked on an unoccupied hex-- it is within range?
                             else
                             {
+                                gameMaster.updateUnitReadouts(null);
+
                                 //Yes-- it is within range. MOVE it
                                 if (hexMap.adjacentHexes.contains(thisHex))
                                 {

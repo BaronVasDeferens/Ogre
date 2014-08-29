@@ -80,6 +80,12 @@ public class Weapon
         disabled = true;
     }
     
+    //IS DISABLED
+    public boolean isDisabled()
+    {
+        return (disabled);
+    }
+    
     //DISCHARGE
     public int discharge()
     {
@@ -131,29 +137,7 @@ class Treads extends Weapon
     
     public int getLostOverRow()
     {
-        return (lostTreads/treadsPerRow);
-        
-        //Here is the proof, if you don't believe it:
-        /*
-        int movement;
-        int maxMove = 3;
-        int maxTreads = 45;
-        int treadsPerRow = 15;
-        int remainingTreads = maxTreads;
-        int lostTreads = maxTreads - remainingTreads;
-        
-        for (int i = maxTreads; i >= 0; i--)
-        {
-            lostTreads = maxTreads - remainingTreads;
-            movement = maxMove - (lostTreads/treadsPerRow);
-            System.out.println("(" + remainingTreads + ") " + "LOST: " + (lostTreads) + "  MOVE: " + movement);
-            
-            remainingTreads--;
-
-        }
-        
-        */
-        
+        return (lostTreads/treadsPerRow);      
     }
     
     //TAKE DAMAGE
@@ -172,5 +156,15 @@ class Treads extends Weapon
             default:
                 break;                
         }
+    }
+    
+    @Override
+    //IS DISABLED
+    public boolean isDisabled()
+    {
+        if (remainingTreads <= 0)
+            return true;
+        else
+            return false;
     }
 }

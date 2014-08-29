@@ -14,6 +14,14 @@ import java.util.LinkedList;
  */
 public class Scenario 
 {
+    int victoryCondition = 0;
+    /*
+    CODE        CONDITION
+    0           no victory conditions set
+    1           destroy enemy HQ / neutralize Ogre
+    */
+    
+    
     
     LinkedList<Unit> allUnits;
     
@@ -21,7 +29,6 @@ public class Scenario
     {
         allUnits = new LinkedList();
         allUnits.clear();        
-        
         
         switch (selection)
         {
@@ -37,6 +44,7 @@ public class Scenario
                 player1.units.add(new Infantry(9,3));
                 player1.units.add(new GEV(88));
                 player1.units.add(new GEV(99));
+                
                 //Add player two's single ogre unit
                 player2.units.add(new Ogre(3));
                 player2.units.add(new Howitzer(33));

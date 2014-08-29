@@ -49,6 +49,7 @@ public class GameFrame extends javax.swing.JFrame {
         LogInMenuItem = new javax.swing.JMenuItem();
         ViewMyGamesMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        optionHexNumbers = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -125,7 +126,17 @@ public class GameFrame extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("Options");
+
+        optionHexNumbers.setText("Show hex coordinates");
+        optionHexNumbers.setSelected(true);
+        optionHexNumbers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionHexNumbersActionPerformed(evt);
+            }
+        });
+        jMenu2.add(optionHexNumbers);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -150,9 +161,7 @@ public class GameFrame extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(attackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(currentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(upperCurrentTargetLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ogrePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -163,8 +172,8 @@ public class GameFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addComponent(phaseLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(51, 51, 51)
+                        .addComponent(phaseLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(selectedUnitLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(1, 1, 1)
@@ -272,6 +281,16 @@ public class GameFrame extends javax.swing.JFrame {
         ogreGame.attack();
     }//GEN-LAST:event_attackButtonClicked
 
+    private void optionHexNumbersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionHexNumbersActionPerformed
+        // TODO add your handling code here:
+        if (ogreGame.hexMap != null)
+        {
+            ogreGame.hexMap.showCoordinates = !(ogreGame.hexMap.showCoordinates);
+            ogreGame.hexMap.updateMapImage();
+        }
+
+    }//GEN-LAST:event_optionHexNumbersActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -322,7 +341,8 @@ public class GameFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     public static ogre.OgrePanel ogrePanel1;
-    private javax.swing.JScrollPane outputArea;
+    private javax.swing.JMenuItem optionHexNumbers;
+    public static javax.swing.JScrollPane outputArea;
     private java.awt.Label phaseLabel;
     private javax.swing.JTextArea reportArea;
     private java.awt.Label selectedUnitLabel;

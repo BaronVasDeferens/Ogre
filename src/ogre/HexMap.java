@@ -1,24 +1,31 @@
 /*
 HEXMAP
-Keeps track of a hex map. Contains and manages several sizes/aspects of the same 
-map (large, meium, small, fpr example).
+Keeps track of a map of hexagons. Contains and manages several sizes/aspects of the same 
+map (large, medium, small, for example).
+
+A LITTLE REMINDER ABOUT MULTI-DIMENSIONAL ARRAYS FOR THE AUTHOR
+Multi-dimensional arrays are a little tricky. Just keep in mind a few things:
+--  When we make an multi-dimensional array, we're making a multiple LAYERS of sequences.
+--  So, if you want to end up with a grid that is, say, 7 units wide by 3 units deep, the declaration would be:
+--  array[3][7] , or three layers, each seven units long
+--  Now, we're sort of slaved to the (x,y) notion of naming a particular position within the grid.
+--  For instance, if you want the spot three units over and two down, you have to flip it around to array[2][3]
+
+            TL;DR: think array[ROW][COLUMN] when CREATING
+                   think array[COLUMN][ROW] when ACCESSING WITH AN (X,Y) MENTALITY
+
  */
 
 package ogre;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.awt.Polygon;
 import java.util.Iterator;
-import java.util.*;
 
-/**
- *
- * @author Skot
- */
+//HEXMAP
 public class HexMap 
 {
     int rows, cols;
@@ -38,7 +45,7 @@ public class HexMap
     int beginDrawingFromX, beginDrawingFromY, hexagonSize;
     int minimumMapWidth, minimumMapHeight;
     
-    boolean showCoordinates = true;
+    public boolean showCoordinates = true;
     
     //Constructor
     public HexMap(int rws, int cls, int hexsize)

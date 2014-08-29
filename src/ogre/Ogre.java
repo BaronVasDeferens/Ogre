@@ -319,5 +319,26 @@ public class Ogre extends ogre.Unit
   
     }
     
-    
+    //IS NEUTRALIZED
+    //Returns true if all weapons have been diabled and no further movement can be made
+    public boolean isNeutralized()
+    {
+        Iterator iter;
+        Weapon thisWeapon;
+        boolean operational = false;
+        
+        iter = getWeapons().iterator();
+        
+        while (iter.hasNext())
+        {
+            thisWeapon = (Weapon)iter.next();
+            
+            if (thisWeapon.isDisabled() == false)
+            {
+                operational = true;
+            }
+        }
+        
+        return (operational);
+    }
 }

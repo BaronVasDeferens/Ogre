@@ -73,7 +73,7 @@ public class OgreGame implements Serializable
         
         //Assume scenarion ZERO (TEST) for now
         playerOne = new Player("Skot");
-        playerTwo = new Player("Kyle");
+        playerTwo = new Player("Jordie");
         
         currentPlayer = playerOne;
         
@@ -901,6 +901,8 @@ public class OgreGame implements Serializable
             //All other non-Ogre units
             else
             {
+                weaponList.removeAll();
+                
                 if (currentPlayer.units.contains(thisUnit))
                     readout = currentPlayer.name + "'s " + thisUnit.unitName;
                 else
