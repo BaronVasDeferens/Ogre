@@ -39,6 +39,7 @@ public class Scenario
                 //TEST SCENARIO
                 player1.units.add(new Infantry(6,1));
                 player1.units.add(new HeavyTank(2));
+                player1.units.add(new Howitzer(33));
                 player1.units.add(new Infantry(8,2));
                 player1.units.add(new Infantry(9,3));
                 player1.units.add(new GEV(88));
@@ -46,8 +47,7 @@ public class Scenario
                 
                 //Add player two's single ogre unit
                 player2.units.add(new Ogre(3));
-                player2.units.add(new Ogre(3));
-                player2.units.add(new Howitzer(33));
+
                 
                 //Add all to AllUnits
                 allUnits.addAll(player1.units);

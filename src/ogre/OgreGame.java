@@ -18,7 +18,7 @@ public class OgreGame implements Serializable
 
     javax.swing.JFrame myFrame;
     java.awt.List weaponList;
-    java.awt.Label unitNameLabel, unitStatsLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel;
+    java.awt.Label unitNameLabel, unitStatLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel, ratioLabel;
     JTextArea reportArea;
     JButton attackButton;
     OgrePanel ogrePanel;
@@ -42,6 +42,8 @@ public class OgreGame implements Serializable
     Unit currentTarget;
     
     Ogre currentOgre = null;
+    
+    int gameRound = 1;
     
     int gamePhase = 10;
     /*
@@ -110,19 +112,22 @@ public class OgreGame implements Serializable
     
     //Give Ogre game awarness of the frame in which it lives
     public void attachComponents(javax.swing.JFrame myframe, java.awt.List list, Label label,
-            Label statsLabel, Label phaselabel, Label upperTargetLbl, Label currTargetLbl, JButton atkButton, JTextArea repArea)
+            Label statsLabel, Label phaselabel, Label upperTargetLbl, Label currTargetLbl,
+            JButton atkButton, JTextArea repArea, Label ratLabel)
     {
         myFrame = myframe;
         weaponList = list;
         unitNameLabel = label;
-        unitStatsLabel = statsLabel;
+        unitStatLabel = statsLabel;
         phaseLabel = phaselabel;
         upperCurrentTargetLabel = upperTargetLbl;
         currentTargetLabel = currTargetLbl;
         attackButton = atkButton;
         reportArea = repArea;
+        ratioLabel = ratLabel;
         
         myFrame.setTitle("OGRE");
+        ratioLabel.setText("");
         
         advanceGamePhase();
         
@@ -280,7 +285,7 @@ public class OgreGame implements Serializable
             updateOgreWeaponSelectionList(null);
             
             currentTargetLabel.setText("NONE");
-            
+            ratioLabel.setText("");
         }
         
         //An OGRE has been targetted.
@@ -296,12 +301,12 @@ public class OgreGame implements Serializable
                 updateOgreWeaponSelectionList(thisOgre);
                 targettedOgreWeapon = thisOgre.getWeaponByID(0);
                 weaponList.select(0);
-                currentTargetLabel.setText("Enemy Ogre: " + targettedOgreWeapon.weaponName);
+                currentTargetLabel.setText("Enemy " + thisOgre.unitName + ": " + targettedOgreWeapon.weaponName);
             }
             
             else
             {
-                currentTargetLabel.setText("Enemy Ogre: " + targettedOgreWeapon.weaponName);
+                currentTargetLabel.setText("Enemy " + thisOgre.unitName + ": " + targettedOgreWeapon.weaponName);
             }
         }
         
@@ -315,6 +320,7 @@ public class OgreGame implements Serializable
         //ARM THE ATTACK BUTTON?
         //If there is at least two units in the selected hexes list...
         
+        updateRatioLabel();
     }
     
     
@@ -426,6 +432,7 @@ public class OgreGame implements Serializable
                     while(iter.hasNext())
                     {
                         currentWeapon = (Weapon)iter.next();
+                        
                         if ((currentWeapon.disabled == false) && (currentWeapon.dischargedThisRound == false))
                             strength += currentWeapon.discharge();
                         else
@@ -483,19 +490,19 @@ public class OgreGame implements Serializable
                 }
                 
 
-                    ratio = (float)(strength/defense);
+                    ratio = (float)strength/defense;
                 
                     reportArea.append((strength + ":" + defense + "\n"));
                     
                     //Less than 1:2, NO EFFECT
-                    if (ratio < .5)
+                    if (ratio < .5f)
                     {
                         reportArea.append("Attack FAILS (too weak)!\n");
                         ratio = 0;
                     }
                     
                     //(1:2) Greater than .5 but less than 1 
-                    else if ((ratio >= .5) && (ratio < 1))
+                    else if ((ratio >= .5f) && (ratio < 1))
                     {
                         ratio = (float).5;
                     }
@@ -523,7 +530,7 @@ public class OgreGame implements Serializable
                         //check for unit death
                         if (currentTarget.isAlive == false)
                         {
-                            reportArea.append("killed unit @ " + hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).getCol() + "," + hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).getRow() +"\n");
+                            //reportArea.append("killed unit @ " + hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).getCol() + "," + hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).getRow() +"\n");
                             hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
                             hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).setOccupyingUnit(null);
                             reportArea.append(currentTarget.unitName + " DESTROYED\n");
@@ -563,7 +570,7 @@ public class OgreGame implements Serializable
                 }
                 
                 else
-                    reportArea.append("ERROR: bad combat result.\n");
+                    reportArea.append("ERROR: bad combat result. Bad! \n");
             }
             
             //AOK == false
@@ -767,12 +774,16 @@ public class OgreGame implements Serializable
                 gamePhase = 11;
             //Player 1 MOVE
             case 11:
+                reportArea.append("Round " + gameRound);
+                reportArea.append(": " + currentPlayer.name + "'s turn\n");
+                
                 phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
                 //Disable the attack readouts
                 attackButton.setEnabled(false);
                 weaponList.setEnabled(false);
                 upperCurrentTargetLabel.setText("");
                 currentTargetLabel.setText("");
+                ratioLabel.setText("");
                 break;
                 
             //Player 1 SHOOT
@@ -797,6 +808,7 @@ public class OgreGame implements Serializable
                 weaponList.setEnabled(false);
                 upperCurrentTargetLabel.setText("");
                 currentTargetLabel.setText("");
+                ratioLabel.setText("");
                 break;
             
             //End of playerOne's turn
@@ -812,6 +824,7 @@ public class OgreGame implements Serializable
                 weaponList.setEnabled(false);
                 upperCurrentTargetLabel.setText("");
                 currentTargetLabel.setText("");
+                ratioLabel.setText("");
                 break;
                 
             case 22:
@@ -833,13 +846,17 @@ public class OgreGame implements Serializable
                 attackButton.setEnabled(false);
                 weaponList.setEnabled(false);
                 upperCurrentTargetLabel.setText("");
-                currentTargetLabel.setText("");                
+                currentTargetLabel.setText(""); 
+                ratioLabel.setText("");
                 break;
             
             case 24:
-                               
+                gameRound++;               
+                
                 //Commit the game state to the server here
+                
                 switchCurrentPlayer();
+                
                 gamePhase = 11;
                 phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
                 
@@ -848,6 +865,7 @@ public class OgreGame implements Serializable
                 weaponList.setEnabled(false);
                 upperCurrentTargetLabel.setText("");
                 currentTargetLabel.setText("");
+                ratioLabel.setText("");
                 break;
                 
             default:
@@ -870,12 +888,14 @@ public class OgreGame implements Serializable
         else
             currentPlayer = playerOne;
         
-        reportArea.append(currentPlayer.name + "'s turn!\n");
+        reportArea.append("Round " + gameRound);
+        reportArea.append(": " + currentPlayer.name + "'s turn\n");
         
         hexMap.updateMapImage();
     }
     
     //UPDATE UNIT READOUTS
+    //Called (mostly) during NON-COMBAT
     //Non-Ogre units: change the labels to reflect unit stats and ownership
     //Ogre units have their weapons populate the weaponList
     public void updateUnitReadouts(Unit thisUnit)
@@ -896,7 +916,7 @@ public class OgreGame implements Serializable
                     readout = "Enemy ";
                 
                 unitNameLabel.setText(readout + thisOgre.unitName);
-                unitStatsLabel.setText("Move: " + thisOgre.getCurrentMovement());
+                unitStatLabel.setText("Move: " + thisOgre.getCurrentMovement());
                 weaponList.removeAll();
 
                 java.util.Iterator iter = thisOgre.getWeaponReadoutStrings().iterator();
@@ -931,14 +951,13 @@ public class OgreGame implements Serializable
                     weaponList.add("Range: " + thisUnit.unitWeapon.range);   
                 }
             }
-        
         }
         
         else
         {
             weaponList.removeAll();
             unitNameLabel.setText("No Unit Selected");
-            unitStatsLabel.setText("");
+            unitStatLabel.setText("");
             
         }
     }
@@ -953,7 +972,7 @@ public class OgreGame implements Serializable
         {
             currentOgre = null;
             weaponList.removeAll();
-            unitStatsLabel.setText("");
+            unitStatLabel.setText("");
         }
         
         else
@@ -964,13 +983,13 @@ public class OgreGame implements Serializable
             String thisWeapon;
 
             weaponList.removeAll();
-            unitStatsLabel.setText("");
+            unitStatLabel.setText("");
 
             //FRIENDLY OGRE: allow multiple selection
             if (currentPlayer.units.contains(thisOgre))
             {
                 unitNameLabel.setText(currentPlayer.name + "'s " + thisOgre.unitName);
-                unitStatsLabel.setText("Select weapon(s) to FIRE");
+                unitStatLabel.setText("Select weapon(s) to FIRE");
                 weaponList.setMultipleMode(true);
             }
 
@@ -978,7 +997,7 @@ public class OgreGame implements Serializable
             else
             {
                 unitNameLabel.setText("Enemy OGRE");
-                unitStatsLabel.setText("Select one weapon to TARGET");
+                unitStatLabel.setText("Select one weapon to TARGET");
                 weaponList.setMultipleMode(false);
 
                 if (targettedOgreWeapon != null)
@@ -998,5 +1017,117 @@ public class OgreGame implements Serializable
             if (targettedOgreWeapon != null)
                 weaponList.select(targettedOgreWeapon.weaponID - 1);
         }
+    }
+    
+    
+    //UPDATE RATIO LABEL
+    //Updates the ratio label (strength:defense) when the game situation changes (attackers/defender changed)
+    public void updateRatioLabel()
+    {
+        int str = 0, def = 0;
+        float ratio;
+        String output = "";
+        
+        str = getCurrentStrength();
+        def = getCurrentDefense();
+        
+        if ((currentTarget != null) && (targettedOgreWeapon != null))
+        {
+            if (targettedOgreWeapon.weaponName.equals("TREADS"))
+            {
+                str = 1;
+                def = 1;
+            }  
+        }
+
+        output = str + ":" + def;
+
+        if (def >= 1)
+        {
+            ratio = (float)str/def;
+            
+            //Less than 1:2, NO EFFECT
+            if (ratio < .5f)
+            {
+                output = output.concat(" (NOGO)");
+            }
+
+            //(1:2) Greater than .5 but less than 1 
+            else if ((ratio >= .5f ) && (ratio < 1))
+            {
+                output = output.concat(" (1:2)");
+            }
+
+            else
+            {
+                output = output.concat(" (" + (int)ratio + ":1)");
+            }
+        }    
+
+        ratioLabel.setText(output);
+    }
+    
+    
+    //Returns the total strength of all currently selected weapons
+    public int getCurrentStrength()
+    {
+        int totalStrength = 0;
+
+        Iterator iter = hexMap.selectedHexes.iterator();
+        Hex hex;
+        Unit thisUnit;
+        
+        while (iter.hasNext())
+        {
+            hex = (Hex)iter.next();
+            thisUnit = hex.occupyingUnit;
+            
+            //If the unit belongs to the current (attacking) player, add it's strength to the total
+            if (currentPlayer.units.contains(thisUnit))
+            {
+                //handle friendly ogre weapons
+                if ((thisUnit.unitType.equals("OGRE")) && (selectedOgreWeapons.isEmpty() == false))
+                {
+                     Iterator iter2 = selectedOgreWeapons.iterator();
+                     Weapon thisWeapon;
+                     
+                     while (iter2.hasNext())
+                     {
+                         thisWeapon = (Weapon)iter2.next();
+                         
+                         if ((thisWeapon.dischargedThisRound == false) && (thisWeapon.disabled == false))
+                         {
+                             totalStrength += thisWeapon.strength;
+                         }
+                     }
+                }
+                
+                //handle friendly basic units
+                else if (thisUnit.unitWeapon != null)
+                {
+                    totalStrength += thisUnit.unitWeapon.strength;
+                }
+            }
+        }
+            
+        return totalStrength;
+    }
+    
+    //GET CURRENT DEFENSE
+    //Returns the defense value of the current target
+    public int getCurrentDefense()
+    {
+        if (currentTarget == null)
+        {
+            return 0;
+        }    
+        else if (targettedOgreWeapon != null)
+        {
+            return (targettedOgreWeapon.defense);
+        }
+        else
+        {
+            return (currentTarget.defense);
+        } 
     }
 }

@@ -70,6 +70,12 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
+                      <Component id="ratioLabel" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="attackButton" min="-2" pref="101" max="-2" attributes="0"/>
+                  </Group>
                   <Component id="WeaponSystemsList" max="32767" attributes="0"/>
                   <Component id="phaseLabel" alignment="0" pref="314" max="32767" attributes="0"/>
                   <Component id="outputArea" max="32767" attributes="0"/>
@@ -78,14 +84,13 @@
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="advancePhaseButton" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Component id="attackButton" min="-2" pref="101" max="-2" attributes="0"/>
-                  </Group>
                   <Component id="currentTargetLabel" alignment="0" max="32767" attributes="0"/>
                   <Component id="upperCurrentTargetLabel" alignment="0" max="32767" attributes="0"/>
                   <Component id="selectedUnitLabel" alignment="0" max="32767" attributes="0"/>
-                  <Component id="selectedUnitStatsLabel" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="unitStatLabel" min="-2" pref="194" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="ogrePanel1" min="-2" max="-2" attributes="0"/>
@@ -99,22 +104,26 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="selectedUnitStatsLabel" min="-2" pref="20" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
                       <Component id="phaseLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="selectedUnitLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                      <Component id="unitStatLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="WeaponSystemsList" min="-2" pref="154" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="upperCurrentTargetLabel" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="currentTargetLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="attackButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="ratioLabel" max="32767" attributes="0"/>
+                          <Component id="attackButton" max="32767" attributes="0"/>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="outputArea" min="-2" pref="140" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="advancePhaseButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="undoButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -122,7 +131,7 @@
                   </Group>
                   <Component id="ogrePanel1" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="13" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -202,7 +211,10 @@
         <Property name="text" type="java.lang.String" value="No Unit Selected"/>
       </Properties>
     </Component>
-    <Component class="java.awt.Label" name="selectedUnitStatsLabel">
+    <Component class="java.awt.Label" name="unitStatLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="unitStatLabel"/>
+      </Properties>
     </Component>
     <Component class="java.awt.Label" name="phaseLabel">
       <Properties>
@@ -229,7 +241,7 @@
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[38, 20]"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="label2"/>
+        <Property name="text" type="java.lang.String" value="currentTarget"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
@@ -247,11 +259,18 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="columns" type="int" value="20"/>
+            <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="rows" type="int" value="5"/>
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
         </Component>
       </SubComponents>
     </Container>
+    <Component class="java.awt.Label" name="ratioLabel">
+      <Properties>
+        <Property name="alignment" type="int" value="2"/>
+        <Property name="text" type="java.lang.String" value="ratioLabel"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

@@ -55,10 +55,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     int scrollingX, scrollingY;     //stores prior position of mouse to compare
     int currentWindowX, currentWindowY;   //stores current position of the upper corner of the view window
     float zoomFactor = 1.0F;
-    
-    //LinkedList<Unit> allUnits = null;
-    //LinkedList<Unit> selectedUnits = null;
-    //LinkedList<Hex> adjacentHexes = null;
+      
     
     int gamePhase = 11;
     
@@ -526,8 +523,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 gameMaster.updateOgreWeaponSelectionList(null);
                                 hexMap.updateMapImage();
                             }
-                            
-                        
+                           
                             else
                             {
                                 //MOVE
@@ -659,6 +655,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             gameMaster.selectedOgreWeapons.removeAll(thisOgre.getWeapons());
                                             gameMaster.currentOgre = null;
                                             gameMaster.updateUnitReadouts(null);
+                                            gameMaster.weaponList.setEnabled(false);
                                         }
                                         
                                         //If this removes the last attacking friendly unit, deselect the targetted unit
@@ -666,6 +663,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         {
                                             gameMaster.hexMap.deselect(gameMaster.hexMap.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation));
                                             gameMaster.updateCurrentTarget(null);
+                                            gameMaster.updateUnitReadouts(null);
                                         }
                                         
                                         //...adjust firing pattern
@@ -677,14 +675,17 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     //PREVIOUSLY UN-SELECTED FRIENDLY UNIT
                                     else
                                     {
-                                        gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
+                                        if (!thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                            gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
                                         
                                         //If this unt is NOT disabled NOR already fired, select it 
                                         if (thisHex.occupyingUnit.disabled == false)
                                         {    
-   
+                                            //NON-OGRE    
                                             if (thisHex.occupyingUnit.unitType.equals("OGRE") == false)
                                             {
+                                                gameMaster.weaponList.setEnabled(false);
+                                                
                                                 if (thisHex.occupyingUnit.unitWeapon.dischargedThisRound == false)
                                                 {
                                                     hexMap.select(thisHex);
@@ -717,6 +718,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                                 hexMap.select(thisHex);
                                                 Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
                                                 gameMaster.updateOgreWeaponSelectionList(thisOgre);
+                                                gameMaster.weaponList.setEnabled(true);
                                             }
                                         }
                                     }
@@ -744,6 +746,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             gameMaster.targettedOgreWeapon = null;
                                             gameMaster.currentOgre = null;
                                             gameMaster.updateUnitReadouts(null);
+                                            gameMaster.weaponList.setEnabled(false);
                                         }
                                         
                                         gameMaster.updateCurrentTarget(null);
@@ -755,12 +758,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         //Was there a prior target? 
                                         if (gameMaster.currentTarget != null)
                                         {
-                                            //Yes. Action: deselect prior target and reassign it to the one just clicked
+                                            //--Yes. Action: deselect prior target and reassign it to the one just clicked
                                             
-                                            //TEST
-                                            Hex tmpHex = hexMap.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation);
-                                            if (tmpHex == null)
-                                                gameMaster.reportArea.append("nothing there, boss");
                                             
                                             //All targets MUST be in the attack radius (adjacentHexes) to be legitimate targets
                                             if (hexMap.adjacentHexes.contains(thisHex))
@@ -768,6 +767,11 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                                 hexMap.deselect(hexMap.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation));
                                                 hexMap.select(thisHex);
                                                 gameMaster.updateCurrentTarget(thisHex.occupyingUnit);
+                                                
+                                                if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                                    gameMaster.weaponList.setEnabled(true);
+                                                else
+                                                    gameMaster.weaponList.setEnabled(false);
                                             }
                                         }
                                         
@@ -779,6 +783,11 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             {    
                                                 hexMap.select(thisHex);
                                                 gameMaster.updateCurrentTarget(thisHex.occupyingUnit);
+                                                
+                                                if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                                                    gameMaster.weaponList.setEnabled(true);
+                                                else
+                                                    gameMaster.weaponList.setEnabled(false);
                                             }
                                         }
                                     }
@@ -796,7 +805,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 hexMap.updateMapImage();
                             }
                             
-                            
+                          
                             //Should the ATTACK button be lit?
                             //MIN REQUIREMENTS: a currentTarget; one unit from the current players units
                             //Since target may only be selected from within attack radius (adjacentHexes) which,
@@ -808,6 +817,9 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             
                             else
                                 gameMaster.attackButton.setEnabled(false);
+                            
+                            
+                            gameMaster.updateRatioLabel();
                             
                             break;
                             
