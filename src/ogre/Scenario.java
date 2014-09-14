@@ -37,13 +37,14 @@ public class Scenario
             default:
                 
                 //TEST SCENARIO
-                player1.units.add(new Infantry(6,1));
+                //player1.units.add(new Infantry(6,1));
                 player1.units.add(new HeavyTank(2));
                 player1.units.add(new Howitzer(33));
                 player1.units.add(new Infantry(8,2));
                 player1.units.add(new Infantry(9,3));
                 player1.units.add(new GEV(88));
                 player1.units.add(new GEV(99));
+                player1.units.add(new CommandPost(34));
                 
                 //Add player two's single ogre unit
                 player2.units.add(new Ogre(3));

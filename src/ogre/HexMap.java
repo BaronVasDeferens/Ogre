@@ -12,7 +12,9 @@ Multi-dimensional arrays are a little tricky. Just keep in mind a few things:
 --  For instance, if you want the spot three units over and two down, you have to flip it around to array[2][3]
 
             TL;DR: think array[ROW][COLUMN] when CREATING
-                   think array[COLUMN][ROW] when ACCESSING WITH AN (X,Y) MENTALITY
+                   but think array[COLUMN][ROW] when ACCESSING WITH AN (X,Y) MENTALITY
+
+                   or [LAYER][COLUMN]
 
  */
 
@@ -21,7 +23,7 @@ package ogre;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
+import java.util.*;
 import java.awt.Polygon;
 import java.util.Iterator;
 
@@ -83,7 +85,11 @@ public class HexMap
         
         //TODO:
         //This doesn't belong here! Move it after testing
-        makeCrater(hexArray[1][1]);
+        makeCrater(hexArray[2][5]);
+        makeCrater(hexArray[1][7]);
+        
+        addRidge(hexArray[3][4],6,hexArray[2][3],3);
+        addRidge(hexArray[3][4],1,hexArray[2][4],4);
         
     }
     
@@ -169,7 +175,9 @@ public class HexMap
     {
         if (polyList != null)
             polyList.clear();
-        
+ 
+        LinkedList<Hex> ridgeList = new LinkedList();
+        ridgeList.clear();
  
         offScreenDraw = createNewImage();
         Graphics newMapGraphics = offScreenDraw.getGraphics();
@@ -234,7 +242,7 @@ public class HexMap
                     //Draw Units (if any)
                     if (hexArray[i][j].isOccupied())
                     {
-                        //if occupying unit is disabled, "keept it gray"
+                        //if occupying unit is disabled, "keep it gray"
                         if ((hexArray[i][j].getUnit().isDisabled()) && ((hexArray[i][j].isSelected() == false)))
                         {
                             newMapGraphics.setColor(Color.GRAY);
@@ -260,17 +268,26 @@ public class HexMap
                //Draw basic polygon
                 newMapGraphics.setColor(Color.BLACK);
                 newMapGraphics.drawPolygon(p);
+                
+                
+                //Collect any ridges (drawn LAST)
+                if (hexArray[i][j].ridges != null)
+                {
+                    ridgeList.add(hexArray[i][j]);
+                } 
+                
                
                //Draw coordinates
                 if (showCoordinates)
                 {
                     newMapGraphics.setColor(Color.BLUE);
-                    newMapGraphics.drawString("[" + (i) + "," + (j) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
+                    newMapGraphics.drawString("[" + (j) + "," + (i) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
                 }
 
                //associate a hex with this polygon
                associatePolygonWithHex(i,j,p);
                polyList.add(p);
+               
                
                //scoot the pencil over
                x = x + (hexagonSize/2) + hexagonSize;   
@@ -287,7 +304,81 @@ public class HexMap
             else
                 y = beginDrawingFromY;
             
-        }  
+        }
+        
+        //Finally, draw ridges
+        if (ridgeList.isEmpty() == false)
+        {
+            Hex rHex;
+            Polygon rPoly;
+            Ridge rRidge;
+            int a,b,c,d;    
+            
+            Iterator hexIter = ridgeList.iterator();
+            Iterator ridgeIter;
+             
+            while (hexIter.hasNext())
+            {
+                rHex = (Hex)hexIter.next();
+                
+                ridgeIter = rHex.ridges.iterator();
+                
+                while (ridgeIter.hasNext())
+                {
+                    rRidge = (Ridge)ridgeIter.next();
+                    rPoly = rRidge.hexA.getPolygon();
+                    
+                    newMapGraphics.setColor(Color.BLACK);
+
+                    //if the face is 1 or 4, then the "thick lines" need
+                    //to be adjusted vertically
+                    if ((rRidge.faceA == 1) || (rRidge.faceA == 4))
+                    {
+                        a = rPoly.xpoints[rRidge.faceA -1];
+                        b = rPoly.ypoints[rRidge.faceA -1];
+                        c = rPoly.xpoints[rRidge.faceA];
+                        d = rPoly.ypoints[rRidge.faceA]; 
+                        
+                        newMapGraphics.drawLine(a,b,c,d);
+                        newMapGraphics.drawLine(a,b+1,c,d+1);
+                        newMapGraphics.drawLine(a,b+2,c,d+2);
+                        newMapGraphics.drawLine(a,b-1,c,d-1);
+                        newMapGraphics.drawLine(a,b-2,c,d-2);
+
+                    }
+                    
+                    else if (rRidge.faceA == 6)
+                    {
+                        a = rPoly.xpoints[0];
+                        b = rPoly.ypoints[0];
+                        c = rPoly.xpoints[5];
+                        d = rPoly.ypoints[5]; 
+                        
+                        newMapGraphics.drawLine(a,b,c,d);
+                        newMapGraphics.drawLine(a-1,b,c-1,d);
+                        newMapGraphics.drawLine(a-2,b,c-2,d);
+                        newMapGraphics.drawLine(a+1,b,c+1,d);
+                        newMapGraphics.drawLine(a+2,b,c+2,d);
+                    }
+                    
+                    else
+                    {
+                        a = rPoly.xpoints[rRidge.faceA -1];
+                        b = rPoly.ypoints[rRidge.faceA -1];
+                        c = rPoly.xpoints[rRidge.faceA];
+                        d = rPoly.ypoints[rRidge.faceA];
+
+                        newMapGraphics.drawLine(a,b,c,d);
+                        newMapGraphics.drawLine(a-1,b,c-1,d);
+                        newMapGraphics.drawLine(a-2,b,c-2,d);
+                        newMapGraphics.drawLine(a+1,b,c+1,d);
+                        newMapGraphics.drawLine(a+2,b,c+2,d);
+                    }
+                }
+            }
+            
+            ridgeList.clear();
+        }
            
         newMapGraphics.dispose();
         mapImage = offScreenDraw;
@@ -297,8 +388,9 @@ public class HexMap
     //Updates the map image ONLY. Does not reconfigure polygon or hex lists
     public void updateMapImage()
     {                  
-
-        //mapImage = new BufferedImage(mapImage.getWidth(), mapImage.getHeight(), BufferedImage.OPAQUE);
+        LinkedList<Hex> ridgeList = new LinkedList();
+        ridgeList.clear();
+       
         offScreenDraw = createNewImage();
         
         Graphics newMapGraphics = offScreenDraw.getGraphics();
@@ -391,6 +483,13 @@ public class HexMap
                 newMapGraphics.setColor(Color.BLACK);
                 newMapGraphics.drawPolygon(p);
              
+                
+                //Collect any ridge faces (drawn last)
+                if (hexArray[i][j].ridges != null)
+                {
+                    ridgeList.add(hexArray[i][j]);
+                }
+                
                //Coordinates
                 if (showCoordinates)
                 {
@@ -413,6 +512,81 @@ public class HexMap
             else
                 y = beginDrawingFromY;
         }
+        
+        //Finally, draw ridges
+        if (ridgeList.isEmpty() == false)
+        {
+            Hex rHex;
+            Polygon rPoly;
+            Ridge rRidge;
+            int a,b,c,d;
+            
+            Iterator hexIter = ridgeList.iterator();
+            Iterator ridgeIter;
+             
+            while (hexIter.hasNext())
+            {
+                rHex = (Hex)hexIter.next();
+                
+                ridgeIter = rHex.ridges.iterator();
+                
+                while (ridgeIter.hasNext())
+                {
+                    rRidge = (Ridge)ridgeIter.next();
+                    rPoly = rRidge.hexA.getPolygon();
+                    
+                    newMapGraphics.setColor(Color.BLACK);
+
+                    //if the face is 1 or 4, then the "thick lines" need
+                    //to be adjusted vertically
+                    if ((rRidge.faceA == 1) || (rRidge.faceA == 4))
+                    {
+                        a = rPoly.xpoints[rRidge.faceA -1];
+                        b = rPoly.ypoints[rRidge.faceA -1];
+                        c = rPoly.xpoints[rRidge.faceA];
+                        d = rPoly.ypoints[rRidge.faceA]; 
+                        
+                        newMapGraphics.drawLine(a,b,c,d);
+                        newMapGraphics.drawLine(a,b+1,c,d+1);
+                        newMapGraphics.drawLine(a,b+2,c,d+2);
+                        newMapGraphics.drawLine(a,b-1,c,d-1);
+                        newMapGraphics.drawLine(a,b-2,c,d-2);
+
+                    }
+                    
+                    else if (rRidge.faceA == 6)
+                    {
+                        a = rPoly.xpoints[0];
+                        b = rPoly.ypoints[0];
+                        c = rPoly.xpoints[5];
+                        d = rPoly.ypoints[5]; 
+                        
+                        newMapGraphics.drawLine(a,b,c,d);
+                        newMapGraphics.drawLine(a-1,b,c-1,d);
+                        newMapGraphics.drawLine(a-2,b,c-2,d);
+                        newMapGraphics.drawLine(a+1,b,c+1,d);
+                        newMapGraphics.drawLine(a+2,b,c+2,d);
+                    }
+                    
+                    else
+                    {
+                        a = rPoly.xpoints[rRidge.faceA -1];
+                        b = rPoly.ypoints[rRidge.faceA -1];
+                        c = rPoly.xpoints[rRidge.faceA];
+                        d = rPoly.ypoints[rRidge.faceA];
+
+                        newMapGraphics.drawLine(a,b,c,d);
+                        newMapGraphics.drawLine(a-1,b,c-1,d);
+                        newMapGraphics.drawLine(a-2,b,c-2,d);
+                        newMapGraphics.drawLine(a+1,b,c+1,d);
+                        newMapGraphics.drawLine(a+2,b,c+2,d);
+                    }
+                }
+            }
+            
+            ridgeList.clear();
+        }
+        
         
         newMapGraphics.dispose();
         mapImage = offScreenDraw;
@@ -548,9 +722,10 @@ public class HexMap
     // ** GET ADJACENT HEXES
     //Returns a list of up to six adjacent hexes to the one specified
     //Based on the weird rules of hexes in 2D arrays
+    //NOTE: this function was returning 8 hexes instead of 6 until Sets were introduced. 
     public LinkedList<Hex> getAdjacentHexes(int row, int col)
     {
-        LinkedList<Hex> adjHexes = new LinkedList();
+        java.util.Set<Hex> adjHexes = new java.util.HashSet();
         adjHexes.clear();
         
         //All hexes are adjacent to thsoe ABOVE AND BELOW (the ones in the same column, +- 1);
@@ -594,80 +769,176 @@ public class HexMap
                 adjHexes.add(hexArray[row][col-1]);
         }
         
-        return (adjHexes);
+//        
+//        LinkedList<Hex> returnList = new LinkedList();
+//        returnList.clear();
+//        Iterator iter = adjHexes.iterator();
+//        Hex thisHex;
+//        
+//        while (iter.hasNext())
+//        {
+//            thisHex = (Hex)iter.next();
+//            returnList.add(thisHex);
+//        }
+        
+        return (convertToHexLinkedList(adjHexes));
     }
     
     
     //GET HEXES WITHIN RANGE
     //Retruns a list of hexes in a "shell" radius within range.
-    //If the ignoreTerrain flag is set to false, then craters (and ridges) are taken into consideration
-    public LinkedList<Hex> getHexesWithinRange(Hex fromHere, int distance, boolean ignoreTerrain)
+    //If the ignoreCrater flag is set to false, then craters are considered obstructions
+    //Likewise, if ignoreRidges is set to false, hexes which share a ridge will be obstructions
+    //Relies upon the recursive version of the function of the same name (below)
+    public LinkedList<Hex> getHexesWithinRange(Hex fromHere, int distance, boolean ignoreCrater, boolean ignoreRidges)
     {
-        LinkedList<Hex> tempAdjacents = new LinkedList();
-        LinkedList<Hex> returnList = new LinkedList();
-        LinkedList<Hex> doneThese = new LinkedList(); //prevents the same hex being called multiple THOUSANDS of times.
+        //NOTE: the use of sets here was CRUCIAL to solving this problem.
+        //A set, as you know, may not contain duplicates. Duplicate entries caused all manner of grief
+        //in debugging. Lordy. I figured it out in the shower, addding weight to the good ol' "Shower Principle."
+        //
+        
+        Set<Hex> tempAdjacents = new HashSet();
+        Set<Hex> returnList = new HashSet();
+        //LinkedList<Hex> returnList = new LinkedList();
+        Set<Hex> doneThese = new HashSet(); //prevents the same hex being called multiple THOUSANDS of times.
+        Set<Hex> ignoreThese = new HashSet();
         
         tempAdjacents.clear();
         returnList.clear();
+        doneThese.clear();
+        ignoreThese.clear();
+        
+        Iterator iter;
+        Hex centerHex, thisHex, tempHex;
         
         if ((fromHere != null) && (distance > 0))
-        {
-            
-            if (ignoreTerrain == true)
+        {            
+            //SCENARIO 1: BOTH CRATERS AND RIDGES ARE IGNORED (SHOOTING)
+            //If there's no need to process the validity of each hex (crater, ridges), simply
+            //add all the concentric rings
+            if ((ignoreCrater == true) && (ignoreRidges == true))
             {
-                //Add the first "shell" of 6 immediate neighbors
-                tempAdjacents.addAll(getAdjacentHexes(fromHere));
+                   tempAdjacents.addAll(getAdjacentHexes(fromHere));
+                   returnList.addAll(tempAdjacents);
+                   doneThese.add(fromHere);
+                
+                for (int i = 0; i < distance-1; i++)
+                {
+                    iter = tempAdjacents.iterator();
+                    
+                    while (iter.hasNext())
+                    {
+                        thisHex = (Hex)iter.next();
+                        
+                        if (!doneThese.contains(thisHex))
+                        {
+                             returnList.addAll(getAdjacentHexes(thisHex));
+                             doneThese.add(thisHex);
+                        }
+                    }
+                    
+                    tempAdjacents.addAll(returnList);
+                }    
+                
             }
-            
-            //We should NOT include any hex which is a crater
+        
+            //SCENARIO 2:
+            //RIDGES and CRATERS should be processes/weeded out
             else
             {
-                Iterator tit = getAdjacentHexes(fromHere).iterator();
-                Hex tmpHex;
                 
-                while (tit.hasNext())
+                //NOTE: strangely, casting the Sets to LinkedLists does not affect their "one instance per list" behavior.
+                //(Hex center, LinkedList<Hex> doneThese, LinkedList<Hex> ignoreThese, LinkedList<Hex> returnList)
+                returnList.addAll(getHexesWithinRange(fromHere, convertToHexLinkedList(doneThese), convertToHexLinkedList(ignoreThese), ignoreRidges));
+                ignoreThese.clear();
+                
+                //NOTE: the ignoreLIst is cleared at the end of each "ring's" examination;
+                //a hex which is not accessible from one hex (shares a ridge) might be accessible from another.
+                //If those "ignored" hexes are allowed to persists from one concentric exam to another,
+                //they will appaear as totally inaccessible-- not good.
+                
+                for (int i = 0; i < distance-1; i++)
                 {
-                    tmpHex = (Hex)tit.next();
-                    
-                    if (!tmpHex.isCrater)
-                    {
-                        tempAdjacents.add(tmpHex);
-                    }
-                }
-            }
-
-
-            returnList.addAll(tempAdjacents);
-            doneThese.add(fromHere);
-            
-            Iterator iter = tempAdjacents.iterator();
-            Hex thisHex;
-            
-            for (int i = 0; i < distance-1; i++)
-            {
-                while (iter.hasNext())
-                {
-                    thisHex = (Hex)iter.next();
-                    
-                    if ((thisHex.isCrater) && (ignoreTerrain == false))
-                    {
-                        //skip it
-                    }
-                    
-                    else if (!doneThese.contains(thisHex))
-                    {
-                        returnList.addAll(getAdjacentHexes(thisHex));
-                        doneThese.add(thisHex);
-                    }
+                     iter = returnList.iterator();
+                     
+                     while (iter.hasNext())
+                     {
+                         thisHex = (Hex)iter.next();
+                         tempAdjacents.addAll(getHexesWithinRange(thisHex, convertToHexLinkedList(doneThese), convertToHexLinkedList(ignoreThese), ignoreRidges));
+                     }
+                     
+                     returnList.addAll(tempAdjacents);
+                     tempAdjacents.clear();
+                     ignoreThese.clear();
                 }
                 
-                tempAdjacents.addAll(returnList);
-
-                iter = tempAdjacents.iterator();
+                
             }
         }
         
-        return (returnList);
+        return (convertToHexLinkedList(returnList));
+    }
+    
+    //GET HEXES WITHIN RANGE
+    //My thinking was this:
+    //A "center" hex and its 6 neighbors are examined. If there is a ridge between them (and ridges are not ignored),
+    //then that hex is inaccessibe from the center hex and is "skipped" for a round of examinations.
+    //That hex may be accessible from another neighbor hex, however, and if it can be found in the list of accessible
+    //neighbors then it is removed from the skip list at the end.
+    public LinkedList<Hex> getHexesWithinRange(Hex center, LinkedList<Hex> doneThese, LinkedList<Hex> ignoreThese, boolean ignoreRidges)
+    {
+        
+        LinkedList<Hex> returnList = new LinkedList();
+        returnList.clear();
+        
+        if (center != null)
+        {
+            //Get the surrounding six hexes around the center
+            Iterator iter = getAdjacentHexes(center).iterator();
+            Hex thisHex;
+            
+            while (iter.hasNext())
+            {
+                thisHex = (Hex)iter.next();
+                
+                //If it is in neither the "done" nor "ignore" pile...
+                if ((!doneThese.contains(thisHex) && (!ignoreThese.contains(thisHex))))
+                {
+                    //check for crater
+                    if (thisHex.isCrater)
+                        ignoreThese.add(thisHex);
+                    
+                    if ((ignoreRidges == false) && ((center.sharesRidgeWithThisHex(thisHex)) && (!doneThese.contains(thisHex))))
+                        ignoreThese.add(thisHex);
+                    
+                    if (!ignoreThese.contains(thisHex))
+                    {
+                        returnList.add(thisHex);
+                    }
+                }
+                
+            }
+            
+            doneThese.add(center);
+              
+            
+            //Reintorduce hexes which were "skipped" by putting them into the ignore pile if they were in fact
+            //accessible from another hex in this "ring." The ignoreList is cleared when all hexes wihin the ring
+            //have been examined.
+            iter = ignoreThese.iterator();
+            while (iter.hasNext())
+            {
+                thisHex = (Hex)iter.next();
+                
+                if (returnList.contains(thisHex))
+                {
+                    ignoreThese.remove(thisHex);
+                }
+            }
+                
+        }
+        
+        return returnList;
     }
     
     //DESELECT ALL SELECTED HEXES
@@ -708,7 +979,7 @@ public class HexMap
            //Get a single zone of fire from the friendly unit...
            if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
            {
-                adjacentHexes.addAll(getHexesWithinRange(thisHex, thisHex.occupyingUnit.unitWeapon.range,true));
+                adjacentHexes.addAll(getHexesWithinRange(thisHex, thisHex.occupyingUnit.unitWeapon.range,true,true));
            }
        }
        
@@ -718,7 +989,7 @@ public class HexMap
            //...and get the "intersection" between the first unit's zone and the rest of the frinedly units' zones
            if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
            {
-                adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisHex.occupyingUnit.unitWeapon.range, true));
+                adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisHex.occupyingUnit.unitWeapon.range, true, true));
            }
        }
        
@@ -744,7 +1015,7 @@ public class HexMap
                     if ((weaponIter.hasNext()) && (adjacentHexes.size() <= 1))
                     {
                         thisWeapon = (Weapon)weaponIter.next();
-                        adjacentHexes.addAll(getHexesWithinRange(thisHex, thisWeapon.range, true));
+                        adjacentHexes.addAll(getHexesWithinRange(thisHex, thisWeapon.range, true,true));
                     }
                     
                     while (weaponIter.hasNext())
@@ -753,7 +1024,7 @@ public class HexMap
                         
                         if (thisOgre.getWeapons().contains(thisWeapon))
                         {
-                            adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisWeapon.range, true));
+                            adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisWeapon.range, true,true));
                         }
                     }
                 }
@@ -761,6 +1032,25 @@ public class HexMap
        }
         
             updateMapImage();
+    }
+    
+    //CONVERT TO HEX LINKED LIST
+    //TODO: consider just overhauling any function arguments which require lists to instead
+    //require Sets.
+    public LinkedList<Hex> convertToHexLinkedList(Set convertMe)
+    {
+        LinkedList<Hex> returnList = new LinkedList();
+        returnList.clear();
+        Iterator iter = convertMe.iterator();
+        Hex thisHex;
+        
+        while (iter.hasNext())
+        {
+            thisHex = (Hex)iter.next();
+            returnList.add(thisHex);
+        }
+        
+        return (returnList);
     }
     
 }

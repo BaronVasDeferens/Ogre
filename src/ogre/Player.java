@@ -16,13 +16,30 @@ import java.util.Iterator;
 public class Player implements Serializable
 {
     String name;
+    String password;        //TODO: fix this glaering security hole
+    String emailAddress;
     LinkedList<Unit> units;
     
     Player(String myName)
     {
         name = myName;
+        password = null;
+        emailAddress = null;
         units = new LinkedList();
         units.clear();
+    }
+    
+    Player (String myName, String myPasswd)
+    {
+        this(myName);
+        password = myPasswd;
+        emailAddress = null;
+    }
+    
+    Player (String myName, String passwd, String emailAddy)
+    {
+        this(myName, passwd);
+        emailAddress = emailAddy;
     }
     
     Player(String myName, LinkedList myUnits)

@@ -104,19 +104,25 @@ public class Weapon
     }   
     
     //TAKE DAMAGE
-    public void takeDamage(String code, int str)
+    public String takeDamage(String code, int str)
     {
+        String report = weaponName;
+        
         switch (code)
         {
             case "NE":
             case "D":
+                report = report.concat(" is UNHARMED.");
                 break;
             case "X":
+                report = report.concat(" is INOPERATIVE!");
                 disable();
                 break;
             default:
                 break;                
         }
+        
+        return (report);
     }
     
 }
@@ -142,20 +148,26 @@ class Treads extends Weapon
     
     //TAKE DAMAGE
     @Override
-    public void takeDamage(String code, int str)
+    public String takeDamage(String code, int str)
     {
+        String report = weaponName;
+        
         switch (code)
         {
             case "NE":
             case "D":
+                report = report.concat(" are UNDAMAGED.");
                 break;
             case "X":
                 remainingTreads -= str;
                 lostTreads = maxTreads - remainingTreads;
+                report = (str + " tread units are DESTROYED!");
                 break;
             default:
                 break;                
         }
+        
+        return report;
     }
     
     @Override

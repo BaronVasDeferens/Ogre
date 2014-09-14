@@ -578,15 +578,21 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         {    
                                             hexMap.select(thisHex);
                                             gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
-                                            
+                                            //Ogres ignore ridges
                                             if (thisHex.occupyingUnit.unitType.equals("OGRE"))
                                             {
                                                 Ogre tempOgre = (Ogre)thisHex.occupyingUnit;
-                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement(),false));
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement(),false,true));
                                             }
+                                            //Infantry, like Ogres, ignore ridges
+                                            else if (thisHex.occupyingUnit.unitType.equals("INFANTRY"))
+                                            {
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement,false,true));
+                                            }
+                                            
                                             else 
                                             {
-                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement,false));
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement,false,false));
                                             }
                                         }
                                             
@@ -729,8 +735,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 //Only one enemy at a time may be selected during the combat phase!
                                 else
                                 {
-                                    //TEST TEST TEST
-                                    //display enemy capabilities
+                                    //Display enemy capabilities
                                     gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
 
                                     //PREVIOUSLY SELECTED ENEMY
@@ -851,7 +856,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     {
                                         hexMap.select(thisHex);
                                         gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
-                                        hexMap.adjacentHexes = hexMap.getHexesWithinRange(thisHex, thisHex.occupyingUnit.movementPostShooting,false);
+                                        hexMap.adjacentHexes = hexMap.getHexesWithinRange(thisHex, thisHex.occupyingUnit.movementPostShooting,false,false);
                                         hexMap.updateMapImage();
                                     }
                                 }

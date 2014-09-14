@@ -20,13 +20,13 @@ public class OgreGame implements Serializable
     java.awt.List weaponList;
     java.awt.Label unitNameLabel, unitStatLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel, ratioLabel;
     JTextArea reportArea;
-    JButton attackButton;
+    JButton attackButton, undoButton;
     OgrePanel ogrePanel;
         
     HexMap hexMap;
     public int hexSide = 64;
-    public final int HEX_ROWS = 15;
-    public final int HEX_COLS = 21;
+    public final int HEX_ROWS = 21;
+    public final int HEX_COLS = 15;
     public final int VIEW_WINDOW_WIDTH = 800;
     public final int VIEW_WINDOW_HEIGHT = 600;
     
@@ -99,7 +99,7 @@ public class OgreGame implements Serializable
         while (iterator.hasNext())
         {
             currentUnit = (Unit)iterator.next();
-            hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+3), currentUnit);
+            hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+4), currentUnit);
             putX++;
         }
         
@@ -113,7 +113,7 @@ public class OgreGame implements Serializable
     //Give Ogre game awarness of the frame in which it lives
     public void attachComponents(javax.swing.JFrame myframe, java.awt.List list, Label label,
             Label statsLabel, Label phaselabel, Label upperTargetLbl, Label currTargetLbl,
-            JButton atkButton, JTextArea repArea, Label ratLabel)
+            JButton atkButton, JTextArea repArea, Label ratLabel, JButton undoBtn)
     {
         myFrame = myframe;
         weaponList = list;
@@ -125,6 +125,7 @@ public class OgreGame implements Serializable
         attackButton = atkButton;
         reportArea = repArea;
         ratioLabel = ratLabel;
+        undoButton = undoBtn;
         
         myFrame.setTitle("OGRE");
         ratioLabel.setText("");
@@ -333,8 +334,15 @@ public class OgreGame implements Serializable
     public void attack()
     {
         boolean AOK = true;
-        int tempStrength = 0;       
-        //This is an ugly work-around for attacks on treads. See below
+        int tempStrength = 0;              //This is an ugly work-around for attacks on treads. See below
+        
+        //attackingUnits and attackingWeapons are required for eventManager logging
+        LinkedList<Unit> attackingUnits = new LinkedList();
+        LinkedList<Weapon> attackingWeapons = new LinkedList();
+        attackingUnits.clear();
+        attackingWeapons.clear();
+        
+        String resultText = "";
         
         Iterator iter;
         
@@ -400,10 +408,17 @@ public class OgreGame implements Serializable
                     }
                 }
                 
+                else if (targettedOgreWeapon.isDisabled())
+                {
+                    AOK = false;
+                    reportArea.append("ERROR: Targetted weapon is already INOP.\n");
+                }
+                
                 else
                     defense = targettedOgreWeapon.defense;
             }
-            else
+            
+            else //non-Ogre target
                 defense = currentTarget.defense;
             
             
@@ -412,6 +427,7 @@ public class OgreGame implements Serializable
                 iter = hexMap.selectedHexes.iterator();
                 Hex currentHex;
                 Unit currentUnit;
+                
 
                 //Total up the total attack strength for the basic units
                 while (iter.hasNext())
@@ -420,7 +436,11 @@ public class OgreGame implements Serializable
                     currentUnit = currentHex.occupyingUnit;
 
                     if (currentUnit.unitType.equals("OGRE") == false)
+                    {
                         strength += currentUnit.dischargeWeapon();
+                        attackingUnits.add(currentUnit);
+                    }
+                        
                 }
 
                 //Next, total up any Ogre weapons 
@@ -434,7 +454,10 @@ public class OgreGame implements Serializable
                         currentWeapon = (Weapon)iter.next();
                         
                         if ((currentWeapon.disabled == false) && (currentWeapon.dischargedThisRound == false))
+                        {
                             strength += currentWeapon.discharge();
+                            attackingWeapons.add(currentWeapon);
+                        }
                         else
                         {
                             reportArea.append("ERROR (Attack): previously discharged/disabled weapon detected.\n");
@@ -515,82 +538,62 @@ public class OgreGame implements Serializable
                     //reportArea.append("RATIO: " + ratio + "\n");
                 
                 
-                //Obtain a result based on ratio...
+                //Obtain a result based on ratio
                 String result = combatResult(ratio);
                 
                 reportArea.append("RESULT: " + result + "\n");
                 
                 if (!result.equals("ERR"))
                 {
-                    //Non-Ogre
+                    //Non-Ogre Unit: 
                     if (currentTarget.unitType.equals("OGRE") == false)
                     {
-                        currentTarget.takeDamage(result);
+                        resultText = currentTarget.takeDamage(result);
+                        reportArea.append(resultText + "\n");
                         
                         //check for unit death
                         if (currentTarget.isAlive == false)
                         {
-                            //reportArea.append("killed unit @ " + hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).getCol() + "," + hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).getRow() +"\n");
                             hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
                             hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).setOccupyingUnit(null);
-                            reportArea.append(currentTarget.unitName + " DESTROYED\n");
+
                         }
                     }
                     
                     //Ogre weapon
                     else
                     {
-                       targettedOgreWeapon.takeDamage(result, tempStrength);
-                       
-                       if (result.equals("X"))
-                       {
-                           if (targettedOgreWeapon.weaponName.equals("TREADS"))
-                           {
-                               reportArea.append("Ogre loses " + tempStrength + " treads\n");
-                           }
-                           
-                           else
-                               reportArea.append(targettedOgreWeapon.weaponName + " DESTROYED\n");
-                       }
+                       resultText = targettedOgreWeapon.takeDamage(result, tempStrength);
+                       reportArea.append(resultText + "\n");
                     }
                     
-                    hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
-                    hexMap.deselectAllSelectedHexes();
-                    hexMap.adjacentHexes.clear();
-                    currentTarget = null;
-                    selectedOgreWeapons.clear();
-                    targettedOgreWeapon = null;
-                    updateCurrentTarget(null);
-                    
-                    attackButton.setEnabled(false);
-                    updateUnitReadouts(null);
-                    
-                    hexMap.updateMapImage();
-                    
+                    //Log the event into the EventQueue
+                    ///(Player atkr, Unit dfndr, Weapon dfndWeap, LinkedList<Unit> atckUnits, LinkedList<Weapon> slctdWeapons, int phase, String msg, String rslt)
+                    eventManager.addEvent(new AttackEvent(currentPlayer, currentTarget, targettedOgreWeapon, attackingUnits, attackingWeapons, gamePhase, resultText, result));
+ 
                 }
                 
                 else
                     reportArea.append("ERROR: bad combat result. Bad! \n");
             }
-            
-            //AOK == false
-            else
-            {
-                hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
-                hexMap.deselectAllSelectedHexes();
-                hexMap.adjacentHexes.clear();
-                currentTarget = null;
-                selectedOgreWeapons.clear();
-                targettedOgreWeapon = null;
-                updateCurrentTarget(null);
-
-                attackButton.setEnabled(false);
-                updateUnitReadouts(null);
-
-                hexMap.updateMapImage();
-            }
-            
+             
         }
+        
+        //End-of-battle cleanup, or AOK == false
+
+        hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
+        hexMap.deselectAllSelectedHexes();
+        hexMap.adjacentHexes.clear();
+        currentTarget = null;
+        selectedOgreWeapons.clear();
+        targettedOgreWeapon = null;
+        updateCurrentTarget(null);
+
+        attackButton.setEnabled(false);
+        updateUnitReadouts(null);
+
+        hexMap.updateMapImage();
+        
     }
     
     
@@ -601,7 +604,7 @@ public class OgreGame implements Serializable
         String result = "ERR";
 
         //less than 
-        if (ratio < .5)
+        if (ratio < .5f)
             result = "NE";
 
         //1:2
@@ -711,13 +714,15 @@ public class OgreGame implements Serializable
         }
 
         //5:1 or better
-        else
+        else if (ratio >= 5)
         {
             result = "X";
         }
 
         return (result);
     }
+    
+    
     
     public int getGamePhase()
     {
@@ -778,6 +783,9 @@ public class OgreGame implements Serializable
                 reportArea.append(": " + currentPlayer.name + "'s turn\n");
                 
                 phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
+                
+                undoButton.setEnabled(true);
+                
                 //Disable the attack readouts
                 attackButton.setEnabled(false);
                 weaponList.setEnabled(false);
@@ -789,6 +797,8 @@ public class OgreGame implements Serializable
             //Player 1 SHOOT
             case 12:
                 phaseLabel.setText("Phase: SHOOT (" + playerOne.name + ")");
+                
+                undoButton.setEnabled(false);
                 
                 //enable attack readouts
                 attackButton.setEnabled(false);
@@ -802,6 +812,8 @@ public class OgreGame implements Serializable
                 phaseLabel.setText("Phase: SECOND MOVE (" + playerOne.name + ")");
                 
                 playerOne.readyForSecondMove();
+                
+                undoButton.setEnabled(true);
                 
                 //Disable the attack readouts
                 attackButton.setEnabled(false);
@@ -830,6 +842,8 @@ public class OgreGame implements Serializable
             case 22:
                 phaseLabel.setText("Phase: SHOOT (" + playerTwo.name + ")");
                 
+                undoButton.setEnabled(false);
+                
                 //enable attack readouts
                 attackButton.setEnabled(false);
                 weaponList.setEnabled(true);
@@ -841,6 +855,8 @@ public class OgreGame implements Serializable
                 phaseLabel.setText("Phase: SECOND MOVE (" + playerTwo.name + ")");
                 
                 playerTwo.readyForSecondMove();
+                
+                undoButton.setEnabled(true);
                 
                 //Disable the attack readouts
                 attackButton.setEnabled(false);
@@ -859,6 +875,8 @@ public class OgreGame implements Serializable
                 
                 gamePhase = 11;
                 phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
+                
+                undoButton.setEnabled(true);
                 
                 //Disable the attack readouts
                 attackButton.setEnabled(false);

@@ -6,6 +6,8 @@
 
 package ogre;
 
+import java.awt.Polygon;
+
 /**
  *
  * @author Skot
@@ -14,28 +16,22 @@ public class mathOut {
     
     public static void main(String ... args)
     {
-        float result;
-        
-        for (int i = 2; i < 10; i++)
-        {
-            result = (float)(2/(0+i));
-            System.out.println(result);
-        }
-//        int movement;
-//        int maxMove = 3;
-//        int maxTreads = 45;
-//        int treadsPerRow = 15;
-//        int remainingTreads = maxTreads;
-//        int lostTreads = maxTreads - remainingTreads;
+//        float result;
 //        
-//        for (int i = maxTreads; i >= 0; i--)
-//        {
-//            lostTreads = maxTreads - remainingTreads;
-//            movement = maxMove - (lostTreads/treadsPerRow);
-//            System.out.println("(" + remainingTreads + ") " + "LOST: " + (lostTreads) + "  MOVE: " + movement);
-//            
-//            remainingTreads--;
-//
+//        for (int i = 1; i < 7; i++)
+//        {          
+//            System.out.println(i + "," + (i+3)%6);
 //        }
+        
+        Polygon p = new Polygon();
+        p.reset();
+        p.addPoint(0,0);
+        p.addPoint(0,15);
+        p.addPoint(15,15);
+        p.addPoint(15,0);
+        
+        System.out.println(p.npoints);
+        System.out.println(p.xpoints[1] + "," + p.ypoints[1]);
+
     }
 }

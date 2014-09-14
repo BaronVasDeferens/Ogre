@@ -106,12 +106,38 @@ public class Hex
             ridges.clear();
         }
         
-        ridges.add(new Ridge (h1,face1,h2,face2));
+        ridges.add(new Ridge(h1,face1,h2,face2));
     }
     
     public LinkedList<Ridge>  getRidges()
     {
         return ridges;
+    }
+    
+    
+    public boolean sharesRidgeWithThisHex(Hex thisHex)
+    {
+        if (ridges == null)
+            return false;
+        
+        else
+        {
+            java.util.Iterator iter = ridges.iterator();
+            Ridge thisRidge;
+
+            while (iter.hasNext())
+            {
+                thisRidge = (Ridge)iter.next();
+                
+                if (thisRidge.hexB.equals(thisHex))
+                {
+                    return true;
+                }
+            }
+            
+        }
+        
+        return (false);
     }
 }
 

@@ -21,7 +21,7 @@ public class GameFrame extends javax.swing.JFrame {
         initComponents();
         ogreGame = new OgreGame(ogrePanel1);
         ogreGame.attachComponents(this, WeaponSystemsList, selectedUnitLabel, unitStatLabel, phaseLabel, 
-                upperCurrentTargetLabel, currentTargetLabel, attackButton, reportArea, ratioLabel);
+                upperCurrentTargetLabel, currentTargetLabel, attackButton, reportArea, ratioLabel, undoButton);
     }
 
     /**
@@ -49,6 +49,7 @@ public class GameFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         LogInMenuItem = new javax.swing.JMenuItem();
+        registerMenuItem = new javax.swing.JMenuItem();
         ViewMyGamesMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         optionHexNumbers = new javax.swing.JMenuItem();
@@ -124,13 +125,21 @@ public class GameFrame extends javax.swing.JFrame {
 
         jMenu1.setText("File");
 
-        LogInMenuItem.setText("Log In / Register");
+        LogInMenuItem.setText("Log In");
         LogInMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LogInMenuItemActionPerformed(evt);
             }
         });
         jMenu1.add(LogInMenuItem);
+
+        registerMenuItem.setText("Register New User");
+        registerMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                registerMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(registerMenuItem);
 
         ViewMyGamesMenuItem.setText("View My Games");
         jMenu1.add(ViewMyGamesMenuItem);
@@ -322,6 +331,12 @@ public class GameFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_optionHexNumbersActionPerformed
 
+    private void registerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerMenuItemActionPerformed
+        // TODO add your handling code here:
+        RegisterFrame regFrame = new RegisterFrame();
+        regFrame.setVisible(true);
+    }//GEN-LAST:event_registerMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -355,8 +370,7 @@ public class GameFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new GameFrame().setVisible(true);
-//                ogreGame = new OgreGame(ogrePanel1);
-//                ogreGame.attachFrame(this);
+
             }
         });
     }
@@ -376,6 +390,7 @@ public class GameFrame extends javax.swing.JFrame {
     public static javax.swing.JScrollPane outputArea;
     private java.awt.Label phaseLabel;
     private java.awt.Label ratioLabel;
+    private javax.swing.JMenuItem registerMenuItem;
     private javax.swing.JTextArea reportArea;
     private java.awt.Label selectedUnitLabel;
     private javax.swing.JButton undoButton;

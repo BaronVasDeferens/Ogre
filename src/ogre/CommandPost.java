@@ -26,4 +26,29 @@ public class CommandPost extends ogre.Unit
         
         unitWeapon = new Weapon(0,0,true,"none",0);
     }
+    
+    @Override
+    public String takeDamage(String result)
+    {
+        String report = unitName;
+        
+        switch (result)
+        {
+            case "NE":
+                //no result
+                report = report.concat(" is UNHARMED.");
+                break;
+            case "D":
+            case "X":
+                //destroyed
+                report = report.concat(" is DESTROYED!");
+                isAlive = false;
+                break;
+            default:
+                report = report.concat(" DERP");
+                break;
+        }
+        
+        return (report);
+    }
 }

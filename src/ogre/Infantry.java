@@ -45,12 +45,16 @@ public class Infantry extends ogre.Unit
     //TAKE DAMAGE
     //Self-manages based on the result of the damage taken
     @Override
-    public void takeDamage(String result)
+    public String takeDamage(String result)
     {
+       
+        String report = unitName;
+        
         switch (result)
         {
             case "NE":
                 //no result
+                report = report.concat(" is UNHARMED.");
                 break;
             case "D":
                 //*** Strength reduced by one; if already 1, then death
@@ -62,11 +66,14 @@ public class Infantry extends ogre.Unit
                     {
                         case 2:
                             image = loadImage("infantry_2.png");
+                            report = report.concat(" TAKES A CASUALTY.");
                             break;
                         case 1:
                             image = loadImage("infantry_1.png");
+                            report = report.concat(" TAKES A CASUALTY.");
                             break;
                         case 0:
+                            report = report.concat(" is DESTROYED!");
                             isAlive = false;
                             break;
                         default:
@@ -76,10 +83,13 @@ public class Infantry extends ogre.Unit
                 break;
             case "X":
                 //destroyed
+                report = report.concat(" is DESTROYED!");
                 isAlive = false;
                 break;
             default:
                 break;
         }
+        
+        return report;
     }
 }

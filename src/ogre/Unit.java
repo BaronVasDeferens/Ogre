@@ -99,31 +99,43 @@ public class Unit implements Serializable
     }
     
     //TAKE DAMAGE
-    //Self-manages based on the result of the damage taken
-    public void takeDamage(String result)
+    //Self-manages based on the result of the damage taken.
+    //Returns a String with flavr text
+    public String takeDamage(String result)
     {
+        String report = unitName;
+        
         switch (result)
         {
             case "NE":
                 //no result
+                report = report.concat(" is UNHARMED.");
                 break;
             case "D":
                 //disabled
                 if (disabled == true)
+                {
                     isAlive = false;
+                    report = report.concat(" is DESTROYED!");
+                }
                 else
                 {
+                    report = report.concat(" is DISABLED.");
                     disabled = true;
                     disabledTurns = 3;
                 }    
                 break;
             case "X":
                 //destroyed
+                report = report.concat(" is DESTROYED!");
                 isAlive = false;
                 break;
             default:
+                report = report.concat(" DERP");
                 break;
         }
+        
+        return (report);
     }
    
     //DISCHARGE WEAPON

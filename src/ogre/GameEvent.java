@@ -63,25 +63,26 @@ class MoveEvent extends GameEvent
 
 class AttackEvent extends GameEvent
 {
-    Player attacker, defender;
-    LinkedList<Unit> selectedUnits;
-    LinkedList<Weapon> selectedWeapons;
+    Player attacker;
+    Unit defendingUnit;
+    Weapon defendingWeapon;
+    LinkedList<Unit> attackingUnits;
+    LinkedList<Weapon> attackingWeapons;
+    String result;
     
     //GameEvent(String tp, int phase, String msg, boolean undo)   
-    AttackEvent(Player atkr, Player dfndr, LinkedList<Unit> slctdUnits, LinkedList<Weapon> slctdWeapons, int phase, String msg)
+    AttackEvent(Player atkr, Unit dfndr, Weapon dfndWeap, LinkedList<Unit> atckUnits, LinkedList<Weapon> slctdWeapons, int phase, String msg, String rslt)
     {
         super("ATTACK",phase,msg,false);
         attacker = atkr;
-        defender = dfndr;
-        selectedUnits = slctdUnits;
-        selectedWeapons = slctdWeapons;
+        attackingUnits = atckUnits;
+        attackingWeapons = slctdWeapons;        
+        
+        defendingUnit = dfndr;
+        defendingWeapon = dfndWeap;
+        
+        result = rslt;
+
     }
 }
 
-class DieRollEvent extends GameEvent
-{
-    DieRollEvent()
-    {
-        
-    }
-}
