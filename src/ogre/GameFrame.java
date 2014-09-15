@@ -237,8 +237,7 @@ public class GameFrame extends javax.swing.JFrame {
 
     private void LogInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogInMenuItemActionPerformed
         // TODO add your handling code here:
-        LoginFrame loginFrame = new LoginFrame();
-        loginFrame.setVisible(true);
+        ogreGame.login();
     }//GEN-LAST:event_LogInMenuItemActionPerformed
 
     private void WeaponSystemsListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_WeaponSystemsListItemStateChanged
@@ -333,8 +332,7 @@ public class GameFrame extends javax.swing.JFrame {
 
     private void registerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerMenuItemActionPerformed
         // TODO add your handling code here:
-        RegisterFrame regFrame = new RegisterFrame();
-        regFrame.setVisible(true);
+        ogreGame.register();
     }//GEN-LAST:event_registerMenuItemActionPerformed
 
     /**

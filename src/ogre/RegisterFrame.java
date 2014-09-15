@@ -6,21 +6,22 @@
 
 package ogre;
 
-import java.io.*;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
+
 /**
  *
  * @author skot
  */
 public class RegisterFrame extends javax.swing.JFrame {
 
+    static RegistrationManager myManager;
     /**
      * Creates new form RegisterFrame
      */
-    public RegisterFrame() {
+    public RegisterFrame(RegistrationManager myMgr) {
+        
+        myManager = myMgr;
         initComponents();
+        OKJButton.setEnabled(false);
     }
 
     /**
@@ -46,6 +47,7 @@ public class RegisterFrame extends javax.swing.JFrame {
         passwordTextField = new javax.swing.JPasswordField();
         jLabel6 = new javax.swing.JLabel();
         confirmPasswordTextField = new javax.swing.JPasswordField();
+        OKJButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("OGRE :: NEW USER REGISTRATION");
@@ -85,6 +87,8 @@ public class RegisterFrame extends javax.swing.JFrame {
 
         jLabel6.setText("Confirm Password");
 
+        OKJButton.setText("OK");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -96,12 +100,15 @@ public class RegisterFrame extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(OKJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(82, 82, 82)
                         .addComponent(registerButton))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)
                     .addComponent(emailTextField)
-                    .addComponent(jLabel2)
+                    .addComponent(usernameTextField)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -109,8 +116,7 @@ public class RegisterFrame extends javax.swing.JFrame {
                                 .addComponent(passwordTextField, javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(jLabel5))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(usernameTextField))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -141,7 +147,9 @@ public class RegisterFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(registerButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(registerButton)
+                    .addComponent(OKJButton))
                 .addContainerGap())
         );
 
@@ -154,11 +162,6 @@ public class RegisterFrame extends javax.swing.JFrame {
 
     private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
         
-        Socket sckt = null;
-        InputStream in = null;
-        OutputStream out = null;
-        ObjectOutputStream objectOut = null;
-        ObjectInputStream objectIn = null;
         
         /*  Perform basic checks:
             -- ensure there is text in each field
@@ -218,9 +221,9 @@ public class RegisterFrame extends javax.swing.JFrame {
         }
         //email doesn't contain a TLD of com/net/org
         if (!((emailTextField.getText().contains(".com")) || (emailTextField.getText().contains(".net")) 
-                || (emailTextField.getText().contains(".org"))))
+                || (emailTextField.getText().contains(".org")) || (emailTextField.getText().contains(".edu"))))
         {
-            feedbackTextArea.append("ERROR: only .com, .net. or .org TLDs are currently accepted. Sorry.");
+            feedbackTextArea.append("ERROR: only com, net, org, and edu TLDs are currently accepted. Sorry.");
             feedbackTextArea.append("\n");
             goodToGo = false;
         }
@@ -229,75 +232,11 @@ public class RegisterFrame extends javax.swing.JFrame {
         //Connect to the Ogre Server and attempt to authenticate
         if (goodToGo)
         {
-            feedbackTextArea.setText("");
-            feedbackTextArea.append("Connecting to server...");
-            feedbackTextArea.append("\n");
-            
-            //Generate a loginObject
-            TransportObject loginObj = new TransportObject(usernameTextField.getText(), pw1, emailTextField.getText(), true, true);
-            
-            
-            try
+            if (myManager.registerPlayer(usernameTextField.getText(), pw1, emailTextField.getText()))
             {
-                sckt = new Socket("127.0.1.1", 12321);
-
-                //Acquitre input and ouput streams
-                in = sckt.getInputStream();
-                out = sckt.getOutputStream();
-                objectOut = new ObjectOutputStream(out);
-                objectIn = new ObjectInputStream(in);
-
-                feedbackTextArea.append("Found a server...\n");
-
+                OKJButton.setEnabled(true);
             }
-        
-            catch(java.io.IOException e)
-            {
-                feedbackTextArea.append("ERROR: NO SERVER FOUND\n");
-            }
-            
-            //Push out a loginMessage
-            if ((sckt != null) && (objectOut != null))
-            {
-                try
-                {   
-                    objectOut.writeObject(loginObj);
-                }
-                
-                catch(java.io.IOException e)
-                {
-                    
-                }
-                
-                //Prepare to wait for answer from the server
-                boolean answerReceived = false;
-                
-                loginObj = null;
-                
-                if (objectIn != null)
-                {
-                    //TODO: add a time out
-                    while (answerReceived == false)
-                    {
-                        try
-                        {
-                            loginObj = (TransportObject)objectIn.readObject();
-                        }
-                        catch (ClassNotFoundException | IOException e)
-                        {
-
-                        }
-
-                        if (loginObj != null)
-                        {
-                            feedbackTextArea.append(loginObj.message);
-                            answerReceived = true;
-                        }
-                    }
-                }
-            }
-            
-        }    
+        }
         
     }//GEN-LAST:event_registerButtonActionPerformed
 
@@ -331,16 +270,17 @@ public class RegisterFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RegisterFrame().setVisible(true);
+                new RegisterFrame(myManager).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField confirmEmailTextField;
-    private javax.swing.JPasswordField confirmPasswordTextField;
-    private javax.swing.JTextField emailTextField;
-    private javax.swing.JTextArea feedbackTextArea;
+    private javax.swing.JButton OKJButton;
+    public javax.swing.JTextField confirmEmailTextField;
+    public javax.swing.JPasswordField confirmPasswordTextField;
+    public javax.swing.JTextField emailTextField;
+    public javax.swing.JTextArea feedbackTextArea;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -348,8 +288,8 @@ public class RegisterFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JPasswordField passwordTextField;
+    public javax.swing.JPasswordField passwordTextField;
     private javax.swing.JButton registerButton;
-    private javax.swing.JTextField usernameTextField;
+    public javax.swing.JTextField usernameTextField;
     // End of variables declaration//GEN-END:variables
 }

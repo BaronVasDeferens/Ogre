@@ -37,7 +37,7 @@ public class TransportObject implements Serializable
         password = psswrd;
         emailAddress = email;
         isRegistration = isReg;
-        
+        isLogin = login;
         player = null;
         gameStateList = null;
         registeredPlayers = null;

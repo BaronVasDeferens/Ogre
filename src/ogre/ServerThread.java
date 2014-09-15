@@ -38,7 +38,7 @@ public class ServerThread implements Runnable
         socket = sckt;
         master = mstr;
         date = new Date();
-        
+        player = null;
         //TODO: set the date, store it
         
         t = new Thread(this);
@@ -97,9 +97,13 @@ public class ServerThread implements Runnable
                 
                 
                 //EXAMINE THE RECEIVED OBJECT:
-           
+                if (transObj == null)
+                {
+                    //do nothing
+                }
+                
                 //REGISTRATION REQUEST
-                if (transObj.isRegistration)
+                else if (transObj.isRegistration)
                 {
                     //If the new player was successfully registered wth the system, log them in
                     if (master.registerPlayer(transObj))
@@ -111,7 +115,7 @@ public class ServerThread implements Runnable
                             System.out.println(player.name + " has registered and logged in!");
                             transObj = new TransportObject(player, master.getRegisteredUserList(), "Registration SUCCESS!");
                             
-                            send(transObj);
+                            send(transObj);  
                         }
                         
                         //Login FAILED
@@ -128,12 +132,33 @@ public class ServerThread implements Runnable
                         transObj = new TransportObject(null, null, "Registration FAILED.");
                         send(transObj);
                     }
+                    
+                    transObj = null;
                 }
                 
                 //LOGIN REQUEST
                 else if (transObj.isLogin)
                 {
+                    System.out.println("Attempting login...");
                     
+                    player = master.loginPlayer(transObj);
+                        
+                    if (player != null)
+                    {
+                        System.out.println(player.name + " logged in");
+                        transObj = new TransportObject(player, master.getRegisteredUserList(), "Welcome back!");
+
+                        send(transObj);
+                    }
+
+                    //Login FAILED
+                    else
+                    {
+                        transObj = new TransportObject(null, null, "Login FAILED.");
+                        send(transObj);
+                    }
+                    
+                    transObj = null;
                 }
 
             }

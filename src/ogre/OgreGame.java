@@ -8,14 +8,17 @@ package ogre;
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
-import java.io.Serializable;
 /**
  *
  * @author Skot
  */
-public class OgreGame implements Serializable
+public class OgreGame
 {
-
+    //Network resources
+    String server = "10.0.0.7";
+    int port = 12321;
+    
+    
     javax.swing.JFrame myFrame;
     java.awt.List weaponList;
     java.awt.Label unitNameLabel, unitStatLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel, ratioLabel;
@@ -1147,5 +1150,20 @@ public class OgreGame implements Serializable
         {
             return (currentTarget.defense);
         } 
+    }
+    
+    
+    //LOGIN
+    public void login()
+    {
+        LoginManager loginManager = new LoginManager(server, port);
+        
+    }
+    
+    //REGISTER
+    public void register()
+    {
+        RegistrationManager registerManager = new RegistrationManager(server, port);
+        
     }
 }
