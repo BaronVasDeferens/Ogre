@@ -264,9 +264,7 @@ public class GameFrame extends javax.swing.JFrame {
                 //There is an activly selected OGRE...
                 if (ogreGame.currentOgre != null)
                 { 
-//                    if (ogreGame.selectedOgreWeapons.isEmpty())
-//                        ogreGame.selectedOgreWeapons.clear();
-
+                    
                     int indexes[] = WeaponSystemsList.getSelectedIndexes();
                     
                     ogreGame.selectedOgreWeapons.clear();
@@ -278,10 +276,6 @@ public class GameFrame extends javax.swing.JFrame {
                         {
                             ogreGame.selectedOgreWeapons.add(ogreGame.currentOgre.getWeaponByID(indexes[i]));
                         }
-//                        else
-//                        {
-//                            ogreGame.selectedOgreWeapons.remove(ogreGame.currentOgre.getWeaponByID(indexes[i]));
-//                        }
                        
                     }
                     
@@ -290,7 +284,8 @@ public class GameFrame extends javax.swing.JFrame {
                     //Changing weapons means that a prior target is no longer viable
                     if (ogreGame.currentTarget != null)
                     {    
-                        if (ogreGame.hexMap.adjacentHexes.contains(ogreGame.currentTarget) == false)
+                        Hex tempHex = ogreGame.hexMap.getHexFromCoords(ogreGame.currentTarget.yLocation, ogreGame.currentTarget.xLocation);
+                        if (ogreGame.hexMap.adjacentHexes.contains(tempHex) == false)
                         {
                             ogreGame.hexMap.deselect(ogreGame.hexMap.getHexFromCoords(ogreGame.currentTarget.yLocation,ogreGame.currentTarget.xLocation));
                             ogreGame.updateCurrentTarget(null);
