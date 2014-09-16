@@ -80,14 +80,14 @@ public class ServerThreadHandler
     }
     
     //GET REGISTERED USER LIST
-    //Returns a LinkedLIst<String> object containing usernames
+    //Returns a LinkedList<String> object containing usernames
     public LinkedList getRegisteredUserList()
     {
         if (serverThreadList == null)
             return(null);
         else
         {
-            LinkedList<Player> userList = new LinkedList();
+            LinkedList<String> userList = new LinkedList();
             
             Iterator iter = registeredPlayers.iterator();
             
@@ -96,7 +96,7 @@ public class ServerThreadHandler
             while(iter.hasNext())
             {
                 player = (Player)iter.next();
-                userList.add(player);
+                userList.add(player.name);
             }
             
             return(userList);

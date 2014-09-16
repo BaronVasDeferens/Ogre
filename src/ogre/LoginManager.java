@@ -23,6 +23,9 @@ public class LoginManager
     String server;
     int port;
     
+    OgreGame myMaster;
+    TransportObject activeUserCredentials;
+    
     Socket sckt = null;
     InputStream in = null;
     OutputStream out = null;
@@ -30,10 +33,13 @@ public class LoginManager
     ObjectInputStream objectIn = null;
     
     
-    LoginManager(String srvr, int prt)
+    LoginManager(String srvr, int prt, OgreGame master, TransportObject activUsr)
     {
         server = srvr;
         port = prt;
+        myMaster = master;
+        
+        activeUserCredentials = activUsr;
         
         loginFrame = new LoginFrame(this);
         loginFrame.setDefaultCloseOperation(LoginFrame.DISPOSE_ON_CLOSE);
@@ -106,24 +112,25 @@ public class LoginManager
                 {
                     try
                     {
-                        loginObj = (TransportObject)objectIn.readObject();
+                        activeUserCredentials = (TransportObject)objectIn.readObject();
                     }
                     catch (ClassNotFoundException | IOException e)
                     {
 
                     }
 
-                    if (loginObj != null)
+                    if (activeUserCredentials != null)
                     {
-                        loginFrame.feedbackTextArea.append(loginObj.message);
+                        loginFrame.feedbackTextArea.append(activeUserCredentials.message);
                         answerReceived = true;
                     }
 
                 }
 
-                if ((answerReceived == true) && (loginObj.player != null))
+                if ((answerReceived == true) && (activeUserCredentials.player != null))
                 {
                     //loginFrame.feedbackTextArea.append("Welcome to Ogre. One moment, please...\n");
+                    myMaster.activePlayerCredentials = activeUserCredentials;
                     AOK = true;
 
                     //Deploy the myGames window HERE

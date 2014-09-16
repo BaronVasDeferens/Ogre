@@ -1,6 +1,6 @@
 /*
 TransportObject
-THe basic unit of communication between the client and server
+The basic unit of communication between the Ogre clients and server
  */
 
 package ogre;

@@ -21,6 +21,11 @@ public class RegistrationManager
 {
     Player player;
     
+    TransportObject loginObj;
+    TransportObject activePlayerCredentials = null;
+    
+    OgreGame myMaster;
+    
     RegisterFrame regFrame;
     String server;
     int port;
@@ -32,26 +37,28 @@ public class RegistrationManager
     ObjectInputStream objectIn = null;
     
     
-    RegistrationManager(String srvr, int prt)
+    RegistrationManager(String srvr, int prt, OgreGame master, TransportObject actvPlyr)
     {
+        server = srvr;
+        port = prt;
+        
+        myMaster = master;
+        activePlayerCredentials = actvPlyr;
+        
         regFrame = new RegisterFrame(this);
         regFrame.setDefaultCloseOperation(LoginFrame.DISPOSE_ON_CLOSE);
         regFrame.setVisible(true);
     }
     
-    //REGISTER PLAYER
-    public boolean registerPlayer(String usrnm, String pswd, String emailAddy)
+    //CONNECT TO SERVER
+    public boolean connectToServer()
     {
-        boolean AOK = false;
-        
+        boolean connectionSuccess = false;
         
         regFrame.feedbackTextArea.setText("");
         regFrame.feedbackTextArea.append("Connecting to server...");
         regFrame.feedbackTextArea.append("\n");
             
-        //Generate a loginObject
-        TransportObject loginObj = new TransportObject(usrnm, pswd, emailAddy, true, true);
-
         try
         {
             sckt = new Socket(server, port);
@@ -62,91 +69,135 @@ public class RegistrationManager
             objectOut = new ObjectOutputStream(out);
             objectIn = new ObjectInputStream(in);
 
-            regFrame.feedbackTextArea.append("Connected to server...\n");
+            regFrame.feedbackTextArea.append("connected!\n");
+            connectionSuccess = true;
 
         }
 
         catch(java.io.IOException e)
         {
-            regFrame.feedbackTextArea.append("ERROR: NO SERVER FOUND\n");
+            regFrame.feedbackTextArea.append("ERROR: Uh-oh! No server found.\n");
         }
-
-        //Push out a loginMessage
-        if ((sckt != null) && (objectOut != null))
+        
+        return (connectionSuccess);
+    }
+    
+    //REGISTER PLAYER
+    public boolean registerPlayer(String usrnm, String pswd, String emailAddy)
+    {
+        boolean AOK = false;
+        
+        if (connectToServer())
         {
+            loginObj = new TransportObject(usrnm, pswd, emailAddy, true, true);
+
             try
-            {   
-                objectOut.writeObject(loginObj);
-            }
-
-            catch(java.io.IOException e)
             {
-                regFrame.feedbackTextArea.append("ERROR: server communication problems.\n");
+                sckt = new Socket(server, port);
+
+                //Acquitre input and ouput streams
+                in = sckt.getInputStream();
+                out = sckt.getOutputStream();
+                objectOut = new ObjectOutputStream(out);
+                objectIn = new ObjectInputStream(in);
+
+                regFrame.feedbackTextArea.append("Connected to server...\n");
+
             }
 
-            //Prepare to wait for answer from the server
-            boolean answerReceived = false;
-            loginObj = null;
-
-            if (objectIn != null)
+            catch (java.io.IOException e)
             {
-                //TODO: add a time out
-                while (answerReceived == false)
-                {
-                    try
-                    {
-                        loginObj = (TransportObject)objectIn.readObject();
-                    }
-                    catch (ClassNotFoundException | IOException e)
-                    {
+                regFrame.feedbackTextArea.append(e.toString() + "\n");
+            }
 
-                    }
-
-                    if (loginObj != null)
-                    {
-                        regFrame.feedbackTextArea.append(loginObj.message);
-                        answerReceived = true;
-                    }
+            //Push out a loginMessage
+            if ((sckt != null) && (objectOut != null))
+            {
+                try
+                {   
+                    objectOut.writeObject(loginObj);
                 }
 
-                if ((answerReceived == true) && (loginObj.player != null))
+                catch(java.io.IOException e)
                 {
-                    regFrame.feedbackTextArea.append("Welcome to Ogre. One moment, please...\n");
-                    player = loginObj.player;
-                    AOK = true;
-
-                    //Deploy the myGames window
+                    regFrame.feedbackTextArea.append("ERROR: server communication problems.\n");
                 }
 
-                else
+                //Prepare to wait for answer from the server
+                boolean answerReceived = false;
+                loginObj = null;
+
+                if (objectIn != null)
                 {
-                    //Close data connections and streams.
-                    regFrame.feedbackTextArea.append("Login error. Please try again.\n");
-                    
-                    try 
+                    //TODO: add a time out
+                    while (answerReceived == false)
                     {
-                        sckt.close();
-                        sckt = null;                           
-                        in.close();
-                        in = null;
-                        out.close();
-                        out = null;
-                        objectIn.close();
-                        objectIn = null;
-                        objectOut.close();
-                        objectOut = null;
+                        try
+                        {
+                            activePlayerCredentials = (TransportObject)objectIn.readObject();
+                        }
+                        catch (ClassNotFoundException | IOException e)
+                        {
+
+                        }
+
+                        if (activePlayerCredentials != null)
+                        {
+                            regFrame.feedbackTextArea.append(activePlayerCredentials.message);
+                            answerReceived = true;
+                        }
                     }
 
-                    catch(IOException e)
+                    if ((answerReceived == true) && (activePlayerCredentials.player != null))
                     {
+                        regFrame.feedbackTextArea.append("Welcome to Ogre. One moment, please...\n");
+                        player = activePlayerCredentials.player;
+                        myMaster.activePlayerCredentials = activePlayerCredentials;
+                        AOK = true;
 
+                        //Deploy the myGames window
                     }
 
+                    else
+                    {
+                        //Close data connections and streams.
+                        regFrame.feedbackTextArea.append("Login error. Please try again.\n");
+                        disconnectFromServer();
+                    }
                 }
             }
+
+            else
+                disconnectFromServer();
         }
 
         return (AOK);
-    }    
+    }
+    
+     //DISCONNECT FROM SERVER
+    //Safely closes socket and streams.
+    public void disconnectFromServer()
+    {
+        try 
+        {
+            sckt.close();
+            sckt = null;                           
+            in.close();
+            in = null;
+            out.close();
+            out = null;
+            objectIn.close();
+            objectIn = null;
+            objectOut.close();
+            objectOut = null;
+            
+            regFrame.feedbackTextArea.append("You have safely disconected from the server.");
+        }
+
+        catch(IOException e)
+        {
+            regFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
+        }
+    }
 }        
           

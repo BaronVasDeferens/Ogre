@@ -15,7 +15,7 @@ import javax.swing.*;
 public class OgreGame
 {
     //Network resources
-    String server = "10.0.0.7";
+    String server = "127.0.1.1";
     int port = 12321;
     
     
@@ -26,6 +26,10 @@ public class OgreGame
     JButton attackButton, undoButton;
     OgrePanel ogrePanel;
         
+    GameState currentGameState = null;
+    
+    TransportObject activePlayerCredentials = null;
+    
     HexMap hexMap;
     public int hexSide = 64;
     public final int HEX_ROWS = 21;
@@ -1156,14 +1160,27 @@ public class OgreGame
     //LOGIN
     public void login()
     {
-        LoginManager loginManager = new LoginManager(server, port);
+        LoginManager loginManager = new LoginManager(server, port, this, activePlayerCredentials);
         
     }
     
     //REGISTER
     public void register()
     {
-        RegistrationManager registerManager = new RegistrationManager(server, port);
-        
+        RegistrationManager registerManager = new RegistrationManager(server, port, this, activePlayerCredentials);  
+    }
+    
+    //CREATE NEW GAME
+    public void createNewGame()
+    {
+        if (activePlayerCredentials != null)
+        {
+            NewGameManager newGameManager = new NewGameManager(activePlayerCredentials);
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(myFrame, "You must log in.",
+            "YOU ARE NOT LOGGED IN", JOptionPane.WARNING_MESSAGE);
+        }
     }
 }

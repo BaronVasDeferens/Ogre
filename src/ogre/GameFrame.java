@@ -53,6 +53,7 @@ public class GameFrame extends javax.swing.JFrame {
         ViewMyGamesMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         optionHexNumbers = new javax.swing.JMenuItem();
+        createNewGameMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -156,6 +157,14 @@ public class GameFrame extends javax.swing.JFrame {
             }
         });
         jMenu2.add(optionHexNumbers);
+
+        createNewGameMenuItem.setText("Create New Game");
+        createNewGameMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createNewGameMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(createNewGameMenuItem);
 
         jMenuBar1.add(jMenu2);
 
@@ -282,6 +291,7 @@ public class GameFrame extends javax.swing.JFrame {
                     ogreGame.hexMap.computeOverlappingHexes(ogreGame.currentPlayer);
                     
                     //Changing weapons means that a prior target is no longer viable
+                    //TODO: make this work right
                     if (ogreGame.currentTarget != null)
                     {    
                         Hex tempHex = ogreGame.hexMap.getHexFromCoords(ogreGame.currentTarget.yLocation, ogreGame.currentTarget.xLocation);
@@ -330,6 +340,11 @@ public class GameFrame extends javax.swing.JFrame {
         ogreGame.register();
     }//GEN-LAST:event_registerMenuItemActionPerformed
 
+    private void createNewGameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createNewGameMenuItemActionPerformed
+        // TODO add your handling code here:
+        ogreGame.createNewGame();
+    }//GEN-LAST:event_createNewGameMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -374,6 +389,7 @@ public class GameFrame extends javax.swing.JFrame {
     public java.awt.List WeaponSystemsList;
     private javax.swing.JButton advancePhaseButton;
     public static javax.swing.JButton attackButton;
+    private javax.swing.JMenuItem createNewGameMenuItem;
     public java.awt.Label currentTargetLabel;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
