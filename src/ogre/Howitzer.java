@@ -17,7 +17,7 @@ public class Howitzer extends ogre.Unit
         super(id);
         
         unitName = "Howitzer";
-        unitType = "HOWITZER";
+        unitType = UnitType.Howitzer;
         
         movement = 0;
         defense = 1;

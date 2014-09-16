@@ -17,10 +17,18 @@ import javax.sound.sampled.*;
  *
  * @author Skot
  */
+
+enum UnitType
+{
+    Ogre, HeavyTank, MissileTank, CommandPost, MobileCommandPost, Infantry, GEV, Howitzer
+}
+
 public class Unit implements Serializable 
 {
+    
+    
     String unitName;        //Different from type?
-    String unitType;        //eg tank, infantry, GEV, etc
+    UnitType unitType;        //eg tank, infantry, GEV, etc
     int unitID;             //unique ID          
 
     Player controllingPlayer;

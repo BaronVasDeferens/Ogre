@@ -1008,7 +1008,7 @@ public class HexMap
             {
                 thisHex = (Hex)iter.next();
 
-                if (thisHex.occupyingUnit.unitType.equals("OGRE"))
+                if (thisHex.occupyingUnit.unitType == UnitType.Ogre)
                 {
                     Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
                     

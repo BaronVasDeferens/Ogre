@@ -173,12 +173,12 @@ public class OgreGame
         //TODO: test for unit ownership        
         
         //COLLAPSE INFANTRY
-        if((e.agent.unitType.equals("INFANTRY")) && (e.destination.isOccupied()))
+        if((e.agent.unitType == UnitType.Infantry) && (e.destination.isOccupied()))
         {
             //Consolidate two units into one, provided they are: 1) both infantry; 
             //2) combined defense values equal 3 or less
             //3) both belong to the operating player
-            if ((e.destination.getUnit().unitType.equals("INFANTRY") && (currentPlayer.units.contains(e.destination.occupyingUnit)) && currentPlayer.units.contains(e.source.occupyingUnit)))
+            if ((e.destination.getUnit().unitType == UnitType.Infantry) && (currentPlayer.units.contains(e.destination.occupyingUnit)) && (currentPlayer.units.contains(e.source.occupyingUnit)))
             {
                 if ((e.agent.defense + e.destination.getUnit().defense) <= 3)
                 {
@@ -297,7 +297,7 @@ public class OgreGame
         }
         
         //An OGRE has been targetted.
-        else if (thisUnit.unitType.equals("OGRE"))
+        else if (thisUnit.unitType == UnitType.Ogre)
         {
             currentTarget = thisUnit;
             Ogre thisOgre = (Ogre)thisUnit;
@@ -362,7 +362,7 @@ public class OgreGame
         }
         
         //Target is an Ogre, but no specific system is targetted: shouldn't happen
-        else if ((currentTarget.unitType.equals("OGRE")) && (targettedOgreWeapon == null))
+        else if ((currentTarget.unitType == UnitType.Ogre) && (targettedOgreWeapon == null))
         {
             reportArea.append("ERROR: (Attack): target is ogre but no weapon selected\n");
             AOK = false;
@@ -370,7 +370,7 @@ public class OgreGame
         
         //Check to see if AP weapons are being used against hard targets
         //if NOT(infantry OR CP) AND Ogre Weapons in play...
-        if ((!(currentTarget.unitType.equals("INFANTRY")) || (currentTarget.unitType.equals("CP"))) && (!selectedOgreWeapons.isEmpty()))
+        if ( (currentTarget.unitType != UnitType.Infantry) || (currentTarget.unitType != UnitType.CommandPost) && (!selectedOgreWeapons.isEmpty()))
         {
             iter = selectedOgreWeapons.iterator();
             Weapon thisWp;
@@ -399,7 +399,7 @@ public class OgreGame
             int defense = 0;
             int strength = 0;
             
-            if (currentTarget.unitType.equals("OGRE"))
+            if (currentTarget.unitType == UnitType.Ogre)
             {
 
                 //Treads may be attacked by single units only
@@ -442,7 +442,7 @@ public class OgreGame
                     currentHex = (Hex)iter.next();
                     currentUnit = currentHex.occupyingUnit;
 
-                    if (currentUnit.unitType.equals("OGRE") == false)
+                    if (currentUnit.unitType != UnitType.Ogre)
                     {
                         strength += currentUnit.dischargeWeapon();
                         attackingUnits.add(currentUnit);
@@ -477,7 +477,7 @@ public class OgreGame
             //Analysis of the values...
             
             //Disallow zero defense (if NOT command post)
-            if ((defense <= 0) && (currentTarget.unitType.equals("CP") == false))
+            if ((defense <= 0) && (currentTarget.unitType != UnitType.CommandPost))
             {
                 reportArea.append("ERROR (Attack): defense values less than or equal to zero.\n");
                 AOK = false;
@@ -495,13 +495,13 @@ public class OgreGame
             {          
                 float ratio = 0;
                 
-                if (currentTarget.equals("CP"))
+                if (currentTarget.unitType == UnitType.CommandPost)
                 {
                     ratio = strength;
                 }
                 
                 //Attacks against treads resolve at 1:1
-                else if (currentTarget.unitType.equals("OGRE"))
+                else if (currentTarget.unitType == UnitType.Ogre)
                 {
                     if (targettedOgreWeapon != null)
                     {
@@ -553,7 +553,7 @@ public class OgreGame
                 if (!result.equals("ERR"))
                 {
                     //Non-Ogre Unit: 
-                    if (currentTarget.unitType.equals("OGRE") == false)
+                    if (currentTarget.unitType != UnitType.Ogre)
                     {
                         resultText = currentTarget.takeDamage(result);
                         reportArea.append(resultText + "\n");
@@ -930,7 +930,7 @@ public class OgreGame
             String readout = "";
 
             //OGRE routine
-            if (thisUnit.unitType.equals("OGRE"))
+            if (thisUnit.unitType == UnitType.Ogre)
             {
                 Ogre thisOgre = (Ogre)thisUnit;
                 currentOgre = thisOgre;
@@ -1111,7 +1111,7 @@ public class OgreGame
             if (currentPlayer.units.contains(thisUnit))
             {
                 //handle friendly ogre weapons
-                if ((thisUnit.unitType.equals("OGRE")) && (selectedOgreWeapons.isEmpty() == false))
+                if ((thisUnit.unitType == UnitType.Ogre) && (selectedOgreWeapons.isEmpty() == false))
                 {
                      Iterator iter2 = selectedOgreWeapons.iterator();
                      Weapon thisWeapon;

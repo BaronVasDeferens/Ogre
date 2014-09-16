@@ -16,7 +16,7 @@ public class HeavyTank extends ogre.Unit
     {
         super(id);
         unitName = "Heavy Tank";
-        unitType = "HVYTANK";
+        unitType = UnitType.HeavyTank;
         movement = 3;
         defense = 3;
         

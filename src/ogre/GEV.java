@@ -17,7 +17,7 @@ public class GEV extends ogre.Unit
         super(id);
         
         unitName = "G.E.V.";
-        unitType = "GEV";
+        unitType = UnitType.GEV;
         
         movement = 4;
         movementPostShooting = 3;

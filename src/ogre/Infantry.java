@@ -33,7 +33,7 @@ public class Infantry extends ogre.Unit
     {
         super(id);
         unitName = "Infantry";
-        unitType = "INFANTRY";
+        unitType = UnitType.Infantry;
         
         movement = 2;
         defense = def;

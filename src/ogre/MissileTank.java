@@ -17,7 +17,7 @@ public class MissileTank extends ogre.Unit
         super(id);
         
         unitName = "Missile Tank";
-        unitType = "MSLTANK";
+        unitType = UnitType.MissileTank;
         
         movement = 2;
         defense = 2;

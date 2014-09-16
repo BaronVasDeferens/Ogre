@@ -125,11 +125,27 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
         // TODO add your handling code here:
-
-        feedbackTextArea.append("Connecting...");
-        if (myManager.login(UsernameJTextField.getText(), new String(PasswordJTextArea.getPassword())))
+        boolean goodToGo = false;
+        
+        //Empty fields
+        String pw = new String(PasswordJTextArea.getPassword());
+        if ((UsernameJTextField.getText().equals("")) ||(pw.equals("")))
         {
-            OKButton.setEnabled(true);
+            feedbackTextArea.append("Please supply both username and password.");
+            feedbackTextArea.append("\n");
+            goodToGo = false;
+        }
+        
+        else
+            goodToGo = true;
+        
+        if (goodToGo)
+        {
+            feedbackTextArea.append("Connecting...");
+            if (myManager.login(UsernameJTextField.getText(), new String(PasswordJTextArea.getPassword())))
+            {
+                OKButton.setEnabled(true);
+            }
         }
        
     }//GEN-LAST:event_LoginButtonActionPerformed

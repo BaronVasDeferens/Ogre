@@ -17,7 +17,7 @@ public class CommandPost extends ogre.Unit
         super(id);
         
         unitName = "Command Post";
-        unitType = "CP";
+        unitType = UnitType.CommandPost;
         
         movement = 0;
         defense = 1;

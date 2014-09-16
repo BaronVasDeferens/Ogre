@@ -33,7 +33,7 @@ public class Ogre extends ogre.Unit
     {
         super(666);
         
-        unitType = "OGRE";
+        unitType = UnitType.Ogre;
         
         mainBattery = new LinkedList();
         mainBattery.clear();

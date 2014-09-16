@@ -89,7 +89,7 @@ public class Player implements Serializable
             thisUnit = (Unit)iter.next();
             
             //NON-OGRE units
-            if (!thisUnit.unitType.equals("OGRE"))
+            if (thisUnit.unitType != UnitType.Ogre)
             {
                 if (thisUnit.isAlive)
                 {
