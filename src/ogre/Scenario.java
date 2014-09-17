@@ -6,38 +6,47 @@
 
 package ogre;
 
-
 import java.util.LinkedList;
-/**
- *
- * @author Skot
- */
+
+
+
+enum ScenarioType
+{
+    MkIII, MkV, Custom, Test
+}
+
+enum VictoryCondition
+{
+    CommandPostDestroyed, OgreNeutralized, LastManStanding, None, Test
+}
+
+// SCENARIO
+// 
 public class Scenario 
 {
-    int victoryCondition = 0;
-    /*
-    CODE        CONDITION
-    0           no victory conditions set
-    1           destroy enemy HQ / neutralize Ogre
-    */
-     
+    
+    ScenarioType scenarioType;
+    VictoryCondition player1VictoryCondition, player2VictoryCondition;
+    
     LinkedList<Unit> allUnits;
     
     Scenario(int selection, Player player1, Player player2)
     {
         allUnits = new LinkedList();
         allUnits.clear();        
+         
+        scenarioType = ScenarioType.Test;
         
-        switch (selection)
+        switch (scenarioType)
         {
             //TEST (0)
             //Player One: defender
             //Player Two: Ogre, attacker
-            case 0:
+            case Test:
             default:
                 
                 //TEST SCENARIO
-                //player1.units.add(new Infantry(6,1));
+
                 player1.units.add(new HeavyTank(2));
                 player1.units.add(new Howitzer(33));
                 player1.units.add(new Infantry(8,2));
@@ -46,9 +55,13 @@ public class Scenario
                 player1.units.add(new GEV(99));
                 player1.units.add(new CommandPost(34));
                 
+                player1VictoryCondition = VictoryCondition.None;
+                
                 //Add player two's single ogre unit
                 player2.units.add(new Ogre(3));
-
+                player1VictoryCondition = VictoryCondition.None;
+                
+                player2.flipAllUnitImages();
                 
                 //Add all to AllUnits
                 allUnits.addAll(player1.units);

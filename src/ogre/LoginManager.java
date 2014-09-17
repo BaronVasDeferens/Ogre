@@ -43,6 +43,7 @@ public class LoginManager
         
         loginFrame = new LoginFrame(this);
         loginFrame.setDefaultCloseOperation(LoginFrame.DISPOSE_ON_CLOSE);
+        loginFrame.setTitle("Login To Ogre");
         loginFrame.setVisible(true);
     }
     

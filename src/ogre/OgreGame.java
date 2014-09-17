@@ -364,13 +364,13 @@ public class OgreGame
         //Target is an Ogre, but no specific system is targetted: shouldn't happen
         else if ((currentTarget.unitType == UnitType.Ogre) && (targettedOgreWeapon == null))
         {
-            reportArea.append("ERROR: (Attack): target is ogre but no weapon selected\n");
+            reportArea.append("ERROR: (Attack): no Ogre sub-system is targetted\n");
             AOK = false;
         }
         
         //Check to see if AP weapons are being used against hard targets
-        //if NOT(infantry OR CP) AND Ogre Weapons in play...
-        if ( (currentTarget.unitType != UnitType.Infantry) || (currentTarget.unitType != UnitType.CommandPost) && (!selectedOgreWeapons.isEmpty()))
+        //Infantry and CommandPosts are considered "soft targets" and are vulnerale to AP attack
+        if (((currentTarget.unitType != UnitType.Infantry) && (currentTarget.unitType != UnitType.CommandPost)) && (!selectedOgreWeapons.isEmpty()))
         {
             iter = selectedOgreWeapons.iterator();
             Weapon thisWp;
@@ -381,8 +381,8 @@ public class OgreGame
                 
                 if (thisWp.softTargetsOnly == true)
                 {
-                    reportArea.append("ERROR (Attack): cannot use AP guns against hard targets.\n");
-                    reportArea.append(thisWp.weaponName + ":" + thisWp.softTargetsOnly + "\n");
+                    reportArea.append("AP guns are only effective against Infantry and Command Post units.\n");
+                    //reportArea.append(thisWp.weaponName + ":" + thisWp.softTargetsOnly + "\n");
                     AOK = false;
                 }
             }
@@ -899,7 +899,7 @@ public class OgreGame
     }
     
     //SWITCH CURRENT PLAYER
-    //Derp. Only supports two players. Sad.
+    //Currently nly supports two players. Sad.
     public void switchCurrentPlayer()
     {
         allUnits.removeAll(playerOne.units);

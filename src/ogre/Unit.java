@@ -52,6 +52,8 @@ public class Unit implements Serializable
     int movementPostShooting;   //for GEVs
     
     BufferedImage image;
+    BufferedImage imageAlternate;
+    BufferedImage currentImage;
     
     //Default constructor
     public Unit(int id)
@@ -183,7 +185,7 @@ public class Unit implements Serializable
         disabledTurns = turns;
     }
     
-    //SUBTRACT TURN FROM DISBALE
+    //PROCESS END OF TURN
     public void processEndOfTurn()
     {
         hasMoved = false;
@@ -207,10 +209,17 @@ public class Unit implements Serializable
             return (false);
     }   
     
+    public void flipImage()
+    {
+        if (currentImage == image)
+            currentImage = imageAlternate;
+        else
+            currentImage = image;
+    }
     
     public BufferedImage getImage()
     {
-        return image;
+        return currentImage;
     }
     
 }

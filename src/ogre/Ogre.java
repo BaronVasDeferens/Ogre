@@ -84,7 +84,10 @@ public class Ogre extends ogre.Unit
                 treads = new Treads(45,15,16);
                 
                 image = loadImage("ogre_mk3.png");
+                imageAlternate = loadImage("ogre_mk3_b.png");
              
+                currentImage = image;
+                
                 break;                
         }    
     }

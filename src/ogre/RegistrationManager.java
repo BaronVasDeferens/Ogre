@@ -47,6 +47,7 @@ public class RegistrationManager
         
         regFrame = new RegisterFrame(this);
         regFrame.setDefaultCloseOperation(LoginFrame.DISPOSE_ON_CLOSE);
+        regFrame.setTitle("Register New Ogre Player");
         regFrame.setVisible(true);
     }
     
@@ -57,6 +58,7 @@ public class RegistrationManager
         
         regFrame.feedbackTextArea.setText("");
         regFrame.feedbackTextArea.append("Connecting to server...");
+        regFrame.setTitle("Register With Ogre");
         regFrame.feedbackTextArea.append("\n");
             
         try

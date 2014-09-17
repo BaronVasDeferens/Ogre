@@ -23,6 +23,8 @@ public class CommandPost extends ogre.Unit
         defense = 1;
         
         image = loadImage("command_post.png");
+        imageAlternate = loadImage("command_post_b.png");
+        currentImage = image;
         
         unitWeapon = new Weapon(0,0,true,"none",0);
     }
@@ -45,7 +47,6 @@ public class CommandPost extends ogre.Unit
                 isAlive = false;
                 break;
             default:
-                report = report.concat(" DERP");
                 break;
         }
         

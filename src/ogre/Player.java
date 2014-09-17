@@ -72,6 +72,19 @@ public class Player implements Serializable
         }
     }
     
+    //FLIP ALL UNIT IMAGES
+    //Replaces the white tiles with black tiles and vice versa
+    public void flipAllUnitImages()
+    {
+        Iterator iter = units.iterator();
+        Unit unit;
+        
+        while (iter.hasNext())
+        {
+            unit = (Unit)iter.next(); 
+            unit.flipImage();
+        }
+    }
     
     //READY FOR NEXT TURN
     //Inbetween house-keeping; returns values to "ready states." Returns a linked list of units
@@ -115,6 +128,9 @@ public class Player implements Serializable
         }
         
         units.removeAll(deadUnits);
+        
+        flipAllUnitImages();
+        
         return (units);
     }
 }

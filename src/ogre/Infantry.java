@@ -40,6 +40,8 @@ public class Infantry extends ogre.Unit
         unitWeapon = new Weapon(def, 1, false, "anti-tank", 0);
         
         image = loadImage("infantry_" + def + ".png");
+        imageAlternate = loadImage("infantry_" + def + "_b.png");
+        currentImage = image;
     }
     
     //TAKE DAMAGE
@@ -66,10 +68,12 @@ public class Infantry extends ogre.Unit
                     {
                         case 2:
                             image = loadImage("infantry_2.png");
+                            imageAlternate = loadImage("infantry_2_b.png");
                             report = report.concat(" TAKES A CASUALTY.");
                             break;
                         case 1:
                             image = loadImage("infantry_1.png");
+                            imageAlternate = loadImage("infantry_1_b.png");
                             report = report.concat(" TAKES A CASUALTY.");
                             break;
                         case 0:
