@@ -30,12 +30,12 @@ public class Scenario
     
     LinkedList<Unit> allUnits;
     
-    Scenario(int selection, Player player1, Player player2)
+    Scenario(Player player1, Player player2, ScenarioType type)
     {
         allUnits = new LinkedList();
         allUnits.clear();        
          
-        scenarioType = ScenarioType.Test;
+        scenarioType = type;
         
         switch (scenarioType)
         {

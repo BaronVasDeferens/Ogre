@@ -26,7 +26,7 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         transObj = trObj;
         initComponents();
         
-        OKButton.setEnabled(false);
+        OKButton.setEnabled(true);
         
         //Setup the opponentList
         OpponentList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -71,6 +71,11 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         jLabel2.setText("Choose A Scenario");
 
         OKButton.setText("OK");
+        OKButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OKButtonActionPerformed(evt);
+            }
+        });
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -89,6 +94,7 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         jLabel3.setText("Scenario Description");
 
         jCheckBox1.setText("Opponent Goes Second");
+        jCheckBox1.setActionCommand("Opponent Goes First");
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBox1ActionPerformed(evt);
@@ -166,6 +172,20 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox1ActionPerformed
+
+    private void OKButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OKButtonActionPerformed
+        // TODO add your handling code here:
+        
+        //TODO: add preflight checks here
+        
+        //obtain a reference to the chosen opponent
+        String opponentName =(String)OpponentList.getSelectedValue();
+        
+        //TODO: allow user to select the scenario
+        myManager.createNewGame(opponentName, ScenarioType.MkIII);
+        
+        
+    }//GEN-LAST:event_OKButtonActionPerformed
 
     /**
      * @param args the command line arguments

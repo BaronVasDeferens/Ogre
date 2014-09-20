@@ -17,9 +17,12 @@ public class TransportObject implements Serializable
     //private static final long serialVersionUID = -6903933977591709194L;
     private static final long serialVersionUID = -1301313013130130130L;
     
-    boolean isLogin;
-    boolean isRegistration;
-    boolean isLogout;
+    //Seven basic client server interactions are covered by these flags:
+    boolean isRegistration;         //true when creating a new user entry
+    boolean isLogin;                //true when logging in
+    boolean isLogout;               //true when logging out
+    boolean checkoutGameState;      //true when 
+    
     
     String username;
     String password;

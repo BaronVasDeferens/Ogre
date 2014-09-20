@@ -16,22 +16,35 @@ public class mathOut {
     
     public static void main(String ... args)
     {
-//        float result;
-//        
-//        for (int i = 1; i < 7; i++)
-//        {          
-//            System.out.println(i + "," + (i+3)%6);
-//        }
+        TestObject [] objectArray = new TestObject[10];
         
-        Polygon p = new Polygon();
-        p.reset();
-        p.addPoint(0,0);
-        p.addPoint(0,15);
-        p.addPoint(15,15);
-        p.addPoint(15,0);
+        int val = 1;
         
-        System.out.println(p.npoints);
-        System.out.println(p.xpoints[1] + "," + p.ypoints[1]);
+        for (TestObject x: objectArray)
+        {
+            x = new TestObject(val);
+            val++;
+        }
+        
+        for (TestObject x: objectArray)
+        {
+            System.out.println(x.data);
+        }
 
+    }
+}
+
+class TestObject
+{
+    public int data;
+    
+    TestObject()
+    {
+        data = 0;
+    }
+    
+    TestObject(int value)
+    {
+        data = value;
     }
 }

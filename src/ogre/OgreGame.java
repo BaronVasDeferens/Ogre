@@ -88,7 +88,7 @@ public class OgreGame
         currentOgre = null;
         targettedOgreWeapon = null;
         
-        scenario = new Scenario(0, playerOne, playerTwo);
+        scenario = new Scenario(playerOne, playerTwo, ScenarioType.Test);
 
         selectedOgreWeapons = new LinkedList();
         selectedOgreWeapons.clear();
@@ -1173,14 +1173,37 @@ public class OgreGame
     //CREATE NEW GAME
     public void createNewGame()
     {
-        if (activePlayerCredentials != null)
+        //Check: if the current game state isn't null, there is a gamein progress
+        if (currentGameState != null)
         {
-            NewGameManager newGameManager = new NewGameManager(activePlayerCredentials);
+            JOptionPane.showMessageDialog(myFrame, "GAME IN PROGRESS",
+            "There is a game in progress.", JOptionPane.WARNING_MESSAGE);
         }
+        
+        //Check to see if the user is logged in
+        else if (activePlayerCredentials != null)
+        {
+            NewGameManager newGameManager = new NewGameManager(activePlayerCredentials, this);
+        }
+        
         else
         {
             JOptionPane.showMessageDialog(myFrame, "You must log in.",
             "YOU ARE NOT LOGGED IN", JOptionPane.WARNING_MESSAGE);
         }
+    }
+    
+    
+    public boolean setCurrentGameState(GameState setState)
+    {
+        boolean success = false;
+        
+        if (currentGameState != null)
+        {
+            JOptionPane.showMessageDialog(myFrame, "There is already a game in progress!",
+            "GAME IN PROGRESS", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        return (success);
     }
 }

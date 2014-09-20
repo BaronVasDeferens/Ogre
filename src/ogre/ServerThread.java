@@ -113,7 +113,7 @@ public class ServerThread implements Runnable
                         if (player != null)
                         {
                             System.out.println(player.name + " has registered and logged in!");
-                            transObj = new TransportObject(player, master.getRegisteredUserList(), "Registration SUCCESS!");
+                            transObj = new TransportObject(player, master.getRegisteredPlayerList(), "Registration SUCCESS!");
                             
                             send(transObj);  
                         }
@@ -146,7 +146,7 @@ public class ServerThread implements Runnable
                     if (player != null)
                     {
                         System.out.println(player.name + " logged in");
-                        transObj = new TransportObject(player, master.getRegisteredUserList(), "Welcome back!");
+                        transObj = new TransportObject(player, master.getRegisteredPlayerList(), "Welcome back!");
 
                         send(transObj);
                     }
