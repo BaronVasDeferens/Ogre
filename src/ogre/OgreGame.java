@@ -28,7 +28,7 @@ public class OgreGame
         
     GameState currentGameState = null;
     
-    TransportObject activePlayerCredentials = null;
+    LoginObject activePlayerCredentials = null;
     
     HexMap hexMap;
     public int hexSide = 64;

@@ -6,37 +6,40 @@ package ogre;
 DATA WRITER
 by Skot West
 Creates and maintains a LinkedList of Objects. This list is then able to be written/read
-to/from disk. The structre and content of the data structure are preserved.
+to/from disk. The structure and content of the data structure are preserved.
 
-NOTE: this version of IOList has been modified to operate on Player objects only.
-I may come back later and make this data structure capable of handling any type of Object.
  */
+
 import java.util.*;
-import java.io.Serializable;
 import java.io.*;
 
 /**
  *
  * @author Skot
  */
-public class IOList 
+public class IOList implements Serializable
 {
-    private DataList<Player> playerList;
+    protected DataList<Object> dataList;
+    protected String dataFileName;
     
-    private String dataFileName = null;
-    
-    private FileOutputStream out;
-    private FileInputStream in;
-    private ObjectOutputStream objectOut;
-    private ObjectInputStream objectIn;
+    protected FileOutputStream out;
+    protected FileInputStream in;
+    protected ObjectOutputStream objectOut;
+    protected ObjectInputStream objectIn;
     
     //DEFAULT CONSTRUCTOR
     public IOList()
     {
-        playerList = new DataList();
-        playerList.clear();
+        dataList = new DataList();
+        dataList.clear();
         
         dataFileName = null;
+        
+        out = null;
+        in = null;
+        objectOut = null;
+        objectIn = null;
+
     }
     
     //CONSTRUCTOR WITH ARG
@@ -47,29 +50,180 @@ public class IOList
         dataFileName = arg;
     }
     
+   
+    //ITERTATOR
+    //Returns an iterator across the 
+    public Iterator iterator()
+    {
+        return dataList.iterator();
+    }
+    
+    
+    //CLEAR ALL
+    //Clears all data but does not not overwrite the file
+    public void clearAll()
+    {
+        if (dataList != null)
+        {
+            dataList.clear();
+        }   
+    }
+    
+    //DESTROY ALL DATA
+    //CLears all data and overwrites the file. Requires the name of the filename as a security check.
+    public void destroyAllData(String filename)
+    {
+        if (dataFileName.equals(filename))
+        {
+            dataList.clear();
+            writeToDisk();
+        }
+    }
+    
+    
+    //DISPLAY ALL
+    //Prints all user data to System.out
+    public void displayAll()
+    {
+        //OUTPUT DATA
+        if (dataList != null)
+        {
+            Object temp;
+            int size = dataList.size();
+            System.out.println(size + " ENTRIES FOUND:");
+            
+            Iterator iter = dataList.iterator();
+            
+            while (iter.hasNext())
+            {
+                temp = (Object)iter.next();
+                System.out.println(temp.toString());
+            }
+        }
+    }
+    
+    
+    //READ FROM DISK (NO ARGS)
+    //Reads from the dataFileName supplied at instantiation.
+    public boolean readFromDisk()
+    {
+        if (dataFileName == null)
+            return false;
+        else
+            return (readFromDisk(dataFileName));
+    }
+    
+    
+    //READ FROM DISK (WITH ARG)
+    //Reads a data structure from specified file
+    public boolean readFromDisk(String file)
+    {
+        try
+        {
+            in = new FileInputStream(file);
+            objectIn = new ObjectInputStream(in);
+            
+            dataList = (DataList)objectIn.readObject();
+            
+            in.close();
+            return (true);
+        }
+        
+        catch(IOException | ClassNotFoundException e)
+        {
+            System.out.println("IOList ERROR: problem reading " + file);
+            return (false);
+        }
+       
+        
+    }
+    
+    //WRITE TO DISK (NO ARGS)
+    //Commits the contents of the list to a previously specified file
+    public boolean writeToDisk()
+    {
+        if (dataFileName == null)
+            return (false);
+        else
+            return (writeToDisk(dataFileName));
+    }
+    
+    //WRITE TO DISK
+    //Commits the contents of the data structure to disk
+    //Returns true upon success.
+    public boolean writeToDisk(String file)
+    {
+        //WRITE TO DISK
+        try
+        {
+            out = new FileOutputStream(file);
+            objectOut = new ObjectOutputStream(out);
+            
+            objectOut.writeObject(dataList);
+            
+            out.close();
+            return (true);   
+        }
+        
+        catch(IOException e)
+        {
+            System.out.println("IOList: error writing to " + file);
+            return (false);
+        }
+        
+    }
+}
+    
+
+//**************
+//PLAYER IO LIST
+//**************
+
+//Handles persistent player database
+class PlayerIOList extends IOList
+{
+    
+    //DEFAULT CONSTRUCTOR
+    public PlayerIOList()
+    {
+        super();
+    }
+    
+    //CONSTRUCTOR WITH ARG
+    //Sets a specified dataFileName which will be read from an saved to.
+    public PlayerIOList(String arg)
+    {
+        super(arg);
+    }
+    
     //ADD USER
     //Determines whether or not the candidate to add has a unique name
     //If so, add it to the list
     public boolean addPlayer(Player addMe)
     {
         if (addMe == null)
-            return false;
-        
-        else if (playerList.isEmpty())
         {
-            playerList.add(addMe);
+            dataList = new ogre.DataList();
+            dataList.clear();
+            return (addPlayer(addMe));
+        }
+        
+        else if (dataList.isEmpty())
+        {
+            dataList.add(addMe);
             writeToDisk();
             return (true);
         }
+        
         else
         {
             if (hasEntryNamed(addMe.name) == false)
             {
-                playerList.add(addMe);
+                dataList.add(addMe);
                 writeToDisk();
                 return (true);
             }
-
+            //Enrty with that name has already been found. Return false
             else
                 return(false);
         }
@@ -81,11 +235,11 @@ public class IOList
     //Returns true if an exact match (both name an password) is found
     public boolean matches(Player findMe)
     {
-        if (playerList == null)
+        if (dataList == null)
             return (false);
         else
         {
-            Iterator iter = playerList.iterator();
+            Iterator iter = dataList.iterator();
             Player currentPlayer;
             
             while (iter.hasNext())
@@ -108,12 +262,12 @@ public class IOList
     //Returns the player from the records matching the one described
     public Player getPlayerMatching(Player findMe)
     {
-        if (playerList == null)
+        if (dataList == null)
             return (null);
         
         else
         {
-            Iterator iter = playerList.iterator();
+            Iterator iter = dataList.iterator();
             Player currentPlayer;
             
             while (iter.hasNext())
@@ -135,14 +289,14 @@ public class IOList
     //Scans through the records and returns truw if there is an entry matching the argument
     public boolean hasEntryNamed(String user)
     {
-        if (playerList == null)
+        if (dataList == null)
             return false;
         
-        else if (playerList.size() == 0)
+        else if (dataList.size() == 0)
             return (false);
         else
         {
-            Iterator iter = playerList.iterator();
+            Iterator iter = dataList.iterator();
             Player currentPlayer;
             
             while (iter.hasNext())
@@ -159,27 +313,16 @@ public class IOList
         }
     }
     
-    //GET
-    public Player get(String name)
-    {
-        return null;
-    }
-    
-    public Iterator iterator()
-    {
-        return playerList.iterator();
-    }
-    
-    
     //REMOVE USER
+    //Returns true if the user 
     public boolean remove(String deleteMe)
     {        
-        if (playerList == null)
+        if (dataList == null)
             return false;
         else
         {
             Player currentPlayer;
-            Iterator iter = playerList.iterator();
+            Iterator iter = dataList.iterator();
             
             while (iter.hasNext())
             {
@@ -187,7 +330,7 @@ public class IOList
                 
                 if(currentPlayer.name.equals(deleteMe))
                 {
-                    playerList.remove(currentPlayer);
+                    dataList.remove(currentPlayer);
                     writeToDisk();
                     return(true);
                 }
@@ -197,122 +340,59 @@ public class IOList
         }
     }
     
-    //REMOVE ALL USERS
-    public void clearAllPlayers()
-    {
-        if (playerList != null)
-        {
-            playerList.clear();
-            writeToDisk();
-        }
-        
-    }
-    
-    
-    //OUTPUT
+    //DISPLAY ALL
     //Prints all user data to System.out
+    @Override
     public void displayAll()
     {
         //OUTPUT DATA
-        if (playerList != null)
+        if (dataList != null)
         {
-            Player temp;
-            int size = playerList.size();
+            int size = dataList.size();
             System.out.println(size + " ENTRIES FOUND:");
             
             Player currentPlayer;
-            Iterator iter = playerList.iterator();
+            Iterator iter = dataList.iterator();
             
             while (iter.hasNext())
             {
                 currentPlayer = (Player)iter.next();
                 
                 System.out.print("USERNAME: " + currentPlayer.name);
-                System.out.print("\t EMAIL: " + currentPlayer.emailAddress);
+                System.out.print("\t\t EMAIL: " + currentPlayer.emailAddress);
                 System.out.println("\t PASSWORD: " + currentPlayer.password);
-
             }
         }
     }
-    
-
-    
-    //READ FROM DISK (NO ARGS)
-    //Reads from the dataFileName supplied at instantiation.
-    public boolean readFromDisk()
-    {
-        if (dataFileName == null)
-            return false;
-        else
-            return (readFromDisk(dataFileName));
-    }
-    
-    
-    //READ FROM DISK (WITH ARG)
-    //Reads a data structure from specified file
-    public boolean readFromDisk(String file)
-    {
-        try
-        {
-            in = new FileInputStream(file);
-            objectIn = new ObjectInputStream(in);
-            
-            playerList = (DataList)objectIn.readObject();
-            
-            in.close();
-            return (true);
-        }
-        
-        catch(IOException | ClassNotFoundException e)
-        {
-            System.out.println("IOList ERROR: problem reading " + file);
-            return (false);
-        }
-       
-        
-    }
-    
-    //WRITE TO DISK (NO ARGS)
-    public boolean writeToDisk()
-    {
-        if (dataFileName == null)
-            return (false);
-        else
-            return (writeToDisk(dataFileName));
-    }
-    
-    //WRITE TO DISK
-    //Commits the contents of the data structure to disk
-    //Returns true upon success.
-    public boolean writeToDisk(String file)
-    {
-        //WRITE TO DISK
-        try
-        {
-            out = new FileOutputStream(file);
-            objectOut = new ObjectOutputStream(out);
-            
-            objectOut.writeObject(playerList);
-            
-            out.close();
-            return (true);
-            
-        }
-        
-        catch(IOException e)
-        {
-            System.out.println("IOList: error writing to " + file);
-            return (false);
-        }
-        
-    }
       
 }
+
+
+//GAME STATE IO LIST
+//For managing a persistent list of GameStates
+class GameStateIOList extends IOList
+{
+    GameStateIOList(String file)
+    {
+        super(file);
+    }
+    
+}
+
+
+
+
 
 //DATA LIST
 //This is basically a serialized HashSet (no duplicate entries!)
 class DataList<Object> extends HashSet implements Serializable
 {
     
+
     
 }
+
+
+
+
+

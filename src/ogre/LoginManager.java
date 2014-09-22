@@ -24,7 +24,7 @@ public class LoginManager
     int port;
     
     OgreGame myMaster;
-    TransportObject activeUserCredentials;
+    LoginObject activePlayerCredentials;
     
     Socket sckt = null;
     InputStream in = null;
@@ -33,13 +33,13 @@ public class LoginManager
     ObjectInputStream objectIn = null;
     
     
-    LoginManager(String srvr, int prt, OgreGame master, TransportObject activUsr)
+    LoginManager(String srvr, int prt, OgreGame master, LoginObject activUsr)
     {
         server = srvr;
         port = prt;
         myMaster = master;
         
-        activeUserCredentials = activUsr;
+        activePlayerCredentials = activUsr;
         
         loginFrame = new LoginFrame(this);
         loginFrame.setDefaultCloseOperation(LoginFrame.DISPOSE_ON_CLOSE);
@@ -89,7 +89,7 @@ public class LoginManager
         {
 
             //Generate a loginObject
-            TransportObject loginObj = new TransportObject(username, password, null, true, false);
+            TransportObject loginObj = new LoginObject(username, password);
 
             //Transmit a connection request object and wait for receipt of answer object
             if (objectOut != null)
@@ -113,25 +113,25 @@ public class LoginManager
                 {
                     try
                     {
-                        activeUserCredentials = (TransportObject)objectIn.readObject();
+                        activePlayerCredentials = (LoginObject)objectIn.readObject();
                     }
                     catch (ClassNotFoundException | IOException e)
                     {
 
                     }
 
-                    if (activeUserCredentials != null)
+                    if (activePlayerCredentials != null)
                     {
-                        loginFrame.feedbackTextArea.append(activeUserCredentials.message);
+                        loginFrame.feedbackTextArea.append(activePlayerCredentials.message);
                         answerReceived = true;
                     }
 
                 }
 
-                if ((answerReceived == true) && (activeUserCredentials.player != null))
+                if ((answerReceived == true) && (activePlayerCredentials.player != null))
                 {
                     //loginFrame.feedbackTextArea.append("Welcome to Ogre. One moment, please...\n");
-                    myMaster.activePlayerCredentials = activeUserCredentials;
+                    myMaster.activePlayerCredentials = activePlayerCredentials;
                     AOK = true;
 
                     //Deploy the myGames window HERE
@@ -142,6 +142,7 @@ public class LoginManager
         else
             loginFrame.feedbackTextArea.append("Could not connect.\n");
         
+        disconnectFromServer();
         return (AOK);
     }
     

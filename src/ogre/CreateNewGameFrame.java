@@ -15,22 +15,37 @@ import java.util.*;
 public class CreateNewGameFrame extends javax.swing.JFrame {
 
     
-    static TransportObject transObj;
+    static LoginObject credentials;
     static NewGameManager myManager;
     /**
      * Creates new form CreateNewGameFrame
      */
-    public CreateNewGameFrame(NewGameManager myMgr, TransportObject trObj) {
+    public CreateNewGameFrame(NewGameManager myMgr, LoginObject loginCreds) {
         
         myManager = myMgr;
-        transObj = trObj;
+        credentials = loginCreds;
         initComponents();
         
         OKButton.setEnabled(true);
         
         //Setup the opponentList
         OpponentList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        OpponentList.setListData(transObj.registeredPlayers.toArray());
+        
+       //Create an array to populate the list
+        DefaultListModel listModel = new DefaultListModel();
+        Iterator iter = credentials.registeredPlayers.iterator();
+        Player plyr;
+        int index = 0;
+        
+        while (iter.hasNext())
+        {
+            plyr = (Player)iter.next();
+            listModel.addElement(plyr.name);
+        }
+        
+        OpponentList.setModel(listModel);
+        
+        //OpponentList.setListData(credentials.registeredPlayers.toArray());
         
         //Setup scenario selection
         scenarioJComboBox.removeAllItems();
@@ -84,6 +99,7 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
             }
         });
 
+        OpponentList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(OpponentList);
 
         jTextArea1.setColumns(20);
@@ -217,7 +233,7 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CreateNewGameFrame(myManager,transObj).setVisible(true);
+                new CreateNewGameFrame(myManager,credentials).setVisible(true);
             }
         });
     }

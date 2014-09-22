@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public class GameState implements Serializable
 {
-    boolean isOpen;         //true when one player is using/writing to it
+    boolean isOpen;         //true when one player is "checked out" this game
     
     Player playerOne, playerTwo, currentPlayer;
     Date dateCreated;

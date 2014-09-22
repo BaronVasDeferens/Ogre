@@ -92,7 +92,7 @@ public class ServerThread implements Runnable
                 catch (ClassNotFoundException | IOException e)
                 {
                     active = false;
-                    System.out.println("ServerThread ERROR: problem reading object"); 
+                    //System.out.println("ServerThread ERROR: problem reading object"); 
                 }
                 
                 
@@ -103,58 +103,71 @@ public class ServerThread implements Runnable
                 }
                 
                 //REGISTRATION REQUEST
-                else if (transObj.isRegistration)
+                else if (transObj.isRegistrationRequest)
                 {
-                    //If the new player was successfully registered wth the system, log them in
-                    if (master.registerPlayer(transObj))
+                    RegistrationObject regObj = (RegistrationObject)transObj;
+                    
+                    //Attempt to register:
+                    if (master.registerPlayer(regObj))
                     {
-                        player = master.loginPlayer(transObj);
+                        //Success. Now, obtain a reference 
+                        LoginObject loginObj = new LoginObject(regObj.username, regObj.password);
+                        player = master.loginPlayer(loginObj);
                         
                         if (player != null)
                         {
-                            System.out.println(player.name + " has registered and logged in!");
-                            transObj = new TransportObject(player, master.getRegisteredPlayerList(), "Registration SUCCESS!");
+                            System.out.println(player.name + " has registered");
                             
-                            send(transObj);  
+                            //Return a loginObject with an empty gamestate list and all registered users
+                            loginObj = new LoginObject(player, "Registration SUCCESS!");
+                            loginObj.gameStateList = new LinkedList();
+                            loginObj.gameStateList.clear();
+                            loginObj.registeredPlayers = master.getRegisteredPlayerList(player);
+                            
+                            send(loginObj);  
                         }
                         
                         //Login FAILED
                         else
                         {
-                            transObj = new TransportObject(null, null, "Login FAILED.");
-                            send(transObj);
+                            TransportObject loginFail = new TransportObject(transObj.username, "Login FAILED!");
+                            send(loginFail);
                         }
                     }
                     
                     //Could not register the user
                     else
                     {
-                        transObj = new TransportObject(null, null, "Registration FAILED.");
-                        send(transObj);
+                        TransportObject loginFail = new TransportObject(transObj.username, transObj.username +  "is already registered. Registration failed.");
+                        send(loginFail);
                     }
                     
                     transObj = null;
                 }
                 
                 //LOGIN REQUEST
-                else if (transObj.isLogin)
+                else if (transObj.isLoginRequest)
                 {
-                    System.out.println("Attempting login...");
+                    //System.out.println("Attempting login...");
                     
-                    player = master.loginPlayer(transObj);
+                    //Attempt to obtain reference to prior registered user
+                    player = master.loginPlayer((LoginObject)transObj);
                         
+                    //Login SUCCESS
                     if (player != null)
                     {
                         System.out.println(player.name + " logged in");
-                        transObj = new TransportObject(player, master.getRegisteredPlayerList(), "Welcome back!");
+                        LoginObject loginObj = new LoginObject(player, "Login SUCCESS!");
+                        loginObj.gameStateList = master.getGamesList(player.name);
+                        loginObj.registeredPlayers = master.getRegisteredPlayerList(player);
 
-                        send(transObj);
+                        send(loginObj);
                     }
 
                     //Login FAILED
                     else
                     {
-                        transObj = new TransportObject(null, null, "Login FAILED.");
+                        transObj = new TransportObject(null, "Login FAILED.");
                         send(transObj);
                     }
                     

@@ -21,13 +21,13 @@ public class NewGameManager
     OgreGame myMaster;
 
     //userCredentials: will be a reference passed from the OgreGame; contains the list of registered users, etc
-    TransportObject userCredentials;        
+    LoginObject userCredentials;        
     
     CreateNewGameFrame newGameFrame;
     
     GameState newGameState = null;
     
-    NewGameManager(TransportObject trnsObj, OgreGame myMsr)
+    NewGameManager(LoginObject trnsObj, OgreGame myMsr)
     {
         myMaster = myMsr;
         userCredentials = trnsObj;

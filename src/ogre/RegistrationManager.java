@@ -21,8 +21,9 @@ public class RegistrationManager
 {
     Player player;
     
-    TransportObject loginObj;
-    TransportObject activePlayerCredentials = null;
+    LoginObject loginObj;
+    TransportObject transObj;
+    LoginObject activePlayerCredentials = null;
     
     OgreGame myMaster;
     
@@ -37,13 +38,14 @@ public class RegistrationManager
     ObjectInputStream objectIn = null;
     
     
-    RegistrationManager(String srvr, int prt, OgreGame master, TransportObject actvPlyr)
+    RegistrationManager(String srvr, int prt, OgreGame master, LoginObject actvPlyr)
     {
         server = srvr;
         port = prt;
         
         myMaster = master;
         activePlayerCredentials = actvPlyr;
+        transObj = null;
         
         regFrame = new RegisterFrame(this);
         regFrame.setDefaultCloseOperation(LoginFrame.DISPOSE_ON_CLOSE);
@@ -91,7 +93,7 @@ public class RegistrationManager
         
         if (connectToServer())
         {
-            loginObj = new TransportObject(usrnm, pswd, emailAddy, true, true);
+            RegistrationObject regObj = new RegistrationObject(usrnm, pswd, emailAddy);
 
             try
             {
@@ -117,7 +119,7 @@ public class RegistrationManager
             {
                 try
                 {   
-                    objectOut.writeObject(loginObj);
+                    objectOut.writeObject(regObj);
                 }
 
                 catch(java.io.IOException e)
@@ -129,6 +131,7 @@ public class RegistrationManager
                 boolean answerReceived = false;
                 loginObj = null;
 
+                //Check the object reader:
                 if (objectIn != null)
                 {
                     //TODO: add a time out
@@ -136,7 +139,7 @@ public class RegistrationManager
                     {
                         try
                         {
-                            activePlayerCredentials = (TransportObject)objectIn.readObject();
+                            activePlayerCredentials = (LoginObject)objectIn.readObject();
                         }
                         catch (ClassNotFoundException | IOException e)
                         {

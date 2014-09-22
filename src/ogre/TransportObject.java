@@ -17,41 +17,91 @@ public class TransportObject implements Serializable
     //private static final long serialVersionUID = -6903933977591709194L;
     private static final long serialVersionUID = -1301313013130130130L;
     
-    //Seven basic client server interactions are covered by these flags:
-    boolean isRegistration;         //true when creating a new user entry
-    boolean isLogin;                //true when logging in
-    boolean isLogout;               //true when logging out
-    boolean checkoutGameState;      //true when 
-    
+    //Seven basic client-server interactions are covered by these flags:
+    boolean isRegistrationRequest;         //true when creating a new user entry
+    boolean isLoginRequest;                //true when logging in
+    boolean isLogoutRequest;               //true when logging out
+    boolean createNewGameRequest;          //true when sending a new gameState to be written
+    boolean checkoutGameStateRequest;      //true when requesting a specific game for checkout
+    boolean commitGameStateRequest;        //true when commiting a gameState to server
+
     
     String username;
+    String message;
+    
+    TransportObject()
+    {
+        isRegistrationRequest = false;
+        isLoginRequest = false;
+        isLogoutRequest = false;
+        createNewGameRequest = false;
+        checkoutGameStateRequest = false;
+        commitGameStateRequest = false;
+        
+        username = null;
+        message = null;
+    }
+    
+    TransportObject(String usrNm, String msg)
+    {
+        this();
+        
+        username = usrNm;
+        message = msg;
+    }
+    
+}
+
+
+class RegistrationObject extends TransportObject
+{
     String password;
     String emailAddress;
     
-    String message;
+    RegistrationObject(String usrnm, String passwd, String emailAddy)
+    {
+        super(usrnm, null);
+        password = passwd;
+        emailAddress = emailAddy;
+        
+        isRegistrationRequest = true;
+        isLoginRequest = true;
+        
+    }
+}
+
+
+class LoginObject extends TransportObject
+{
+    String password;
+    String emailAddress;
     
     Player player;
-    LinkedList<GameState> gameStateList;
-    LinkedList<Player> registeredPlayers; 
     
-    TransportObject(String usrnm, String psswrd, String email, boolean login, boolean isReg)
+    LinkedList<GameState> gameStateList;
+    LinkedList<Player> registeredPlayers;
+    
+    LoginObject(String usr, String passwd)
     {
-        username = usrnm;
-        password = psswrd;
-        emailAddress = email;
-        isRegistration = isReg;
-        isLogin = login;
+        super(usr, null);
+        password = passwd;
+        
         player = null;
         gameStateList = null;
         registeredPlayers = null;
         
-        message = null;
+        isLoginRequest = true;
     }
     
-    TransportObject(Player plyr, LinkedList<Player> regPlayers, String msg)
+    LoginObject(Player plyr, String msg)
     {
+        super();
         player = plyr;
-        registeredPlayers = regPlayers;
         message = msg;
+        
+        gameStateList = null;
+        registeredPlayers = null;
+        
+        isLoginRequest = true;
     }
 }
