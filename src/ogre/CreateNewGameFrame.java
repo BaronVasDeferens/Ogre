@@ -17,6 +17,9 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
     
     static LoginObject credentials;
     static NewGameManager myManager;
+    static boolean opponentGoesFirst = false;
+    static Player opponent;
+    static ScenarioDescription scenarioDescription;
     /**
      * Creates new form CreateNewGameFrame
      */
@@ -24,15 +27,20 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         
         myManager = myMgr;
         credentials = loginCreds;
-        initComponents();
         
-        OKButton.setEnabled(true);
+        opponentGoesFirst = false;
+        opponent = null;
+        
+        initComponents();
         
         //Setup the opponentList
         OpponentList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         
        //Create an array to populate the list
         DefaultListModel listModel = new DefaultListModel();
+        
+        Player [] playerArray = new Player[credentials.registeredPlayers.size()];
+        
         Iterator iter = credentials.registeredPlayers.iterator();
         Player plyr;
         int index = 0;
@@ -40,17 +48,26 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         while (iter.hasNext())
         {
             plyr = (Player)iter.next();
-            listModel.addElement(plyr.name);
+            
+            playerArray[index] = plyr;
+            listModel.add(index, plyr.name);
+            index++;
         }
-        
+              
         OpponentList.setModel(listModel);
-        
-        //OpponentList.setListData(credentials.registeredPlayers.toArray());
+        OpponentList.setSelectedIndex(0);
         
         //Setup scenario selection
         scenarioJComboBox.removeAllItems();
-        scenarioJComboBox.addItem(new String("Ogre Mk III basic"));
+        scenarioJComboBox.addItem(ScenarioType.Test);
+//        scenarioJComboBox.addItem(ScenarioType.MkV);
+//        scenarioJComboBox.addItem(ScenarioType.Test);
+//        scenarioJComboBox.addItem(ScenarioType.Custom);
         
+        scenarioDescription = new ScenarioDescription();
+        scenarioDescriptionJTextArea.setText(scenarioDescription.description((ScenarioType)scenarioJComboBox.getSelectedItem()));
+        
+        OKButton.setEnabled(true);
     }
 
     /**
@@ -70,17 +87,23 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         OpponentList = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        scenarioDescriptionJTextArea = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
         jCheckBox1 = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
         jLabel1.setText("Choose An Opponent");
 
         scenarioJComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        scenarioJComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scenarioJComboBoxActionPerformed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
         jLabel2.setText("Choose A Scenario");
@@ -100,11 +123,18 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         });
 
         OpponentList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        OpponentList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                OpponentListValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(OpponentList);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        scenarioDescriptionJTextArea.setEditable(false);
+        scenarioDescriptionJTextArea.setColumns(20);
+        scenarioDescriptionJTextArea.setLineWrap(true);
+        scenarioDescriptionJTextArea.setRows(5);
+        jScrollPane2.setViewportView(scenarioDescriptionJTextArea);
 
         jLabel3.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
         jLabel3.setText("Scenario Description");
@@ -165,11 +195,11 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(scenarioJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jCheckBox1))
-                        .addGap(110, 110, 110)
+                        .addGap(104, 104, 104)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(OKButton)
                             .addComponent(cancelButton)))
@@ -199,9 +229,20 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         
         //TODO: allow user to select the scenario
         myManager.createNewGame(opponentName, ScenarioType.MkIII);
-        
-        
+            
     }//GEN-LAST:event_OKButtonActionPerformed
+
+    private void OpponentListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_OpponentListValueChanged
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_OpponentListValueChanged
+
+    private void scenarioJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scenarioJComboBoxActionPerformed
+        // TODO add your handling code here:
+        
+        //Change the game description based on user input
+        
+    }//GEN-LAST:event_scenarioJComboBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -249,7 +290,7 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
+    public javax.swing.JTextArea scenarioDescriptionJTextArea;
     public javax.swing.JComboBox scenarioJComboBox;
     // End of variables declaration//GEN-END:variables
 }

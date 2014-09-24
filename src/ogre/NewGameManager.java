@@ -12,6 +12,8 @@ Handles the creation of GameStates from user's selections of:
 
 package ogre;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author skot
@@ -43,6 +45,7 @@ public class NewGameManager
         Scenario newScenario = null;
         java.util.Iterator iter = userCredentials.registeredPlayers.iterator();
         
+        //get the opponent reference
         while (iter.hasNext())
         {
             thisPlayer = (Player)iter.next();
@@ -58,15 +61,33 @@ public class NewGameManager
             newScenario = new Scenario(userCredentials.player, opponent, ScenarioType.Test);
         }
         
+        else
+            JOptionPane.showMessageDialog(newGameFrame, "Opponent is null",
+            "ERROR", JOptionPane.WARNING_MESSAGE);
+        
         if (newScenario != null)
         {
             newGameState = new GameState(userCredentials.player, opponent, newScenario);
         }
+        else
+            JOptionPane.showMessageDialog(newGameFrame, "scenario is null",
+            "ERROR", JOptionPane.WARNING_MESSAGE);
         
         if (newGameState != null)
         {
-            myMaster.setCurrentGameState(newGameState);
+            //TODO: Check to see if there is 
+            
+            if (myMaster.setCurrentGameState(newGameState))
+                newGameFrame.setVisible(false);
+            
+            else
+                JOptionPane.showMessageDialog(newGameFrame, "could not set game state",
+                    "ERROR", JOptionPane.WARNING_MESSAGE);
         }
+        
+        else
+            JOptionPane.showMessageDialog(newGameFrame, "gamestate is null",
+            "ERROR", JOptionPane.WARNING_MESSAGE);
         
     }
     

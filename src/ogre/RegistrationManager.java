@@ -196,12 +196,12 @@ public class RegistrationManager
             objectOut.close();
             objectOut = null;
             
-            regFrame.feedbackTextArea.append("You have safely disconected from the server.");
+            //regFrame.feedbackTextArea.append("You have safely disconected from the server.");
         }
 
         catch(IOException e)
         {
-            regFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
+            //regFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
         }
     }
 }        

@@ -15,6 +15,36 @@ enum ScenarioType
     MkIII, MkV, Custom, Test
 }
 
+class ScenarioDescription
+{
+    public String description(ScenarioType selection)
+    {
+        String returnString = null;
+        
+        switch (selection)
+        {
+            case MkIII:
+                returnString = "A single Ogre MkIII vs 20 points of armor and infantry. Goal is to destroy/defend an immboile command post.";
+                break;
+            case MkV:
+                returnString = "A single Ogre MkV vs 40 points of armor, infantry; goal is to defend/destroy an immobile command post.";
+                break;
+            case Test:
+                returnString = "Freeform scenario. No set victory conditions. For testing.";
+                break;
+            case Custom:
+                returnString = "Design your own scenario!";
+                break;
+            default:
+                returnString = "err";
+                break;
+        }
+        
+        return returnString;   
+    }
+}
+
+
 enum VictoryCondition
 {
     CommandPostDestroyed, OgreNeutralized, LastManStanding, None, Test

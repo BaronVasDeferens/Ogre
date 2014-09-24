@@ -19,13 +19,25 @@ public class EventManager implements Serializable
     GameEvent currentEvent = null;
     OgreGame master = null;
     
+    EventManager()
+    {
+        eventQueue = new EventList();
+        eventQueue.clear();
+        currentEvent = null;
+    }
+    
+    
     EventManager(OgreGame msr)
     {
         eventQueue = new EventList();
         eventQueue.clear();
-        
         currentEvent = null;
         
+        setMaster(msr);
+    }
+    
+    public void setMaster(OgreGame msr)
+    {
         master = msr;
     }
     

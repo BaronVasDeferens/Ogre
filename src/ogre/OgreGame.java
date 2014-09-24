@@ -72,47 +72,49 @@ public class OgreGame
     //TODO: put the ogrePanel in attachComponents function below instead 
     OgreGame(OgrePanel ogrPnl)
     {
-        hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
-        hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
-        hexMap.setMaster(this);
-        hexMap.setupMap();
-        
-        eventManager = new EventManager(this);
-        
-        //Assume scenarion ZERO (TEST) for now
-        playerOne = new Player("Skot");
-        playerTwo = new Player("Jordie");
-        
-        currentPlayer = playerOne;
-        
-        currentOgre = null;
-        targettedOgreWeapon = null;
-        
-        scenario = new Scenario(playerOne, playerTwo, ScenarioType.Test);
-
-        selectedOgreWeapons = new LinkedList();
-        selectedOgreWeapons.clear();
-        
-        allUnits = new LinkedList();
-        allUnits.clear();
-        allUnits.addAll(playerOne.units);
-        allUnits.addAll(playerTwo.units);
-        
-        Iterator iterator = allUnits.iterator();
-        Unit currentUnit;
-        int putX = 0;
-        
-        //DUMB PLACEMENT ROUTINE :: FOR TESTING ONLY
-        while (iterator.hasNext())
-        {
-            currentUnit = (Unit)iterator.next();
-            hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+4), currentUnit);
-            putX++;
-        }
-        
+//        hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
+//        hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
+//        hexMap.setMaster(this);
+//        hexMap.setupMap();
+//        
+//        eventManager = new EventManager(this);
+//        
+//        //Assume scenarion ZERO (TEST) for now
+//        playerOne = new Player("Skot");
+//        playerTwo = new Player("Jordie");
+//        
+//        currentPlayer = playerOne;
+//        
+//        currentOgre = null;
+//        targettedOgreWeapon = null;
+//        
+//        scenario = new Scenario(playerOne, playerTwo, ScenarioType.Test);
+//
+//        selectedOgreWeapons = new LinkedList();
+//        selectedOgreWeapons.clear();
+//        
+//        allUnits = new LinkedList();
+//        allUnits.clear();
+//        allUnits.addAll(playerOne.units);
+//        allUnits.addAll(playerTwo.units);
+//        
+//        Iterator iterator = allUnits.iterator();
+//        Unit currentUnit;
+//        int putX = 0;
+//        
+//        //DUMB PLACEMENT ROUTINE :: FOR TESTING ONLY
+//        while (iterator.hasNext())
+//        {
+//            currentUnit = (Unit)iterator.next();
+//            hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+4), currentUnit);
+//            putX++;
+//        }
+//        
         ogrePanel = ogrPnl;
-        ogrePanel.setHexMap(hexMap);
-        ogrePanel.setMaster(this);
+//        ogrePanel.setHexMap(hexMap);
+//        ogrePanel.setMaster(this);
+        
+        loadGameState(null);
         
     }
     
@@ -1188,8 +1190,8 @@ public class OgreGame
         
         else
         {
-            JOptionPane.showMessageDialog(myFrame, "You must log in.",
-            "YOU ARE NOT LOGGED IN", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(myFrame, "ERROR",
+            "You must log in first", JOptionPane.WARNING_MESSAGE);
         }
     }
     
@@ -1198,10 +1200,80 @@ public class OgreGame
     {
         boolean success = false;
         
-        if (currentGameState != null)
+        if (setState == null)
+            return false;
+        
+        //Prior gamestate in progress
+        else if (currentGameState != null)
         {
-            JOptionPane.showMessageDialog(myFrame, "There is already a game in progress!",
-            "GAME IN PROGRESS", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(myFrame, "GAME IN PROGRESS",
+            "There is already a game in progress!", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        //Reset everything to reelct the new gameState
+        else
+        {
+            return (loadGameState(setState));
+        }
+        
+        return (success);
+    }
+    
+    //LOAD GAME STATE
+    //
+    private boolean loadGameState(GameState loadState)
+    {
+        boolean success = false;
+        
+        //The initial load state is null. Fresh start.
+        if (loadState == null)
+        {
+            hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
+            hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
+            hexMap.setMaster(this);
+            hexMap.setupMap();
+
+            eventManager = new EventManager(this);
+
+            //Assume scenarion ZERO (TEST) for now
+            playerOne = new Player("Player 1");
+            playerTwo = new Player("Player 2");
+
+            currentPlayer = playerOne;
+
+            currentOgre = null;
+            targettedOgreWeapon = null;
+
+            scenario = new Scenario(playerOne, playerTwo, ScenarioType.Test);
+
+            selectedOgreWeapons = new LinkedList();
+            selectedOgreWeapons.clear();
+
+            allUnits = new LinkedList();
+            allUnits.clear();
+            allUnits.addAll(playerOne.units);
+            allUnits.addAll(playerTwo.units);
+
+            Iterator iterator = allUnits.iterator();
+            Unit currentUnit;
+            int putX = 0;
+
+            //DUMB PLACEMENT ROUTINE :: FOR TESTING ONLY
+            while (iterator.hasNext())
+            {
+                currentUnit = (Unit)iterator.next();
+                hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+4), currentUnit);
+                putX++;
+            }
+
+            ogrePanel.setHexMap(hexMap);
+            ogrePanel.setMaster(this);
+        
+        }
+        
+        else
+        {
+            
         }
         
         return (success);

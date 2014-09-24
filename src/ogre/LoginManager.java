@@ -164,12 +164,12 @@ public class LoginManager
             objectOut.close();
             objectOut = null;
             
-            loginFrame.feedbackTextArea.append("You have safely disconected from the server.");
+            //loginFrame.feedbackTextArea.append("You have safely disconected from the server.");
         }
 
         catch(IOException e)
         {
-            loginFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
+            //loginFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
         }
     }
     
