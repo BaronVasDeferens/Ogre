@@ -72,50 +72,8 @@ public class OgreGame
     //TODO: put the ogrePanel in attachComponents function below instead 
     OgreGame(OgrePanel ogrPnl)
     {
-//        hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
-//        hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
-//        hexMap.setMaster(this);
-//        hexMap.setupMap();
-//        
-//        eventManager = new EventManager(this);
-//        
-//        //Assume scenarion ZERO (TEST) for now
-//        playerOne = new Player("Skot");
-//        playerTwo = new Player("Jordie");
-//        
-//        currentPlayer = playerOne;
-//        
-//        currentOgre = null;
-//        targettedOgreWeapon = null;
-//        
-//        scenario = new Scenario(playerOne, playerTwo, ScenarioType.Test);
-//
-//        selectedOgreWeapons = new LinkedList();
-//        selectedOgreWeapons.clear();
-//        
-//        allUnits = new LinkedList();
-//        allUnits.clear();
-//        allUnits.addAll(playerOne.units);
-//        allUnits.addAll(playerTwo.units);
-//        
-//        Iterator iterator = allUnits.iterator();
-//        Unit currentUnit;
-//        int putX = 0;
-//        
-//        //DUMB PLACEMENT ROUTINE :: FOR TESTING ONLY
-//        while (iterator.hasNext())
-//        {
-//            currentUnit = (Unit)iterator.next();
-//            hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+4), currentUnit);
-//            putX++;
-//        }
-//        
         ogrePanel = ogrPnl;
-//        ogrePanel.setHexMap(hexMap);
-//        ogrePanel.setMaster(this);
-        
-        loadGameState(null);
-        
+        loadGameState(null); 
     }
     
     
@@ -139,7 +97,7 @@ public class OgreGame
         myFrame.setTitle("OGRE");
         ratioLabel.setText("");
         
-        advanceGamePhase();
+        //advanceGamePhase();
         
     }
     
@@ -772,6 +730,9 @@ public class OgreGame
         targettedOgreWeapon = null;
         currentOgre = null;
         
+        if ((currentGameState != null) && (eventManager != null))
+            currentGameState.eventManager = eventManager;
+        
         switch (gamePhase)
         {
             case 0:
@@ -818,7 +779,7 @@ public class OgreGame
                 
             //player 1 second move
             case 13:
-                phaseLabel.setText("Phase: SECOND MOVE (" + playerOne.name + ")");
+                phaseLabel.setText("Phase: 2nd MOVE (" + playerOne.name + ")");
                 
                 playerOne.readyForSecondMove();
                 
@@ -861,7 +822,7 @@ public class OgreGame
                 break;
                 
             case 23:
-                phaseLabel.setText("Phase: SECOND MOVE (" + playerTwo.name + ")");
+                phaseLabel.setText("Phase: 2nd MOVE (" + playerTwo.name + ")");
                 
                 playerTwo.readyForSecondMove();
                 
@@ -1175,7 +1136,7 @@ public class OgreGame
     //CREATE NEW GAME
     public void createNewGame()
     {
-        //Check: if the current game state isn't null, there is a gamein progress
+        //Check: if the current game state isn't null, there is a game in progress
         if (currentGameState != null)
         {
             JOptionPane.showMessageDialog(myFrame, "GAME IN PROGRESS",
@@ -1213,7 +1174,7 @@ public class OgreGame
         //Reset everything to reelct the new gameState
         else
         {
-            return (loadGameState(setState));
+            success = (loadGameState(setState));
         }
         
         return (success);
@@ -1228,52 +1189,94 @@ public class OgreGame
         //The initial load state is null. Fresh start.
         if (loadState == null)
         {
-            hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
-            hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
-            hexMap.setMaster(this);
-            hexMap.setupMap();
-
-            eventManager = new EventManager(this);
-
-            //Assume scenarion ZERO (TEST) for now
-            playerOne = new Player("Player 1");
-            playerTwo = new Player("Player 2");
-
-            currentPlayer = playerOne;
-
+//            hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
+//            hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
+//            hexMap.setMaster(this);
+//            hexMap.setupMap();
+//
+//            eventManager = new EventManager(this);
+//
+//            //Assume scenarion ZERO (TEST) for now
+//            playerOne = new Player("Player 1");
+//            playerTwo = new Player("Player 2");
+//
+//            currentPlayer = playerOne;
+//
+//            currentOgre = null;
+//            targettedOgreWeapon = null;
+//
+//            scenario = new Scenario(playerOne, playerTwo, ScenarioType.Test);
+//
+//            selectedOgreWeapons = new LinkedList();
+//            selectedOgreWeapons.clear();
+//
+//            allUnits = new LinkedList();
+//            allUnits.clear();
+//
+//            Iterator iterator = allUnits.iterator();
+//            Unit currentUnit;
+//            int putX = 0;
+//
+//            //DUMB PLACEMENT ROUTINE :: FOR TESTING ONLY
+//            while (iterator.hasNext())
+//            {
+//                currentUnit = (Unit)iterator.next();
+//                hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+4), currentUnit);
+//                putX++;
+//            }
+//
+//            ogrePanel.setHexMap(hexMap);
+//            ogrePanel.setMaster(this);
+//            
+//            hexMap.updateMapImage();
+            hexMap = null;
+            eventManager = null;
+            playerOne = null;
+            playerTwo = null;
+            currentPlayer = null;
+            selectedOgreWeapons = null;
             currentOgre = null;
-            targettedOgreWeapon = null;
-
-            scenario = new Scenario(playerOne, playerTwo, ScenarioType.Test);
-
-            selectedOgreWeapons = new LinkedList();
-            selectedOgreWeapons.clear();
-
-            allUnits = new LinkedList();
-            allUnits.clear();
-            allUnits.addAll(playerOne.units);
-            allUnits.addAll(playerTwo.units);
-
-            Iterator iterator = allUnits.iterator();
-            Unit currentUnit;
-            int putX = 0;
-
-            //DUMB PLACEMENT ROUTINE :: FOR TESTING ONLY
-            while (iterator.hasNext())
-            {
-                currentUnit = (Unit)iterator.next();
-                hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+4), currentUnit);
-                putX++;
-            }
-
-            ogrePanel.setHexMap(hexMap);
-            ogrePanel.setMaster(this);
-        
+            allUnits = null;
         }
         
         else
         {
+            //Begin loading prior gamestate info
             
+            eventManager = new EventManager(this);
+            
+            hexMap = null;
+            hexMap = loadState.hexMap;
+
+            playerOne = loadState.playerOne;
+            playerTwo = loadState.playerTwo;
+            currentPlayer = loadState.currentPlayer;
+
+            currentOgre = null;
+            targettedOgreWeapon = null;
+
+            scenario = loadState.scenario;
+
+            selectedOgreWeapons = new LinkedList();
+            selectedOgreWeapons.clear();
+
+            allUnits = loadState.scenario.allUnits;
+
+            ogrePanel.setHexMap(hexMap);
+            ogrePanel.setMaster(this);
+            
+            gameRound = loadState.turnNumber;
+            
+            gamePhase = 10;
+            
+            hexMap.setMaster(this);
+            
+            currentGameState = loadState;
+            
+            advanceGamePhase();
+            
+            success = true;
+
         }
         
         return (success);

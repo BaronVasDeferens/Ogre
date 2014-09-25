@@ -51,7 +51,7 @@ enum VictoryCondition
 }
 
 // SCENARIO
-// 
+// Encapsulates the units and victory conditions of a game
 public class Scenario 
 {
     

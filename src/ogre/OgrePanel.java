@@ -116,7 +116,9 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     public void setHexMap(HexMap hxmp)
     {
         hexMap = hxmp;
-        hexSide = hexMap.getHexSize();
+        
+        if (hexMap != null)
+            hexSide = hexMap.getHexSize();
 
     }
     
@@ -127,7 +129,6 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     {
         //Creates the peer, starts the game
         super.addNotify();
-        //startGame();
     }
     
     @Override    
@@ -192,7 +193,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     {
         if (gameOver == false)
         {
-            //hexMap.updateMapImage();
+
         }
     }//gameover != true
     
@@ -200,83 +201,85 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     //GAME RENDER
     private void gameRender()
     {
-        
-        if (dbImage == null)
+        if (hexMap != null)
         {
-            dbImage = createImage(VIEW_WINDOW_WIDTH, VIEW_WINDOW_HEIGHT);
-        }
-        
-        if (dbImage == null)
-        {
-            gameMaster.reportArea.append("ERROR: dbImage is null");
-            return;
-        }
-        
-        else
-        {
-            dbg = dbImage.getGraphics();
-        }
-        
-        
-        //Graphics bigMapGraphics = hexMap.getImage().getGraphics();
-        BufferedImage temp = hexMap.getImage();
-        Graphics bigMapGraphics = temp.getGraphics();
-
-        //make sure the new image is big enough
-        if (((currentWindowX + 800) <= temp.getWidth()) && ((currentWindowY + 600) <= temp.getHeight()))
-            temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
-        
-        //Otherwise set the viewing window to the upper left corner 
-        else
-        {
-            currentWindowX = 0;
-            currentWindowY = 0;
-            temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
-        }
-
-        dbg.drawImage(temp,0,0,800,600, this);
-
-        
-        if (scrolling)
-        {
-
-            dbg.setColor(Color.RED);
-            dbg.drawString("SCROLLING", 10,10);
-            dbg.drawString("scrollingX:"+scrollingX, 10, 20);
-            dbg.drawString("scrollingY:"+scrollingY, 10, 30);
-            dbg.drawString("hexSide:" + hexSide,10,40);
-
-            
-            java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
-            
-            //check for horizontal scroll
-            //Compare where the mouse was at initial click against its current location.
-            //If they're different AND the addition of the difference to the current position of the window
-            //does not exeed the max size of the big map MINUS the size of the view window (or is less than zero)
-            //apply the difference.
-            if ((pInfo.getLocation().x != scrollingX) && 
-               ((currentWindowX + pInfo.getLocation().x - scrollingX) >= 0) && 
-               ((currentWindowX + pInfo.getLocation().x - scrollingX) <= (hexMap.getImage().getWidth() - PANEL_WIDTH))) 
+            if (dbImage == null)
             {
-                currentWindowX += (pInfo.getLocation().x - scrollingX)/5;
+                dbImage = createImage(VIEW_WINDOW_WIDTH, VIEW_WINDOW_HEIGHT);
             }
-            
-            //Same for vertical scroll
-            if ((pInfo.getLocation().y != scrollingY) && 
-               ((currentWindowY + pInfo.getLocation().y - scrollingY) >= 0) && 
-               ((currentWindowY + pInfo.getLocation().y - scrollingY) <= (hexMap.getImage().getHeight() - PANEL_HEIGHT))) 
+
+            if (dbImage == null)
             {
-                currentWindowY += (pInfo.getLocation().y - scrollingY)/5;
+                gameMaster.reportArea.append("ERROR: dbImage is null");
+                return;
             }
-           
+
+            else
+            {
+                dbg = dbImage.getGraphics();
+            }
+
+
+            //Graphics bigMapGraphics = hexMap.getImage().getGraphics();
+            BufferedImage temp = hexMap.getImage();
+            Graphics bigMapGraphics = temp.getGraphics();
+
+            //make sure the new image is big enough
+            if (((currentWindowX + 800) <= temp.getWidth()) && ((currentWindowY + 600) <= temp.getHeight()))
+                temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
+
+            //Otherwise set the viewing window to the upper left corner 
+            else
+            {
+                currentWindowX = 0;
+                currentWindowY = 0;
+                temp = temp.getSubimage(currentWindowX, currentWindowY, 800, 600);
+            }
+
+            dbg.drawImage(temp,0,0,800,600, this);
+
+
+            if (scrolling)
+            {
+
+                dbg.setColor(Color.RED);
+                dbg.drawString("SCROLLING", 10,10);
+                dbg.drawString("scrollingX:"+scrollingX, 10, 20);
+                dbg.drawString("scrollingY:"+scrollingY, 10, 30);
+                dbg.drawString("hexSide:" + hexSide,10,40);
+
+
+                java.awt.PointerInfo pInfo = java.awt.MouseInfo.getPointerInfo();
+
+                //check for horizontal scroll
+                //Compare where the mouse was at initial click against its current location.
+                //If they're different AND the addition of the difference to the current position of the window
+                //does not exeed the max size of the big map MINUS the size of the view window (or is less than zero)
+                //apply the difference.
+                if ((pInfo.getLocation().x != scrollingX) && 
+                   ((currentWindowX + pInfo.getLocation().x - scrollingX) >= 0) && 
+                   ((currentWindowX + pInfo.getLocation().x - scrollingX) <= (hexMap.getImage().getWidth() - PANEL_WIDTH))) 
+                {
+                    currentWindowX += (pInfo.getLocation().x - scrollingX)/5;
+                }
+
+                //Same for vertical scroll
+                if ((pInfo.getLocation().y != scrollingY) && 
+                   ((currentWindowY + pInfo.getLocation().y - scrollingY) >= 0) && 
+                   ((currentWindowY + pInfo.getLocation().y - scrollingY) <= (hexMap.getImage().getHeight() - PANEL_HEIGHT))) 
+                {
+                    currentWindowY += (pInfo.getLocation().y - scrollingY)/5;
+                }
+
+            }
+
+            if (gameOver == true)
+            {
+                gameOverMsg(dbg);
+            }
+
+            bigMapGraphics.dispose();
         }
-        
-        if (gameOver == true)
-        {
-            gameOverMsg(dbg);
-        }
-        
-        bigMapGraphics.dispose();
     }
     
     //PAINT COMPONENT
@@ -299,6 +302,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         try 
         {
             g = this.getGraphics();
+            
             if ((g != null) && (dbImage != null))
             {
                 g.drawImage(dbImage, 0, 0, null);
@@ -367,9 +371,13 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     @Override
     public void mouseWheelMoved(MouseWheelEvent e)
     {
-                
+        if (hexMap == null)
+        {
+            //do nothing
+        }
+        
         //Scroll DOWN, zoom IN
-        if (e.getWheelRotation() >= 0)
+        else if (e.getWheelRotation() >= 0)
         {           
             switch (hexSide)
             {
@@ -446,10 +454,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                 default:
                     break;
             }
-            
-            
-            
-            //hexMap.setupMap();
+
         }
     }
     
@@ -490,7 +495,12 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     @Override
     public void mousePressed(MouseEvent e)
     {
-         if (e.getButton() == MouseEvent.BUTTON1)
+        if (hexMap == null)
+        {
+            //do nothing
+        }
+        
+        else if (e.getButton() == MouseEvent.BUTTON1)
         {
             java.awt.Polygon candidate = hexMap.getPolygon(e.getX()+currentWindowX, e.getY()+currentWindowY);
             
@@ -574,6 +584,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                    //Add the surrounding hexes to adjacenHexes to display movement
                                     if (thisHex.isOccupied())
                                     {
+                                        
                                         if (gameMaster.currentPlayer.units.contains(thisHex.occupyingUnit))
                                         {    
                                             hexMap.select(thisHex);

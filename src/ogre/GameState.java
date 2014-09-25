@@ -3,6 +3,7 @@ package ogre;
 /*
 GAME STATE
 
+Tracks the overall state of a game; the players, units, map, terrain, victory conditions, etc.
 
  */
 import java.io.Serializable;
@@ -15,23 +16,38 @@ import java.util.Date;
 public class GameState implements Serializable
 {
     boolean isOpen;         //true when one player is "checked out" this game
-    
-    Player playerOne, playerTwo, currentPlayer;
     Date dateCreated;
     Date lastModified;
+    
+    Player playerOne, playerTwo, currentPlayer;
+
     int turnNumber;
+    
     Scenario scenario;
     
-    LinkedList<GameEvent> gameEventList;
+    HexMap hexMap;
+    int hexRows, hexCols;
+
+    EventManager eventManager;
     
     
     
     
-    GameState(Player p1, Player p2, Scenario scen)
+    GameState(Player p1, Player p2, ScenarioType scenType, int hexMapRows, int hexMapCols, int hexsize)      //TODO; accept victory condition args here
     {
         playerOne = p1;
         playerTwo = p2;
-        scenario = scen;
+        
+        currentPlayer = playerOne;
+        
+        eventManager = null;
+        
+        scenario = new Scenario(p1,p2, scenType);
+        
+        hexMap = new HexMap(hexMapRows, hexMapCols, hexsize);
+        
+        UnitPlacementManager.placeUnits(hexMap, scenario.allUnits);
+        
         turnNumber = 1;
         
         isOpen = false;

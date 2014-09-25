@@ -56,18 +56,18 @@ public class NewGameManager
             }
         }
         
+//        if (opponent != null)
+//        {
+//            newScenario = new Scenario(userCredentials.player, opponent, ScenarioType.Test);
+//        }
+//        
+//        else
+//            JOptionPane.showMessageDialog(newGameFrame, "Opponent is null",
+//            "ERROR", JOptionPane.WARNING_MESSAGE);
+        
         if (opponent != null)
         {
-            newScenario = new Scenario(userCredentials.player, opponent, ScenarioType.Test);
-        }
-        
-        else
-            JOptionPane.showMessageDialog(newGameFrame, "Opponent is null",
-            "ERROR", JOptionPane.WARNING_MESSAGE);
-        
-        if (newScenario != null)
-        {
-            newGameState = new GameState(userCredentials.player, opponent, newScenario);
+            newGameState = new GameState(userCredentials.player, opponent, ScenarioType.Test, myMaster.HEX_ROWS, myMaster.HEX_COLS, myMaster.hexSide);
         }
         else
             JOptionPane.showMessageDialog(newGameFrame, "scenario is null",
@@ -77,6 +77,7 @@ public class NewGameManager
         {
             //TODO: Check to see if there is 
             
+            //If the instantiation was successful, set it to the current state and close the window
             if (myMaster.setCurrentGameState(newGameState))
                 newGameFrame.setVisible(false);
             

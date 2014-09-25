@@ -670,7 +670,10 @@ public class HexMap
             return (false);
     }
     
-    
+    public boolean addUnit(int row, int col, Unit toAdd)
+    {
+        return (addUnit(getHexFromCoords(row,col),toAdd));
+    }
     
     public void select(Hex thisOne)
     {
