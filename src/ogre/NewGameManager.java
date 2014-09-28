@@ -56,27 +56,22 @@ public class NewGameManager
             }
         }
         
-//        if (opponent != null)
-//        {
-//            newScenario = new Scenario(userCredentials.player, opponent, ScenarioType.Test);
-//        }
-//        
-//        else
-//            JOptionPane.showMessageDialog(newGameFrame, "Opponent is null",
-//            "ERROR", JOptionPane.WARNING_MESSAGE);
-        
+        //Final check: if all is ready, create a new gameState and upload it to the server
         if (opponent != null)
         {
             newGameState = new GameState(userCredentials.player, opponent, ScenarioType.Test, myMaster.HEX_ROWS, myMaster.HEX_COLS, myMaster.hexSide);
+            
+            GameStateUploadManager gameUploader = new GameStateUploadManager(myMaster.server, myMaster.port, userCredentials);
+            gameUploader.uploadGameState(newGameState);
+            
         }
+        
         else
             JOptionPane.showMessageDialog(newGameFrame, "scenario is null",
             "ERROR", JOptionPane.WARNING_MESSAGE);
         
         if (newGameState != null)
-        {
-            //TODO: Check to see if there is 
-            
+        {            
             //If the instantiation was successful, set it to the current state and close the window
             if (myMaster.setCurrentGameState(newGameState))
                 newGameFrame.setVisible(false);

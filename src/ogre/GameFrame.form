@@ -229,7 +229,7 @@
     </Component>
     <Component class="java.awt.Label" name="unitStatLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="unitStatLabel"/>
+        <Property name="text" type="java.lang.String" value="null"/>
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="phaseLabel">
@@ -237,7 +237,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="18" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="phaseLabel"/>
+        <Property name="text" type="java.lang.String" value="no game loaded"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="attackButton">

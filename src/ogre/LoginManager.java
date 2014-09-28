@@ -89,7 +89,8 @@ public class LoginManager
         {
 
             //Generate a loginObject
-            TransportObject loginObj = new LoginObject(username, password);
+            LoginObject loginObj = new LoginObject(username, password);
+            TransportObject responseObject = null;
 
             //Transmit a connection request object and wait for receipt of answer object
             if (objectOut != null)
@@ -107,35 +108,58 @@ public class LoginManager
                 //Await a response from server...
                 boolean answerReceived = false;
                 loginObj = null;
+                responseObject = null;
 
                 //TODO: include a timeout here
                 while (answerReceived == false)
                 {
                     try
                     {
-                        activePlayerCredentials = (LoginObject)objectIn.readObject();
+                        responseObject = (TransportObject)objectIn.readObject();
                     }
+                    
                     catch (ClassNotFoundException | IOException e)
                     {
 
                     }
 
-                    if (activePlayerCredentials != null)
+                    if (responseObject != null)
                     {
-                        loginFrame.feedbackTextArea.append(activePlayerCredentials.message);
-                        answerReceived = true;
+                        loginFrame.feedbackTextArea.append(responseObject.message);
+                        
+                        //Reponse recieved:
+                        //if it is a generic transportObject, it is a failure notice
+                        //if it is a loginObject, it contains login data
+                        if (responseObject.isLoginRequest)
+                        {
+                            loginObj = (LoginObject)responseObject;
+                            responseObject = null;
+                            
+                            if (loginObj.player != null)
+                            {
+                                activePlayerCredentials = loginObj;
+                                answerReceived = true;
+                            }
+                           
+                        }
+                        
+                        else
+                        {
+                            loginObj = null;
+                            answerReceived = true;
+                        }
+
                     }
+               
+                }//while
 
-                }
-
-                if ((answerReceived == true) && (activePlayerCredentials.player != null))
+                if ((answerReceived == true) && (loginObj != null))
                 {
-                    //loginFrame.feedbackTextArea.append("Welcome to Ogre. One moment, please...\n");
+                    //Login success
                     myMaster.activePlayerCredentials = activePlayerCredentials;
                     AOK = true;
-
-                    //Deploy the myGames window HERE
                 }
+                
             }
         }
         
@@ -144,6 +168,21 @@ public class LoginManager
         
         disconnectFromServer();
         return (AOK);
+    }
+    
+    
+    public void postLoginScreen()
+    {
+        //If the player has no current games, take them to the new game screen
+        if (myMaster.activePlayerCredentials.gameStateList.size() == 0)
+        {
+            myMaster.createNewGame();
+        }
+        
+        else
+        {
+            myMaster.displayMyGames();
+        }
     }
     
     

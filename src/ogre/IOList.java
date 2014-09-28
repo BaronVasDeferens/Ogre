@@ -372,9 +372,95 @@ class PlayerIOList extends IOList
 //For managing a persistent list of GameStates
 class GameStateIOList extends IOList
 {
+    //Default constructor
+    //Requires a file name to store the games
     GameStateIOList(String file)
     {
         super(file);
+    }
+    
+    //GET GAME STATES
+    //Returns a list of all games matching the playerName to ether player or matching the id number
+    public HashSet<GameState> getGamesList(String playerName, int id)
+    {
+        HashSet<GameState> gameList = new HashSet();
+        gameList.clear();
+        
+        Iterator iter = dataList.iterator();
+        GameState thisState;
+        
+        if (playerName == null)
+        {
+            return gameList;
+        }
+        
+        else
+        {
+            while (iter.hasNext())
+            {
+                thisState = (GameState)iter.next();
+
+                //If the id o either play names match, add it to the list
+                if ((thisState.idNumber == id) || (thisState.playerOne.name.equals(playerName)) || (thisState.playerTwo.name.equals(playerName)))
+                {
+                    gameList.add(thisState);
+                }
+            }
+        }
+        
+        return (gameList);
+    }
+    
+    //GET GAME BY ID
+    //Returns a GameState matching the id provided
+    private GameState getGameByID(int id)
+    {
+        GameState thisState, returnState = null;
+        Iterator iter = dataList.iterator();
+        
+        while (iter.hasNext())
+        {
+            thisState = (GameState)iter.next();
+            
+            if (thisState.idNumber == id)
+            {
+                returnState = thisState;
+            }
+        }
+        
+        return returnState;
+    }
+    
+    
+    public void removeGameState(GameState removeMe)
+    {
+        
+    }
+    
+    private void remove(GameState removeMe)
+    {
+        
+    }
+    
+    public void updateGameState(GameState updateMe)
+    {
+        GameState targetGame = getGameByID(updateMe.idNumber);
+        
+        //If a game matching the id is found, strike it from the list and replace it with the updated version
+        //and commit to disk
+        if (targetGame != null)
+        {
+            dataList.remove(targetGame);
+            dataList.add(updateMe);
+            writeToDisk();
+            System.out.println("Updated game #" + updateMe.idNumber);
+        }
+        
+        else
+        {
+            dataList.add(updateMe);
+            System.out.println("Added game #" + updateMe.idNumber);
+        }
     }
     
 }

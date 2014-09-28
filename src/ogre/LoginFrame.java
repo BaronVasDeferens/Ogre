@@ -141,17 +141,25 @@ public class LoginFrame extends javax.swing.JFrame {
         
         if (goodToGo)
         {
+            feedbackTextArea.setText("");
+            
             feedbackTextArea.append("Connecting...");
+            
             if (myManager.login(UsernameJTextField.getText(), new String(PasswordJTextArea.getPassword())))
             {
+                feedbackTextArea.append("\nClick OK to continue..\n");
                 OKButton.setEnabled(true);
             }
+
         }
        
     }//GEN-LAST:event_LoginButtonActionPerformed
 
     private void OKButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OKButtonActionPerformed
         // TODO add your handling code here:
+        
+        myManager.postLoginScreen();
+        
         this.setVisible(false);
     }//GEN-LAST:event_OKButtonActionPerformed
 

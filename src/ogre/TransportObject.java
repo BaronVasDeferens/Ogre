@@ -8,6 +8,7 @@ package ogre;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.*;
 /**
  *
  * @author skot
@@ -78,8 +79,8 @@ class LoginObject extends TransportObject
     
     Player player;
     
-    LinkedList<GameState> gameStateList;
-    LinkedList<Player> registeredPlayers;
+    HashSet<GameState> gameStateList;
+    HashSet<Player> registeredPlayers;
     
     LoginObject(String usr, String passwd)
     {
@@ -103,5 +104,27 @@ class LoginObject extends TransportObject
         registeredPlayers = null;
         
         isLoginRequest = true;
+    }
+    
+    LoginObject (Player plyr, String msg, HashSet games, HashSet players)
+    {
+        this(plyr, msg);
+        
+        gameStateList = games;
+        registeredPlayers = players;
+    }
+}
+
+class GameStateUploadObject extends TransportObject
+{
+    
+    GameState gameStateToCommit;
+    
+    GameStateUploadObject(LoginObject creds, GameState state)
+    {
+        super();
+        commitGameStateRequest = true;
+        username = creds.username;
+        gameStateToCommit = state;
     }
 }

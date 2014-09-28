@@ -33,6 +33,8 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
         
         initComponents();
         
+        this.setTitle("Start A New Game");
+        
         //Setup the opponentList
         OpponentList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         

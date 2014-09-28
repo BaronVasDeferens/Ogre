@@ -16,35 +16,9 @@ public class mathOut {
     
     public static void main(String ... args)
     {
-        TestObject [] objectArray = new TestObject[10];
-        
-        int val = 1;
-        
-        for (TestObject x: objectArray)
-        {
-            x = new TestObject(val);
-            val++;
-        }
-        
-        for (TestObject x: objectArray)
-        {
-            System.out.println(x.data);
-        }
+        UnitImageLoader loader = new UnitImageLoader();
 
     }
 }
 
-class TestObject
-{
-    public int data;
-    
-    TestObject()
-    {
-        data = 0;
-    }
-    
-    TestObject(int value)
-    {
-        data = value;
-    }
-}
+

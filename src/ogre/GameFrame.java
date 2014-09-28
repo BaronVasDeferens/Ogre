@@ -21,7 +21,7 @@ public class GameFrame extends javax.swing.JFrame {
         initComponents();
         ogreGame = new OgreGame(ogrePanel1);
         ogreGame.attachComponents(this, WeaponSystemsList, selectedUnitLabel, unitStatLabel, phaseLabel, 
-                upperCurrentTargetLabel, currentTargetLabel, attackButton, reportArea, ratioLabel, undoButton);
+                upperCurrentTargetLabel, currentTargetLabel, attackButton, reportArea, ratioLabel, undoButton, advancePhaseButton);
     }
 
     /**
@@ -99,10 +99,10 @@ public class GameFrame extends javax.swing.JFrame {
         selectedUnitLabel.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         selectedUnitLabel.setText("No Unit Selected");
 
-        unitStatLabel.setText("unitStatLabel");
+        unitStatLabel.setText("null");
 
         phaseLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        phaseLabel.setText("phaseLabel");
+        phaseLabel.setText("no game loaded");
 
         attackButton.setText("ATTACK");
         attackButton.addActionListener(new java.awt.event.ActionListener() {

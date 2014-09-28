@@ -23,7 +23,7 @@ public class OgreGame
     java.awt.List weaponList;
     java.awt.Label unitNameLabel, unitStatLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel, ratioLabel;
     JTextArea reportArea;
-    JButton attackButton, undoButton;
+    JButton attackButton, undoButton, advancePhaseButton;
     OgrePanel ogrePanel;
         
     GameState currentGameState = null;
@@ -80,7 +80,7 @@ public class OgreGame
     //Give Ogre game awarness of the frame in which it lives
     public void attachComponents(javax.swing.JFrame myframe, java.awt.List list, Label label,
             Label statsLabel, Label phaselabel, Label upperTargetLbl, Label currTargetLbl,
-            JButton atkButton, JTextArea repArea, Label ratLabel, JButton undoBtn)
+            JButton atkButton, JTextArea repArea, Label ratLabel, JButton undoBtn, JButton advPhase)
     {
         myFrame = myframe;
         weaponList = list;
@@ -93,11 +93,16 @@ public class OgreGame
         reportArea = repArea;
         ratioLabel = ratLabel;
         undoButton = undoBtn;
+        advancePhaseButton = advPhase;
         
         myFrame.setTitle("OGRE");
         ratioLabel.setText("");
         
-        //advanceGamePhase();
+        //Disable certain functions until a gameState has been loaded
+        attackButton.setEnabled(false);
+        advancePhaseButton.setEnabled(false);
+        undoButton.setEnabled(false);
+        
         
     }
     
@@ -1123,8 +1128,7 @@ public class OgreGame
     //LOGIN
     public void login()
     {
-        LoginManager loginManager = new LoginManager(server, port, this, activePlayerCredentials);
-        
+        LoginManager loginManager = new LoginManager(server, port, this, activePlayerCredentials);   
     }
     
     //REGISTER
@@ -1132,6 +1136,18 @@ public class OgreGame
     {
         RegistrationManager registerManager = new RegistrationManager(server, port, this, activePlayerCredentials);  
     }
+    
+    //DISPLAY MY GAMES
+    //Allows the logged-in user to view and manage her in-progress games
+    public void displayMyGames()
+    {
+        //check for user login creds
+        if (activePlayerCredentials != null)
+        {
+            
+        }
+    }
+    
     
     //CREATE NEW GAME
     public void createNewGame()
@@ -1189,46 +1205,6 @@ public class OgreGame
         //The initial load state is null. Fresh start.
         if (loadState == null)
         {
-//            hexMap = new HexMap(HEX_ROWS,HEX_COLS, hexSide);
-//            hexMap.setMinimumMapSize(VIEW_WINDOW_WIDTH,VIEW_WINDOW_HEIGHT);
-//            hexMap.setMaster(this);
-//            hexMap.setupMap();
-//
-//            eventManager = new EventManager(this);
-//
-//            //Assume scenarion ZERO (TEST) for now
-//            playerOne = new Player("Player 1");
-//            playerTwo = new Player("Player 2");
-//
-//            currentPlayer = playerOne;
-//
-//            currentOgre = null;
-//            targettedOgreWeapon = null;
-//
-//            scenario = new Scenario(playerOne, playerTwo, ScenarioType.Test);
-//
-//            selectedOgreWeapons = new LinkedList();
-//            selectedOgreWeapons.clear();
-//
-//            allUnits = new LinkedList();
-//            allUnits.clear();
-//
-//            Iterator iterator = allUnits.iterator();
-//            Unit currentUnit;
-//            int putX = 0;
-//
-//            //DUMB PLACEMENT ROUTINE :: FOR TESTING ONLY
-//            while (iterator.hasNext())
-//            {
-//                currentUnit = (Unit)iterator.next();
-//                hexMap.addUnit(hexMap.getHexFromCoords(putX+3,putX+4), currentUnit);
-//                putX++;
-//            }
-//
-//            ogrePanel.setHexMap(hexMap);
-//            ogrePanel.setMaster(this);
-//            
-//            hexMap.updateMapImage();
             hexMap = null;
             eventManager = null;
             playerOne = null;
@@ -1272,8 +1248,10 @@ public class OgreGame
             hexMap.setMaster(this);
             
             currentGameState = loadState;
-            
             advanceGamePhase();
+            
+            advancePhaseButton.setEnabled(true);
+            undoButton.setEnabled(true);
             
             success = true;
 

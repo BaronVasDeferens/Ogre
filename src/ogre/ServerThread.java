@@ -102,6 +102,7 @@ public class ServerThread implements Runnable
                     //do nothing
                 }
                 
+                //********************
                 //REGISTRATION REQUEST
                 else if (transObj.isRegistrationRequest)
                 {
@@ -111,6 +112,7 @@ public class ServerThread implements Runnable
                     if (master.registerPlayer(regObj))
                     {
                         //Success. Now, obtain a reference 
+                        //Send a reply in a LoginObject
                         LoginObject loginObj = new LoginObject(regObj.username, regObj.password);
                         player = master.loginPlayer(loginObj);
                         
@@ -119,15 +121,13 @@ public class ServerThread implements Runnable
                             System.out.println(player.name + " has registered");
                             
                             //Return a loginObject with an empty gamestate list and all registered users
-                            loginObj = new LoginObject(player, "Registration SUCCESS!");
-                            loginObj.gameStateList = new LinkedList();
-                            loginObj.gameStateList.clear();
-                            loginObj.registeredPlayers = master.getRegisteredPlayerList(player);
+                            loginObj = new LoginObject(player, "Registration SUCCESS!", master.getGamesList(player.name), master.getRegisteredPlayerList(player));
                             
                             send(loginObj);  
                         }
                         
                         //Login FAILED
+                        //Send a generic transportobject
                         else
                         {
                             TransportObject loginFail = new TransportObject(transObj.username, "Login FAILED!");
@@ -136,6 +136,7 @@ public class ServerThread implements Runnable
                     }
                     
                     //Could not register the user
+                    //Send a generic transportobject
                     else
                     {
                         TransportObject loginFail = new TransportObject(transObj.username, transObj.username +  "is already registered. Registration failed.");
@@ -144,34 +145,57 @@ public class ServerThread implements Runnable
                     
                     transObj = null;
                 }
-                
+                //*************
                 //LOGIN REQUEST
                 else if (transObj.isLoginRequest)
                 {
-                    //System.out.println("Attempting login...");
                     
                     //Attempt to obtain reference to prior registered user
                     player = master.loginPlayer((LoginObject)transObj);
                         
                     //Login SUCCESS
+                    //Include player reference, message, current games, and list of regisered players
                     if (player != null)
                     {
                         System.out.println(player.name + " logged in");
-                        LoginObject loginObj = new LoginObject(player, "Login SUCCESS!");
-                        loginObj.gameStateList = master.getGamesList(player.name);
-                        loginObj.registeredPlayers = master.getRegisteredPlayerList(player);
-
+                        LoginObject loginObj = new LoginObject(player, "Login SUCCESS!", master.getGamesList(player.name),master.getRegisteredPlayerList(player));
+                        
                         send(loginObj);
                     }
 
                     //Login FAILED
+                    //Send generic transportobject and no user reference
                     else
                     {
                         transObj = new TransportObject(null, "Login FAILED.");
                         send(transObj);
+                        active = false;
                     }
                     
                     transObj = null;
+                }
+                
+                //********************
+                //GAME CHECKOUT REQUEST
+                
+                
+                
+                //*******************
+                //GAME UPLOAD REQUEST
+                //Accepts a GameUploadObject and either stores or updates a gamestate with those same properties
+                else if (transObj.commitGameStateRequest)
+                {
+                    GameStateUploadObject gameUpload = null;
+                    
+                    gameUpload = (GameStateUploadObject)transObj;
+                    
+                    if (gameUpload != null)
+                    {
+                        //Send the gameState to be updated
+                        master.updateGameState(gameUpload.gameStateToCommit);
+                    }
+                    
+                    
                 }
 
             }

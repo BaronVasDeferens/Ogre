@@ -84,13 +84,13 @@ public class ServerThreadHandler
     //Returns a LinkedList<String> object containing usernames
     //If a Player argument was supplied, do not include it in the list.
     //If the Player argument is null, include everyone
-    public LinkedList<Player> getRegisteredPlayerList(Player excludeMe)
+    public HashSet<Player> getRegisteredPlayerList(Player excludeMe)
     {
         if (serverThreadList == null)
             return(null);
         else
         {
-            LinkedList<Player> userList = new LinkedList();
+            HashSet<Player> userList = new HashSet();
             
             Iterator iter = registeredPlayers.iterator();
             
@@ -148,25 +148,16 @@ public class ServerThreadHandler
     
     //GET GAME STATES
     //Returns a LL populated with all stored GameStates with a player matching the given String argument
-    public LinkedList<GameState> getGamesList(String username)
+    public HashSet<GameState> getGamesList(String username)
     {
-        Iterator iter = currentGames.iterator();
-        GameState thisGame;
-        
-        LinkedList<GameState> returnList = new LinkedList();
-        returnList.clear();
-        
-        while (iter.hasNext())
-        {
-            thisGame = (GameState)iter.next();
-            
-            if ((thisGame.playerOne.name.equals(username)) || (thisGame.playerTwo.name.equals(username)))
-            {
-                returnList.add(thisGame);
-            }
-        }
-        
-        return (returnList);
+        return (currentGames.getGamesList(username, 0));
+    }
+    
+    //UPDATE GAME STATE
+    //Submits a gamestate to be updated
+    public void updateGameState(GameState updateMe)
+    {
+        currentGames.updateGameState(updateMe);
     }
 
 }
