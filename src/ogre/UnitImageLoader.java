@@ -29,76 +29,76 @@ public class UnitImageLoader
         String name;
         
         name = "GEV.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "GEV_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "command_post.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "command_post_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "heavy_tank.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "heavy_tank_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "howitzer.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "howitzer_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "infantry_1.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "infantry_1_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "infantry_2.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "infantry_2_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "infantry_3.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "infantry_2_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "infantry_3.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "infantry_3_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "missile_tank.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "missile_tank_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "mobile_command_post.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "mobile_command_post_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "ogre_mk3.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "ogre_mk3_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "ogre_mk5.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
         
         name = "ogre_mk5_b.png";
-        imageTable.put(loadImage(name),name);
+        imageTable.put(name,loadImage(name));
             
     }
     
@@ -133,7 +133,7 @@ public class UnitImageLoader
     
     public BufferedImage getImage(String imageName)
     {
-       return null;
+       return (BufferedImage)imageTable.get(imageName);
     }
     
 }

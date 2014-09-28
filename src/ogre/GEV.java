@@ -26,8 +26,8 @@ public class GEV extends ogre.Unit
         
         //Weapon(int atk, int rng, boolean infOnly, String name, int id)
         unitWeapon = new Weapon(2, 2, false, "GEV", 0);
-        image = loadImage("GEV.png");
-        imageAlternate = loadImage("GEV_b.png");
+        image = "GEV.png";
+        imageAlternate = "GEV_b.png";
         currentImage = image;
     }
 }

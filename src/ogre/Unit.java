@@ -6,11 +6,8 @@ The basic entity class.
 
 package ogre;
 
-import java.awt.image.BufferedImage;
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.imageio.ImageIO;
+
+
 import javax.sound.sampled.*;
 
 /**
@@ -23,12 +20,11 @@ enum UnitType
     Ogre, HeavyTank, MissileTank, CommandPost, MobileCommandPost, Infantry, GEV, Howitzer
 }
 
-public class Unit implements Serializable 
+public class Unit 
 {
-    
-    
+
     String unitName;        //Different from type?
-    UnitType unitType;        //eg tank, infantry, GEV, etc
+    UnitType unitType;       //eg tank, infantry, GEV, etc
     int unitID;             //unique ID          
 
     Player controllingPlayer;
@@ -51,9 +47,9 @@ public class Unit implements Serializable
     int movement;          //covers the unit's movement allowance.
     int movementPostShooting;   //for GEVs
     
-    BufferedImage image;
-    BufferedImage imageAlternate;
-    BufferedImage currentImage;
+    String image;
+    String imageAlternate;
+    String currentImage;
     
     //Default constructor
     public Unit(int id)
@@ -76,37 +72,6 @@ public class Unit implements Serializable
         yLocation = y;
     }
     
-    //SET LOCATION (HEX)
-    
-    //LOAD IMAGE
-    protected BufferedImage loadImage(String fileName)
-    {
-        if (fileName == null)
-            return (null);
-        
-        else if ((!fileName.matches("none")))
-        {
-            InputStream fin = null;
-            BufferedImage img = null;
-            
-            fin = getClass().getResourceAsStream("images/" + fileName);
-            
-            try 
-            {
-                img = ImageIO.read(fin);
-                fin.close();
-            }
-            catch (IOException e) 
-            {
-                System.out.println(fileName + ": no file found");
-            }
-            
-            return (img);   
-        }
-        
-        else
-            return (null);
-    }
     
     //TAKE DAMAGE
     //Self-manages based on the result of the damage taken.
@@ -171,12 +136,6 @@ public class Unit implements Serializable
         disabled = false;
     }
     
-//    //DISABLE
-//    //Who an ever know the mysteries of this weird function?!?!
-//    public void disable()
-//    {
-//        disabled = true;
-//    }
     
     //DISABLE
     //Set the number of turns before this unit come back online
@@ -216,11 +175,6 @@ public class Unit implements Serializable
         else
             currentImage = image;
     }
-    
-    public BufferedImage getImage()
-    {
-        return currentImage;
-    }
-    
+        
 }
 

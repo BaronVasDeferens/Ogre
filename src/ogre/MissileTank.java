@@ -24,8 +24,8 @@ public class MissileTank extends ogre.Unit
         
         //Weapon(int atk, int rng, boolean infOnly, String name, int id)
         unitWeapon = new Weapon(3, 4, false, "missile", 0);
-        image = loadImage("missile_tank.png");
-        imageAlternate = loadImage("missile_tank_b.png");
+        image = "missile_tank.png";
+        imageAlternate = "missile_tank_b.png";
         currentImage = image;
     }
 }

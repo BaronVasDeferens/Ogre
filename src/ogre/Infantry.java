@@ -12,22 +12,6 @@ package ogre;
  */
 public class Infantry extends ogre.Unit
 {
-    /*
-    public Infantry(int id)
-    {
-        super(id);
-        
-        unitName = "Infantry";
-        unitType = "INFANTRY";
-        
-        movement = 2;
-        defense = 3;
-        
-        //Weapon(int atk, int rng, boolean infOnly, String name, int id)
-        unitWeapon = new Weapon(3, 1, false, "anti-tank", 0);
-        image = loadImage("infantry_3.png");
-    }
-    */
     
     public Infantry(int id, int def)
     {
@@ -39,8 +23,8 @@ public class Infantry extends ogre.Unit
         defense = def;
         unitWeapon = new Weapon(def, 1, false, "anti-tank", 0);
         
-        image = loadImage("infantry_" + def + ".png");
-        imageAlternate = loadImage("infantry_" + def + "_b.png");
+        image = "infantry_" + def + ".png";
+        imageAlternate = "infantry_" + def + "_b.png";
         currentImage = image;
     }
     
@@ -67,13 +51,13 @@ public class Infantry extends ogre.Unit
                     switch (defense)
                     {
                         case 2:
-                            image = loadImage("infantry_2.png");
-                            imageAlternate = loadImage("infantry_2_b.png");
+                            image = "infantry_2.png";
+                            imageAlternate = "infantry_2_b.png";
                             report = report.concat(" TAKES A CASUALTY.");
                             break;
                         case 1:
-                            image = loadImage("infantry_1.png");
-                            imageAlternate = loadImage("infantry_1_b.png");
+                            image = "infantry_1.png";
+                            imageAlternate = "infantry_1_b.png";
                             report = report.concat(" TAKES A CASUALTY.");
                             break;
                         case 0:

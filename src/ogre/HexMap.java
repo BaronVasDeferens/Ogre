@@ -44,6 +44,8 @@ public class HexMap
     BufferedImage mapImage;
     BufferedImage offScreenDraw;
     
+    UnitImageLoader unitImages; 
+    
     int beginDrawingFromX, beginDrawingFromY, hexagonSize;
     int minimumMapWidth, minimumMapHeight;
     
@@ -90,6 +92,8 @@ public class HexMap
         
         addRidge(hexArray[3][4],6,hexArray[2][3],3);
         addRidge(hexArray[3][4],1,hexArray[2][4],4);
+        
+        unitImages = new UnitImageLoader(); 
         
     }
     
@@ -251,7 +255,7 @@ public class HexMap
 
 
                         //Rescale and offset
-                        BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
+                        BufferedImage unitImage = unitImages.getImage(hexArray[i][j].getUnit().currentImage);
 
                         int Xoffset, Yoffset, imageSize;
 
@@ -466,7 +470,7 @@ public class HexMap
                         }
 
                         //Rescale and offset
-                        BufferedImage unitImage = hexArray[i][j].getUnit().getImage();
+                        BufferedImage unitImage = unitImages.getImage(hexArray[i][j].getUnit().currentImage);
 
                         int Xoffset, Yoffset, imageSize;
 

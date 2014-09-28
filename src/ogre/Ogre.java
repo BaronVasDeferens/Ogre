@@ -83,8 +83,8 @@ public class Ogre extends ogre.Unit
                 //treadID = 16
                 treads = new Treads(45,15,16);
                 
-                image = loadImage("ogre_mk3.png");
-                imageAlternate = loadImage("ogre_mk3_b.png");
+                image = "ogre_mk3.png";
+                imageAlternate = "ogre_mk3_b.png";
              
                 currentImage = image;
                 

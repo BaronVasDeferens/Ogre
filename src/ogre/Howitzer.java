@@ -24,8 +24,8 @@ public class Howitzer extends ogre.Unit
         
         //Weapon(int atk, int rng, boolean infOnly, String name, int id)
         unitWeapon = new Weapon(6, 8, false, "Howitzer", 0);
-        image = loadImage("howitzer.png");
-        imageAlternate = loadImage("howitzer_b.png");
+        image = "howitzer.png";
+        imageAlternate = "howitzer_b.png";
         currentImage = image;
         
     }

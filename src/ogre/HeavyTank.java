@@ -10,7 +10,7 @@ package ogre;
  *
  * @author Skot
  */
-public class HeavyTank extends ogre.Unit
+public class HeavyTank extends Unit
 {
     public HeavyTank(int id)
     {
@@ -22,8 +22,8 @@ public class HeavyTank extends ogre.Unit
         
         unitWeapon = new Weapon(4,2, false, "Tank", 0);
         
-        image = loadImage("heavy_tank.png");
-        imageAlternate = loadImage("heavy_tank_b.png");
+        image = "heavy_tank.png";
+        imageAlternate = "heavy_tank_b.png";
         currentImage = image;
     }
 }

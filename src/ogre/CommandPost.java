@@ -22,8 +22,8 @@ public class CommandPost extends ogre.Unit
         movement = 0;
         defense = 1;
         
-        image = loadImage("command_post.png");
-        imageAlternate = loadImage("command_post_b.png");
+        image = "command_post.png";
+        imageAlternate = "command_post_b.png";
         currentImage = image;
         
         unitWeapon = new Weapon(0,0,true,"none",0);
