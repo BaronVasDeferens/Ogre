@@ -35,10 +35,11 @@ public class GameStateUploadManager
     {
         boolean success = false;
         
-        if (currentPlayerCredentials == null)
-        {
+        if (sendMe == null)
             return false;
-        }
+        
+        if (currentPlayerCredentials == null)
+            return false;
         
         else if (currentPlayerCredentials.player == null)
         {
@@ -51,6 +52,7 @@ public class GameStateUploadManager
             try
             {
                 socket = new Socket(server,port);
+                socket.setSoLinger(true, 60);
                 out = socket.getOutputStream();
                 objectOut = new ObjectOutputStream(out);
             }
@@ -65,26 +67,38 @@ public class GameStateUploadManager
             GameStateUploadObject uploadPackage = new GameStateUploadObject(currentPlayerCredentials, sendMe);
             
             //Transmit data and close the streams
-            try
+            if ((socket != null) && (objectOut != null))
             {
-                objectOut.writeObject(uploadPackage);
+                try
+                {
+                    objectOut.writeObject(uploadPackage);
+                    success = true;
+                }
 
-                objectOut.close();
-                out.close();
-                socket.close();
-                
-                socket = null;
-                objectOut = null;
-                out = null;
-                
-                success = true;
-                                
-            }
-            
-            catch (IOException e)
-            {
-                //TODO: thrown an error msg
-                 System.out.println(e.toString());
+                catch (IOException e)
+                {
+                    //TODO: thrown an error msg
+                     System.out.println(e.toString());
+                     success = false;
+                }
+
+                try
+                {
+                    objectOut.close();
+                    out.close();
+                    socket.close();
+
+                    socket = null;
+                    objectOut = null;
+                    out = null;
+
+                }
+
+                catch (IOException e)
+                {
+                    //TODO: thrown an error msg
+                     System.out.println(e.toString());
+                }
             }
               
         }

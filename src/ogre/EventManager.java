@@ -70,7 +70,7 @@ public class EventManager implements Serializable
                     temp.agent.hasMoved = false;
                     //...and remove the prior move from the history
                     eventQueue.pollLast();
-                    master.hexMap.updateMapImage();
+                    master.ogrePanel.hexMapRenderer.updateMapImage();
                 }
             }
             

@@ -8,12 +8,13 @@ package ogre;
 
 import java.awt.Polygon;
 import java.util.LinkedList;
+import java.io.Serializable;
 
 /**
  *
  * @author Skot
  */
-public class Hex 
+public class Hex implements Serializable
 {
 
     private int row, col;
@@ -141,7 +142,7 @@ public class Hex
     }
 }
 
-class Ridge
+class Ridge implements Serializable
 {
     public Hex hexA, hexB;
     int faceA, faceB;

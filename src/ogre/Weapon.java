@@ -6,11 +6,12 @@
 
 package ogre;
 
+import java.io.Serializable;
 /**
  *
  * @author Skot
  */
-public class Weapon 
+public class Weapon implements Serializable
 {
     String weaponName;
     int weaponID;

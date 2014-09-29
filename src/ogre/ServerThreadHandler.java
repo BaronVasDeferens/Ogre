@@ -159,5 +159,26 @@ public class ServerThreadHandler
     {
         currentGames.updateGameState(updateMe);
     }
+    
+    
+    public void cullDeadThreads()
+    {
+        Iterator iter = serverThreadList.iterator();
+        HashSet deadThreads = new HashSet();
+        deadThreads.clear();
+        ServerThread thisThread;
+        
+        while (iter.hasNext())
+        {
+            thisThread = (ServerThread)iter.next();
+            
+            if (thisThread.active == false)
+                deadThreads.add(thisThread);
+        }
+        
+        System.out.println("Removed " + deadThreads.size() + " dead threads");
+        serverThreadList.removeAll(deadThreads);
+        deadThreads.clear();
+    }
 
 }

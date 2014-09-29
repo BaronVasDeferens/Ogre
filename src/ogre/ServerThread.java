@@ -54,7 +54,7 @@ public class ServerThread implements Runnable
     @Override
     public void run()
     {
-        System.out.println("Thread starting..");
+        //System.out.println("Thread starting..");
         
         TransportObject transObj = null;
         
@@ -100,6 +100,7 @@ public class ServerThread implements Runnable
                 if (transObj == null)
                 {
                     //do nothing
+                    active = false;
                 }
                 
                 //********************
@@ -143,8 +144,10 @@ public class ServerThread implements Runnable
                         send(loginFail);
                     }
                     
-                    transObj = null;
+                    //transObj = null;
+                    active = false;
                 }
+                
                 //*************
                 //LOGIN REQUEST
                 else if (transObj.isLoginRequest)
@@ -172,7 +175,8 @@ public class ServerThread implements Runnable
                         active = false;
                     }
                     
-                    transObj = null;
+                    //transObj = null;
+                    active = false;
                 }
                 
                 //********************
@@ -185,6 +189,8 @@ public class ServerThread implements Runnable
                 //Accepts a GameUploadObject and either stores or updates a gamestate with those same properties
                 else if (transObj.commitGameStateRequest)
                 {
+                    System.out.println("UPLOAD REQUEST");
+                    
                     GameStateUploadObject gameUpload = null;
                     
                     gameUpload = (GameStateUploadObject)transObj;
@@ -195,6 +201,8 @@ public class ServerThread implements Runnable
                         master.updateGameState(gameUpload.gameStateToCommit);
                     }
                     
+                    //transObj = null;
+                    active = false;
                     
                 }
 
@@ -253,7 +261,7 @@ public class ServerThread implements Runnable
             
             active = false;
             
-            System.out.println("ServerThread ended.");
+            //System.out.println("ServerThread ended.");
         }
         catch (IOException e)
         {

@@ -7,6 +7,7 @@
 package ogre;
 
 import java.util.LinkedList;
+import java.io.Serializable;
 
 
 
@@ -52,7 +53,7 @@ enum VictoryCondition
 
 // SCENARIO
 // Encapsulates the units and victory conditions of a game
-public class Scenario 
+public class Scenario implements Serializable
 {
     
     ScenarioType scenarioType;

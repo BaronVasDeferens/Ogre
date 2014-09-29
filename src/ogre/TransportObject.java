@@ -123,7 +123,9 @@ class GameStateUploadObject extends TransportObject
     GameStateUploadObject(LoginObject creds, GameState state)
     {
         super();
+        
         commitGameStateRequest = true;
+        
         username = creds.username;
         gameStateToCommit = state;
     }

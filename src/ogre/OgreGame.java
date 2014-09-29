@@ -187,7 +187,7 @@ public class OgreGame
             {
                 hexMap.deselectAllSelectedHexes();
                 hexMap.adjacentHexes.clear();
-                hexMap.updateMapImage();
+                ogrePanel.hexMapRenderer.updateMapImage();
                 
                 return false;
             }    
@@ -198,7 +198,7 @@ public class OgreGame
         {
             hexMap.deselectAllSelectedHexes();
             hexMap.adjacentHexes.clear();
-            hexMap.updateMapImage();        
+            ogrePanel.hexMapRenderer.updateMapImage();        
             
             return (false);
         }
@@ -358,7 +358,7 @@ public class OgreGame
             //Everythings cool. Let's do some organizing:
             
             //Remove the currentTarget from the selected hexes
-            hexMap.selectedHexes.remove(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
+            hexMap.selectedHexes.remove(ogrePanel.hexMapRenderer.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
             
             //Combat tallies
             int defense = 0;
@@ -526,8 +526,8 @@ public class OgreGame
                         //check for unit death
                         if (currentTarget.isAlive == false)
                         {
-                            hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
-                            hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).setOccupyingUnit(null);
+                            hexMap.deselect(ogrePanel.hexMapRenderer.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
+                            ogrePanel.hexMapRenderer.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).setOccupyingUnit(null);
 
                         }
                     }
@@ -553,7 +553,7 @@ public class OgreGame
         
         //End-of-battle cleanup, or AOK == false
 
-        hexMap.deselect(hexMap.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
+        hexMap.deselect(ogrePanel.hexMapRenderer.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
         hexMap.deselectAllSelectedHexes();
         hexMap.adjacentHexes.clear();
         currentTarget = null;
@@ -564,7 +564,7 @@ public class OgreGame
         attackButton.setEnabled(false);
         updateUnitReadouts(null);
 
-        hexMap.updateMapImage();
+        ogrePanel.hexMapRenderer.updateMapImage();
         
     }
     
@@ -728,7 +728,7 @@ public class OgreGame
         
         hexMap.deselectAllSelectedHexes();
         hexMap.adjacentHexes.clear();
-        hexMap.updateMapImage();
+        ogrePanel.hexMapRenderer.updateMapImage();
         
         currentTarget = null;
         selectedOgreWeapons.clear();
@@ -884,7 +884,7 @@ public class OgreGame
         reportArea.append("Round " + gameRound);
         reportArea.append(": " + currentPlayer.name + "'s turn\n");
         
-        hexMap.updateMapImage();
+        ogrePanel.hexMapRenderer.updateMapImage();
     }
     
     //UPDATE UNIT READOUTS

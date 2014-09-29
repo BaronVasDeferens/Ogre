@@ -20,15 +20,13 @@ Multi-dimensional arrays are a little tricky. Just keep in mind a few things:
 
 package ogre;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.*;
 import java.awt.Polygon;
 import java.util.Iterator;
 
 //HEXMAP
-public class HexMap 
+public class HexMap implements Serializable
 {
     int rows, cols;
     
@@ -41,13 +39,13 @@ public class HexMap
     LinkedList<Hex> selectedHexes;
     LinkedList<Hex> adjacentHexes;
     
-    BufferedImage mapImage;
-    BufferedImage offScreenDraw;
+    //BufferedImage mapImage;
+    //BufferedImage offScreenDraw;
     
-    UnitImageLoader unitImages; 
+    //UnitImageLoader unitImages; 
     
-    int beginDrawingFromX, beginDrawingFromY, hexagonSize;
-    int minimumMapWidth, minimumMapHeight;
+    int beginDrawingFromX, beginDrawingFromY;//, hexagonSize;
+    //int minimumMapWidth, minimumMapHeight;
     
     public boolean showCoordinates = false;
     
@@ -79,11 +77,11 @@ public class HexMap
             }
         }
 
-        hexagonSize = 64;
-        minimumMapWidth = 800;
-        minimumMapHeight = 600;
+        //hexagonSize = 64;
+        //minimumMapWidth = 800;
+        //minimumMapHeight = 600;
         
-        setHexSize(hexsize);
+        //setHexSize(hexsize);
         
         //TODO:
         //This doesn't belong here! Move it after testing
@@ -93,7 +91,7 @@ public class HexMap
         addRidge(hexArray[3][4],6,hexArray[2][3],3);
         addRidge(hexArray[3][4],1,hexArray[2][4],4);
         
-        unitImages = new UnitImageLoader(); 
+        //unitImages = new UnitImageLoader(); 
         
     }
     
@@ -104,17 +102,19 @@ public class HexMap
         gameMaster = msr;
     }
     
+    /*
     //SET HEXAGON SIZE
     public void setHexSize(int newSize)
     {
         hexagonSize = newSize;
-        setupMap();
+        //setupMap();
     }
     
     public int getHexSize()
     {
         return (hexagonSize);
     }
+    
     
     //SET MINIMUM MAP SIZE
     //ba-derp
@@ -123,6 +123,8 @@ public class HexMap
         minimumMapWidth = minWidth;
         minimumMapHeight = minHeight;
     }
+    */
+    
     
     //MAKE CRATER
     public void makeCrater(Hex target)
@@ -147,6 +149,7 @@ public class HexMap
     //Returns a blank BufferedImage sized according to the size of the hexes to be drawn upon it.
     //If smaller than the viewing window (minX, minY), a BufferedImage of minWidth x minLength is returned instead.
     //Drawing offset coordinates are also adjusted to 2*hexagonSize from 0,0
+    /*
     private BufferedImage createNewImage()
     {
         
@@ -165,9 +168,7 @@ public class HexMap
             sizeY = minimumMapHeight;
         
         BufferedImage newImage = new BufferedImage(sizeX,sizeY,BufferedImage.OPAQUE);
-        
-        //System.out.println("Created new Image: " + sizeX + " x " + sizeY);
-        
+      
         return (newImage);
         
     }
@@ -404,8 +405,7 @@ public class HexMap
         newMapGraphics.fillRect(0,0,offScreenDraw.getWidth(), offScreenDraw.getHeight());
 
         int x = beginDrawingFromX;
-        //int y = beginDrawingFromY;
-        int y = beginDrawingFromY;// + (int)(.8660 * hexagonSize); 
+        int y = beginDrawingFromY;
         
         //Draw hex field
         for (int i = 0; i < rows; i++)
@@ -657,6 +657,8 @@ public class HexMap
         return (mapImage);
     }
     
+    */
+    
     
     //*** UNIT MANAGMENT ***
     //Adds a unit to a hex. Checks for crater, existing unit
@@ -667,17 +669,32 @@ public class HexMap
             target.setOccupyingUnit(toAdd);
             target.occupyingUnit.xLocation = target.getCol();
             target.occupyingUnit.yLocation = target.getRow();
-            updateMapImage();
+            //updateMapImage();
             return (true);
         }
         else
             return (false);
     }
     
+    
     public boolean addUnit(int row, int col, Unit toAdd)
     {
-        return (addUnit(getHexFromCoords(row,col),toAdd));
+        //return (addUnit(getHexFromCoords(row,col),toAdd));
+        Hex target = hexArray[row][col];
+        
+        if ((target.isCrater() == false) && (target.isOccupied() == false))
+        {
+            hexArray[col][row].setOccupyingUnit(toAdd);
+            target.occupyingUnit.xLocation = target.getCol();
+            target.occupyingUnit.yLocation = target.getRow();
+            return true;
+        }
+        
+        else
+            return false;
+        
     }
+    
     
     public void select(Hex thisOne)
     {
@@ -685,7 +702,7 @@ public class HexMap
         {
             selectedHexes.add(thisOne);
             thisOne.select();
-            updateMapImage();
+            //updateMapImage();
         }
 
     }
@@ -696,7 +713,7 @@ public class HexMap
         {
             selectedHexes.remove(thisOne);
             thisOne.deselect();           
-            updateMapImage();
+            //updateMapImage();
         }
     }
     
@@ -1038,7 +1055,7 @@ public class HexMap
             }
        }
         
-            updateMapImage();
+            //updateMapImage();
     }
     
     //CONVERT TO HEX LINKED LIST

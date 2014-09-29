@@ -15,13 +15,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import static java.awt.image.ImageObserver.HEIGHT;
-import static java.awt.image.ImageObserver.WIDTH;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.imageio.ImageIO;
-import java.util.LinkedList;
-import java.util.Enumeration;
+
 
 /**
  *
@@ -49,6 +43,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     int hexSide;
     
     OgreGame gameMaster;
+    
+    public HexMapRenderer hexMapRenderer;
     
     //User-interaction flags
     boolean scrolling = false;
@@ -110,15 +106,22 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     public void setMaster(OgreGame msr)
     {
         gameMaster = msr;
+
+        
         startGame();
     }
     
     public void setHexMap(HexMap hxmp)
     {
         hexMap = hxmp;
+       
+        hexMapRenderer = new HexMapRenderer(hexMap);
+        hexMapRenderer.setMinimumMapSize(VIEW_WINDOW_WIDTH, VIEW_WINDOW_HEIGHT);
+        hexMapRenderer.setHexSize(64);
+        hexMapRenderer.setupMap();
         
         if (hexMap != null)
-            hexSide = hexMap.getHexSize();
+            hexSide = hexMapRenderer.getHexSize();
 
     }
     
@@ -221,7 +224,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
 
 
             //Graphics bigMapGraphics = hexMap.getImage().getGraphics();
-            BufferedImage temp = hexMap.getImage();
+            BufferedImage temp = hexMapRenderer.getImage();
             Graphics bigMapGraphics = temp.getGraphics();
 
             //make sure the new image is big enough
@@ -258,7 +261,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                 //apply the difference.
                 if ((pInfo.getLocation().x != scrollingX) && 
                    ((currentWindowX + pInfo.getLocation().x - scrollingX) >= 0) && 
-                   ((currentWindowX + pInfo.getLocation().x - scrollingX) <= (hexMap.getImage().getWidth() - PANEL_WIDTH))) 
+                   ((currentWindowX + pInfo.getLocation().x - scrollingX) <= (hexMapRenderer.getImage().getWidth() - PANEL_WIDTH))) 
                 {
                     currentWindowX += (pInfo.getLocation().x - scrollingX)/5;
                 }
@@ -266,7 +269,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                 //Same for vertical scroll
                 if ((pInfo.getLocation().y != scrollingY) && 
                    ((currentWindowY + pInfo.getLocation().y - scrollingY) >= 0) && 
-                   ((currentWindowY + pInfo.getLocation().y - scrollingY) <= (hexMap.getImage().getHeight() - PANEL_HEIGHT))) 
+                   ((currentWindowY + pInfo.getLocation().y - scrollingY) <= (hexMapRenderer.getImage().getHeight() - PANEL_HEIGHT))) 
                 {
                     currentWindowY += (pInfo.getLocation().y - scrollingY)/5;
                 }
@@ -371,7 +374,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     @Override
     public void mouseWheelMoved(MouseWheelEvent e)
     {
-        if (hexMap == null)
+        if (hexMapRenderer == null)
         {
             //do nothing
         }
@@ -379,35 +382,35 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         //Scroll DOWN, zoom IN
         else if (e.getWheelRotation() >= 0)
         {           
-            switch (hexSide)
+            switch (hexMapRenderer.getHexSize())
             {
                 case 20:
                     hexSide = 28;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 28:
                     hexSide = 34;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 34:
                     hexSide = 36;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 36:
                     hexSide = 44;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 44:
                     hexSide = 52;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 52:
                     hexSide = 64;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 64:
                     hexSide = 80;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;    
                 default:
                     break;
@@ -415,45 +418,48 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
             
             //hexMap.setHexSize(hexSide);
             //hexMap.setupMap();
+            hexMapRenderer.setupMap();
         }
         
         //Scroll UP, zoom OUT
         else
         {
-            switch (hexSide)
+            switch (hexMapRenderer.getHexSize())
             {
 
                 case 28:
                     hexSide = 20;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 34:
                     hexSide = 28;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 36:
                     hexSide = 34;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 44:
                     hexSide = 36;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 52:
                     hexSide = 44;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 64:
                     hexSide = 52;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 case 80:
                     hexSide = 64;
-                    hexMap.setHexSize(hexSide);
+                    hexMapRenderer.setHexSize(hexSide);
                     break;
                 default:
                     break;
             }
+            
+            hexMapRenderer.setupMap();
 
         }
     }
@@ -502,7 +508,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         
         else if (e.getButton() == MouseEvent.BUTTON1)
         {
-            java.awt.Polygon candidate = hexMap.getPolygon(e.getX()+currentWindowX, e.getY()+currentWindowY);
+            java.awt.Polygon candidate = hexMapRenderer.getPolygon(e.getX()+currentWindowX, e.getY()+currentWindowY);
             
             //Here, we determine the context of the click.
             //Possibilities: 
@@ -512,7 +518,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
             */
             if (candidate != null)
             {
-                Hex thisHex = hexMap.getHexFromPoly(candidate);
+                Hex thisHex = hexMapRenderer.getHexFromPoly(candidate);
 
                 if (thisHex != null)
                 {
@@ -531,7 +537,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 hexMap.adjacentHexes.clear();
                                 gameMaster.updateUnitReadouts(null);
                                 gameMaster.updateOgreWeaponSelectionList(null);
-                                hexMap.updateMapImage();
+                                hexMapRenderer.updateMapImage();
                             }
                            
                             else
@@ -549,14 +555,14 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             //Submit the move event to the gameMaster...
                                             if (gameMaster.move(moveEvent))
                                             {
-                                                hexMap.updateMapImage();
+                                                hexMapRenderer.updateMapImage();
                                             }
 
                                             else
                                             {
                                                 hexMap.deselectAllSelectedHexes();
                                                 hexMap.adjacentHexes.clear();
-                                                hexMap.updateMapImage();
+                                                hexMapRenderer.updateMapImage();
                                             }
                                             
                                             gameMaster.updateUnitReadouts(null);
@@ -568,7 +574,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             //gameMaster.reportArea.append("nacho cheese");
                                             hexMap.deselectAllSelectedHexes();
                                             hexMap.adjacentHexes.clear();
-                                            hexMap.updateMapImage();
+                                            hexMapRenderer.updateMapImage();
                                             
                                             gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
                                         }    
@@ -621,7 +627,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     //Display stats and weapons in the on-screen list
                                     gameMaster.updateUnitReadouts(thisHex.getUnit());
                                         
-                                    hexMap.updateMapImage();
+                                    hexMapRenderer.updateMapImage();
                                 }
                                 
                                 else if (thisHex.isOccupied())
@@ -636,7 +642,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     hexMap.deselectAllSelectedHexes();
                                     hexMap.adjacentHexes.clear();
                                     gameMaster.updateUnitReadouts(null);
-                                    hexMap.updateMapImage();
+                                    hexMapRenderer.updateMapImage();
                                 }
                             }
                             break;
@@ -678,14 +684,14 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         //If this removes the last attacking friendly unit, deselect the targetted unit
                                         if ((gameMaster.currentTarget != null) && (gameMaster.hexMap.selectedHexes.size() >= 1))
                                         {
-                                            gameMaster.hexMap.deselect(gameMaster.hexMap.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation));
+                                            gameMaster.hexMap.deselect(hexMapRenderer.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation));
                                             gameMaster.updateCurrentTarget(null);
                                             gameMaster.updateUnitReadouts(null);
                                         }
                                         
                                         //...adjust firing pattern
                                         hexMap.computeOverlappingHexes(gameMaster.currentPlayer);
-                                        hexMap.updateMapImage();
+                                        hexMapRenderer.updateMapImage();
                                         
                                     }
                                     
@@ -712,14 +718,14 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                                     //Check:
                                                     if (gameMaster.currentTarget != null)
                                                     {
-                                                        if (!gameMaster.hexMap.adjacentHexes.contains(gameMaster.hexMap.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation)))
+                                                        if (!gameMaster.hexMap.adjacentHexes.contains(hexMapRenderer.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation)))
                                                         {
-                                                            gameMaster.hexMap.deselect(gameMaster.hexMap.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation));
+                                                            gameMaster.hexMap.deselect(hexMapRenderer.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation));
                                                             gameMaster.updateCurrentTarget(null);
                                                         }
                                                     }
 
-                                                    hexMap.updateMapImage();
+                                                    hexMapRenderer.updateMapImage();
                                                 }
                                                 
                                                 //else, update the display
@@ -780,7 +786,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             //All targets MUST be in the attack radius (adjacentHexes) to be legitimate targets
                                             if (hexMap.adjacentHexes.contains(thisHex))
                                             {    
-                                                hexMap.deselect(hexMap.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation));
+                                                hexMap.deselect(hexMapRenderer.getHexFromCoords(gameMaster.currentTarget.yLocation, gameMaster.currentTarget.xLocation));
                                                 hexMap.select(thisHex);
                                                 gameMaster.updateCurrentTarget(thisHex.occupyingUnit);
                                                 
@@ -818,7 +824,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 hexMap.deselectAllSelectedHexes();
                                 hexMap.adjacentHexes.clear();
                                 gameMaster.updateUnitReadouts(null);
-                                hexMap.updateMapImage();
+                                hexMapRenderer.updateMapImage();
                             }
                             
                           
@@ -856,7 +862,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     
                                     gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
                                     
-                                    hexMap.updateMapImage();
+                                    hexMapRenderer.updateMapImage();
                                 }
                                   
                                 //...is a valid post-shooting mover...
@@ -868,7 +874,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         hexMap.select(thisHex);
                                         gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
                                         hexMap.adjacentHexes = hexMap.getHexesWithinRange(thisHex, thisHex.occupyingUnit.movementPostShooting,false,false);
-                                        hexMap.updateMapImage();
+                                        hexMapRenderer.updateMapImage();
                                     }
                                 }
                                 
@@ -894,14 +900,14 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     {
                                         hexMap.deselectAllSelectedHexes();
                                         hexMap.adjacentHexes.clear();
-                                        hexMap.updateMapImage();
+                                        hexMapRenderer.updateMapImage();
                                     }
                                     
                                     else
                                     {
                                         hexMap.deselectAllSelectedHexes();
                                         hexMap.adjacentHexes.clear();
-                                        hexMap.updateMapImage();
+                                        hexMapRenderer.updateMapImage();
                                     }
                                 }
                                 
@@ -912,7 +918,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     hexMap.deselectAllSelectedHexes();
                                     hexMap.adjacentHexes.clear();
                                     gameMaster.updateUnitReadouts(null);
-                                    hexMap.updateMapImage();
+                                    hexMapRenderer.updateMapImage();
                                 }     
                             }
                             break;

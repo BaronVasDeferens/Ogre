@@ -77,6 +77,8 @@ public class OgreServer
                 serverThreadHandler.addServerThread(socket);
                 System.out.println("Incoming connection...");
             }
+            
+            serverThreadHandler.cullDeadThreads();
         }
         
     }

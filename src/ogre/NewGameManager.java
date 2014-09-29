@@ -62,7 +62,11 @@ public class NewGameManager
             newGameState = new GameState(userCredentials.player, opponent, ScenarioType.Test, myMaster.HEX_ROWS, myMaster.HEX_COLS, myMaster.hexSide);
             
             GameStateUploadManager gameUploader = new GameStateUploadManager(myMaster.server, myMaster.port, userCredentials);
-            gameUploader.uploadGameState(newGameState);
+            
+            if (gameUploader.uploadGameState(newGameState))
+            {
+                System.out.println("I think I uploaded a gameState");
+            }
             
         }
         

@@ -294,10 +294,10 @@ public class GameFrame extends javax.swing.JFrame {
                     //TODO: make this work right
                     if (ogreGame.currentTarget != null)
                     {    
-                        Hex tempHex = ogreGame.hexMap.getHexFromCoords(ogreGame.currentTarget.yLocation, ogreGame.currentTarget.xLocation);
+                        Hex tempHex = ogreGame.ogrePanel.hexMapRenderer.getHexFromCoords(ogreGame.currentTarget.yLocation, ogreGame.currentTarget.xLocation);
                         if (ogreGame.hexMap.adjacentHexes.contains(tempHex) == false)
                         {
-                            ogreGame.hexMap.deselect(ogreGame.hexMap.getHexFromCoords(ogreGame.currentTarget.yLocation,ogreGame.currentTarget.xLocation));
+                            ogreGame.hexMap.deselect(ogreGame.ogrePanel.hexMapRenderer.getHexFromCoords(ogreGame.currentTarget.yLocation,ogreGame.currentTarget.xLocation));
                             ogreGame.updateCurrentTarget(null);
                         }
                     }
@@ -330,7 +330,7 @@ public class GameFrame extends javax.swing.JFrame {
         if (ogreGame.hexMap != null)
         {
             ogreGame.hexMap.showCoordinates = !(ogreGame.hexMap.showCoordinates);
-            ogreGame.hexMap.updateMapImage();
+            ogreGame.ogrePanel.hexMapRenderer.updateMapImage();
         }
 
     }//GEN-LAST:event_optionHexNumbersActionPerformed

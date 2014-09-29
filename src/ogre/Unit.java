@@ -9,6 +9,7 @@ package ogre;
 
 
 import javax.sound.sampled.*;
+import java.io.Serializable;
 
 /**
  *
@@ -20,7 +21,7 @@ enum UnitType
     Ogre, HeavyTank, MissileTank, CommandPost, MobileCommandPost, Infantry, GEV, Howitzer
 }
 
-public class Unit 
+public class Unit implements Serializable
 {
 
     String unitName;        //Different from type?
