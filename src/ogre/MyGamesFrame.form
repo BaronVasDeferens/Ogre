@@ -29,7 +29,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="continueJButton" min="-2" pref="171" max="-2" attributes="0"/>
+                      <Component id="playJButton" min="-2" pref="171" max="-2" attributes="0"/>
                       <EmptySpace pref="173" max="32767" attributes="0"/>
                       <Component id="surrenderJButton" min="-2" pref="154" max="-2" attributes="0"/>
                   </Group>
@@ -55,7 +55,7 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="surrenderJButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="continueJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="playJButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="81" max="32767" attributes="0"/>
               <Component id="cancelJButton" min="-2" max="-2" attributes="0"/>
@@ -83,6 +83,7 @@
                 <StringItem index="4" value="Item 5"/>
               </StringArray>
             </Property>
+            <Property name="selectionMode" type="int" value="0"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -95,10 +96,13 @@
         <Property name="text" type="java.lang.String" value="Games In Progress"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="continueJButton">
+    <Component class="javax.swing.JButton" name="playJButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="PLAY"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="playJButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="surrenderJButton">
       <Properties>
@@ -109,6 +113,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="CANCEL"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelJButtonActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

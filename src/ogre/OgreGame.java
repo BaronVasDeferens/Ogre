@@ -892,9 +892,15 @@ public class OgreGame
         allUnits.addAll(playerTwo.readyForNextTurn());
         
         if (currentPlayer == playerOne)
+        {
             currentPlayer = playerTwo;
+            currentGameState.currentPlayer = playerTwo;
+        }    
         else
+        {
             currentPlayer = playerOne;
+            currentGameState.currentPlayer = playerOne;
+        }    
         
         reportArea.append("Round " + gameRound);
         reportArea.append(": " + currentPlayer.name + "'s turn\n");
@@ -1249,6 +1255,7 @@ public class OgreGame
 
             playerOne = loadState.playerOne;
             playerTwo = loadState.playerTwo;
+            
             currentPlayer = loadState.currentPlayer;
 
             currentOgre = null;

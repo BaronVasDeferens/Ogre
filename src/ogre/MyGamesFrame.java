@@ -7,6 +7,7 @@ package ogre;
 
 import java.util.Iterator;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import static ogre.CreateNewGameFrame.credentials;
 
@@ -18,6 +19,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
 
     static LoginObject activePlayerCredentials;
     static OgreGame gameMaster;
+    static GameState [] gameArray;
     /**
      * Creates new form MyGamesFrame
      */
@@ -35,7 +37,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
         
         DefaultListModel listModel = new DefaultListModel();
         
-        GameState [] gameArray = new GameState[userCreds.gameStateList.size()];
+        gameArray = new GameState[userCreds.gameStateList.size()];
         
         Iterator iter = userCreds.gameStateList.iterator();
         GameState thisState;
@@ -46,7 +48,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
             thisState = (GameState)iter.next();
             
             gameArray[index] = thisState;
-            listModel.add(index, (thisState.playerOne.name + " vs " + thisState.playerTwo.name + " turn " + thisState.turnNumber));
+            listModel.add(index, (thisState.playerOne.name + " vs " + thisState.playerTwo.name + " / " + thisState.scenario.scenarioType.toString() + " / turn " + thisState.turnNumber));
             index++;
         }
               
@@ -66,7 +68,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         gamesList = new javax.swing.JList();
         jLabel1 = new javax.swing.JLabel();
-        continueJButton = new javax.swing.JButton();
+        playJButton = new javax.swing.JButton();
         surrenderJButton = new javax.swing.JButton();
         cancelJButton = new javax.swing.JButton();
 
@@ -78,16 +80,27 @@ public class MyGamesFrame extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        gamesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(gamesList);
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
         jLabel1.setText("Games In Progress");
 
-        continueJButton.setText("PLAY");
+        playJButton.setText("PLAY");
+        playJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playJButtonActionPerformed(evt);
+            }
+        });
 
         surrenderJButton.setText("SURRENDER");
 
         cancelJButton.setText("CANCEL");
+        cancelJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelJButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -98,7 +111,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(continueJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(playJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 173, Short.MAX_VALUE)
                         .addComponent(surrenderJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -118,7 +131,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(surrenderJButton)
-                    .addComponent(continueJButton))
+                    .addComponent(playJButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 81, Short.MAX_VALUE)
                 .addComponent(cancelJButton)
                 .addContainerGap())
@@ -126,6 +139,41 @@ public class MyGamesFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+    }//GEN-LAST:event_cancelJButtonActionPerformed
+
+    private void playJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playJButtonActionPerformed
+        // TODO add your handling code here:
+        //Perform a quick check to see whether or not another game is already in progress
+        if (gameMaster.currentGameState != null)
+        {
+            //Object[] options = { "OK", "CANCEL" };
+            //JOptionPane.showConfirmDialog(this, "This will end your current game. Continue?", "END CURRENT GAME?", JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+                    
+            Object[] options = { "OK", "CANCEL" };
+            JOptionPane pane = new JOptionPane();
+            pane.showOptionDialog(this, "This will end your current game turn. Continue?", "Warning",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+            null, options, options[0]);
+            
+            Object selectedValue = pane.getValue();
+            
+            if (selectedValue.equals("OK"))
+            {
+                gameMaster.setCurrentGameState(gameArray[gamesList.getSelectedIndex()]);
+                this.setVisible(false);
+            }
+        }
+        
+        else
+        {
+            gameMaster.setCurrentGameState(gameArray[gamesList.getSelectedIndex()]);
+            this.setVisible(false);
+        }
+    }//GEN-LAST:event_playJButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -164,10 +212,10 @@ public class MyGamesFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelJButton;
-    private javax.swing.JButton continueJButton;
     private javax.swing.JList gamesList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton playJButton;
     private javax.swing.JButton surrenderJButton;
     // End of variables declaration//GEN-END:variables
 }
