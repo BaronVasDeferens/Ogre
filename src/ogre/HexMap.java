@@ -30,7 +30,7 @@ public class HexMap implements Serializable
 {
     int rows, cols;
     
-    OgreGame gameMaster;
+    //OgreGame gameMaster;
     
     Hex hexArray[][];
     
@@ -95,14 +95,16 @@ public class HexMap implements Serializable
         
     }
     
+    /*
     //SET GAME MASTER
     //give this object awareness of its owner
+    
     public void setMaster(OgreGame msr)
     {
         gameMaster = msr;
     }
     
-    /*
+    
     //SET HEXAGON SIZE
     public void setHexSize(int newSize)
     {
@@ -984,7 +986,7 @@ public class HexMap implements Serializable
     //COMPUTE OVERLAPPING HEXES
     //Gets the overlapping "hexes in common" with  multi-firing wepaon solution...or something.
     //The "comon zone of fire" hexes will be listed in the adjacentHexes list
-    public void computeOverlappingHexes(Player currentPlayer)
+    public void computeOverlappingHexes(Player currentPlayer, OgreGame gameMaster)
     {
        adjacentHexes.clear();
        

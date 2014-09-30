@@ -460,7 +460,65 @@ class GameStateIOList extends IOList
         {
             dataList.add(updateMe);
             System.out.println("Added game #" + updateMe.idNumber);
+            writeToDisk();
         }
+    }
+    
+        //DISPLAY ALL
+    //Prints all user data to System.out
+    public void displayAll()
+    {
+        //OUTPUT DATA
+        if (dataList != null)
+        {
+            GameState temp;
+            int size = dataList.size();
+            System.out.println(size + " ENTRIES FOUND:");
+            
+            Iterator iter = dataList.iterator();
+            
+            while (iter.hasNext())
+            {
+                temp = (GameState)iter.next();
+                System.out.println(temp.idNumber + ":" + temp.playerOne.name + " vs " + temp.playerTwo.name);
+            }
+        }
+    }
+    
+    
+    //READ FROM DISK (NO ARGS)
+    //Reads from the dataFileName supplied at instantiation.
+    public boolean readFromDisk()
+    {
+        if (dataFileName == null)
+            return false;
+        else
+            return (readFromDisk(dataFileName));
+    }
+    
+    
+    //READ FROM DISK (WITH ARG)
+    //Reads a data structure from specified file
+    public boolean readFromDisk(String file)
+    {
+        try
+        {
+            in = new FileInputStream(file);
+            objectIn = new ObjectInputStream(in);
+            
+            dataList = (DataList)objectIn.readObject();
+            
+            in.close();
+            return (true);
+        }
+        
+        catch(IOException | ClassNotFoundException e)
+        {
+            System.out.println("IOList ERROR: problem reading " + file);
+            return (false);
+        }
+       
+        
     }
     
 }

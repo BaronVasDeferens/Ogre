@@ -288,7 +288,7 @@ public class GameFrame extends javax.swing.JFrame {
                        
                     }
                     
-                    ogreGame.hexMap.computeOverlappingHexes(ogreGame.currentPlayer);
+                    ogreGame.hexMap.computeOverlappingHexes(ogreGame.currentPlayer, ogreGame);
                     
                     //Changing weapons means that a prior target is no longer viable
                     //TODO: make this work right

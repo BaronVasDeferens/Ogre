@@ -30,6 +30,8 @@ public class OgreGame
     
     LoginObject activePlayerCredentials = null;
     
+    GameStateUploadManager uploader;
+    
     HexMap hexMap;
     public int hexSide = 64;
     public final int HEX_ROWS = 21;
@@ -735,8 +737,16 @@ public class OgreGame
         targettedOgreWeapon = null;
         currentOgre = null;
         
-        if ((currentGameState != null) && (eventManager != null))
-            currentGameState.eventManager = eventManager;
+        if (currentGameState != null)
+        {
+            if  (eventManager == null)
+            {
+                eventManager = new EventManager(this);
+            }
+            //currentGameState.eventManager = eventManager;
+            eventManager.eventQueue = currentGameState.eventQueue;
+        }
+        
         
         switch (gamePhase)
         {
@@ -802,6 +812,11 @@ public class OgreGame
             //Commit the game state to the server here
             case 14:
                 switchCurrentPlayer();
+                
+                //Upload changes to gameState
+                uploader = new GameStateUploadManager(server, port, activePlayerCredentials);
+                uploader.uploadGameState(currentGameState);
+                
                 gamePhase = 21;
             case 21:
                 phaseLabel.setText("Phase: MOVE (" + playerTwo.name + ")");
@@ -1144,8 +1159,12 @@ public class OgreGame
         //check for user login creds
         if (activePlayerCredentials != null)
         {
-            
+            MyGamesFrame myGames = new MyGamesFrame(this,activePlayerCredentials);
+            myGames.setVisible(true);
         }
+        
+        else
+            System.out.println("creds are null");
     }
     
     
@@ -1220,6 +1239,10 @@ public class OgreGame
             //Begin loading prior gamestate info
             
             eventManager = new EventManager(this);
+            if (loadState.eventQueue == null)
+                loadState.eventQueue = new EventList();
+            
+            eventManager.eventQueue = loadState.eventQueue;
             
             hexMap = null;
             hexMap = loadState.hexMap;
@@ -1245,7 +1268,7 @@ public class OgreGame
             
             gamePhase = 10;
             
-            hexMap.setMaster(this);
+            //hexMap.setMaster(this);
             
             currentGameState = loadState;
             advanceGamePhase();

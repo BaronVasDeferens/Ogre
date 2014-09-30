@@ -20,7 +20,6 @@ public class GameState implements Serializable
     Date lastModified;
     int idNumber;
     
-    
     Player playerOne, playerTwo, currentPlayer;
 
     int turnNumber;
@@ -29,9 +28,9 @@ public class GameState implements Serializable
     HexMap hexMap;
     int hexRows, hexCols;
 
-    EventManager eventManager;
+    //EventManager eventManager;
     
-    
+    EventList<GameEvent> eventQueue;
     
     
     GameState(Player p1, Player p2, ScenarioType scenType, int hexMapRows, int hexMapCols, int hexsize)      //TODO; accept victory condition args here
@@ -46,7 +45,8 @@ public class GameState implements Serializable
         
         currentPlayer = playerOne;
         
-        eventManager = null;
+        //eventManager = null;
+        eventQueue = null;
         
         scenario = new Scenario(p1,p2, scenType);
         

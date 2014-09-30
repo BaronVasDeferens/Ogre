@@ -62,9 +62,13 @@ public class GameStateUploadManager
                 //TODO: thrown an error msg
                 System.out.println(e.toString());
             }
-            
+                        
             //Create upload package and transmit
             GameStateUploadObject uploadPackage = new GameStateUploadObject(currentPlayerCredentials, sendMe);
+            
+            //for debugging
+            //TransportObject uploadPackage = new TransportObject();
+            //uploadPackage.isLogoutRequest = true;
             
             //Transmit data and close the streams
             if ((socket != null) && (objectOut != null))
@@ -72,6 +76,7 @@ public class GameStateUploadManager
                 try
                 {
                     objectOut.writeObject(uploadPackage);
+                    objectOut.writeObject(null);
                     success = true;
                 }
 
@@ -82,22 +87,25 @@ public class GameStateUploadManager
                      success = false;
                 }
 
-                try
+                if (socket.isConnected() == false)
                 {
-                    objectOut.close();
-                    out.close();
-                    socket.close();
+                    try
+                    {
+                        objectOut.close();
+                        out.close();
+                        socket.close();
 
-                    socket = null;
-                    objectOut = null;
-                    out = null;
+                        socket = null;
+                        objectOut = null;
+                        out = null;
 
-                }
+                    }
 
-                catch (IOException e)
-                {
-                    //TODO: thrown an error msg
-                     System.out.println(e.toString());
+                    catch (IOException e)
+                    {
+                        //TODO: thrown an error msg
+                         System.out.println(e.toString());
+                    }
                 }
             }
               

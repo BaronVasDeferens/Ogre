@@ -34,6 +34,8 @@ public class ServerThreadHandler
         onlinePlayers.clear();
         
         currentGames = new GameStateIOList(gameFile);
+        currentGames.readFromDisk();
+        currentGames.displayAll();
         
         registeredPlayers = new PlayerIOList(playerFile);
         registeredPlayers.readFromDisk();

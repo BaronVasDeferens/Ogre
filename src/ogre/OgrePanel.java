@@ -690,7 +690,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         }
                                         
                                         //...adjust firing pattern
-                                        hexMap.computeOverlappingHexes(gameMaster.currentPlayer);
+                                        hexMap.computeOverlappingHexes(gameMaster.currentPlayer, gameMaster);
                                         hexMapRenderer.updateMapImage();
                                         
                                     }
@@ -712,7 +712,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                                 if (thisHex.occupyingUnit.unitWeapon.dischargedThisRound == false)
                                                 {
                                                     hexMap.select(thisHex);
-                                                    hexMap.computeOverlappingHexes(gameMaster.currentPlayer);
+                                                    hexMap.computeOverlappingHexes(gameMaster.currentPlayer, gameMaster);
 
                                                     //Selecting multiple friendly units may remove a prior target from the combined attack radius.
                                                     //Check:

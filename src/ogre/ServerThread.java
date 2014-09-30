@@ -91,16 +91,31 @@ public class ServerThread implements Runnable
                 }
                 catch (ClassNotFoundException | IOException e)
                 {
+                    e.printStackTrace(System.out);
                     active = false;
                     //System.out.println("ServerThread ERROR: problem reading object"); 
                 }
                 
+                int bytesAvailable = 0;
+                try
+                {
+                    bytesAvailable = objectIn.available();
+                }
+                catch (IOException e)
+                {
+                    
+                }
                 
+                if (bytesAvailable > 0)
+                {
+                    System.out.println("not yet...");
+                }
                 //EXAMINE THE RECEIVED OBJECT:
-                if (transObj == null)
+                else if (transObj == null)
                 {
                     //do nothing
-                    active = false;
+                    System.out.println("I got nothing");
+
                 }
                 
                 //********************

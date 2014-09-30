@@ -63,10 +63,12 @@ public class NewGameManager
             
             GameStateUploadManager gameUploader = new GameStateUploadManager(myMaster.server, myMaster.port, userCredentials);
             
-            if (gameUploader.uploadGameState(newGameState))
-            {
-                System.out.println("I think I uploaded a gameState");
-            }
+//            if (gameUploader.uploadGameState(newGameState))
+//            {
+//                System.out.println("I think I uploaded a gameState");
+//            }
+            
+            gameUploader.uploadGameState(newGameState);
             
         }
         

@@ -26,7 +26,6 @@ public class TransportObject implements Serializable
     boolean checkoutGameStateRequest;      //true when requesting a specific game for checkout
     boolean commitGameStateRequest;        //true when commiting a gameState to server
 
-    
     String username;
     String message;
     
@@ -122,11 +121,9 @@ class GameStateUploadObject extends TransportObject
     
     GameStateUploadObject(LoginObject creds, GameState state)
     {
-        super();
+        super(creds.username, null);
         
         commitGameStateRequest = true;
-        
-        username = creds.username;
         gameStateToCommit = state;
     }
 }

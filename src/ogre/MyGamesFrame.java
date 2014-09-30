@@ -5,7 +5,10 @@
  */
 package ogre;
 
+import java.util.Iterator;
+import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
+import static ogre.CreateNewGameFrame.credentials;
 
 /**
  *
@@ -14,18 +17,41 @@ import javax.swing.ListSelectionModel;
 public class MyGamesFrame extends javax.swing.JFrame {
 
     static LoginObject activePlayerCredentials;
-    
+    static OgreGame gameMaster;
     /**
      * Creates new form MyGamesFrame
      */
-    public MyGamesFrame(LoginObject userCreds) 
+    public MyGamesFrame(OgreGame master, LoginObject userCreds) 
     {
         initComponents();
         
+        this.setTitle("Continue A Game");
+        
+        gameMaster = master;
         activePlayerCredentials = userCreds;
         
         gamesList.removeAll();
         gamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        DefaultListModel listModel = new DefaultListModel();
+        
+        GameState [] gameArray = new GameState[userCreds.gameStateList.size()];
+        
+        Iterator iter = userCreds.gameStateList.iterator();
+        GameState thisState;
+        int index = 0;
+        
+        while (iter.hasNext())
+        {
+            thisState = (GameState)iter.next();
+            
+            gameArray[index] = thisState;
+            listModel.add(index, (thisState.playerOne.name + " vs " + thisState.playerTwo.name + " turn " + thisState.turnNumber));
+            index++;
+        }
+              
+        gamesList.setModel(listModel);
+        gamesList.setSelectedIndex(0);
     }
 
     /**
@@ -131,7 +157,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MyGamesFrame(activePlayerCredentials).setVisible(true);
+                new MyGamesFrame(gameMaster,activePlayerCredentials).setVisible(true);
             }
         });
     }
