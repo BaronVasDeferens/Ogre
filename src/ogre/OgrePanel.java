@@ -32,8 +32,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     
     //DRAWING STUFF
     private Thread animator;
-    private volatile boolean running = false;    
-    private volatile boolean gameOver = false;
+    public volatile boolean running = false;    
+    public volatile boolean gameOver = false;
     private Graphics dbg;
     private Image dbImage = null;
     
@@ -169,6 +169,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     public void run()
     {
         running = true;
+        
         while (running == true)
         {
             gameUpdate();
@@ -187,24 +188,34 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
             }
         }
         
-        System.exit(0);
     }
 
     
     //*** GAME UPDATE
     private void gameUpdate()
     {
-        if (gameOver == false)
+        if (gameOver == true)
         {
-
+            this.setEnabled(false);
         }
+        
     }//gameover != true
     
     
     //GAME RENDER
     private void gameRender()
     {
-        if (hexMap != null)
+        if (gameOver)
+        {
+            //this.setEnabled(false);
+            dbImage = createImage(VIEW_WINDOW_WIDTH, VIEW_WINDOW_HEIGHT);
+            dbg = dbImage.getGraphics();
+            
+            dbg.setColor(Color.WHITE);
+            dbg.fillRect(0,0,800,600);
+        }
+        
+        else if (hexMap != null)
         {
             if (dbImage == null)
             {
@@ -742,6 +753,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                                 Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
                                                 gameMaster.updateOgreWeaponSelectionList(thisOgre);
                                                 gameMaster.weaponList.setEnabled(true);
+                                                hexMapRenderer.updateMapImage();
                                             }
                                         }
                                     }
@@ -794,6 +806,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                                     gameMaster.weaponList.setEnabled(true);
                                                 else
                                                     gameMaster.weaponList.setEnabled(false);
+                                                
+                                                hexMapRenderer.updateMapImage();
                                             }
                                         }
                                         
@@ -811,6 +825,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                                 else
                                                     gameMaster.weaponList.setEnabled(false);
                                             }
+                                            
+                                            hexMapRenderer.updateMapImage();
                                         }
                                     }
                                 }

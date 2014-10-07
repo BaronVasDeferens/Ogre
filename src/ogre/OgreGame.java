@@ -724,161 +724,179 @@ public class OgreGame
     */
     public void advanceGamePhase()
     {
-        gamePhase += 1;
-                
-        updateUnitReadouts(null);
-        
-        hexMap.deselectAllSelectedHexes();
-        hexMap.adjacentHexes.clear();
-        ogrePanel.hexMapRenderer.updateMapImage();
-        
-        currentTarget = null;
-        selectedOgreWeapons.clear();
-        targettedOgreWeapon = null;
-        currentOgre = null;
-        
         if (currentGameState != null)
         {
-            if  (eventManager == null)
+            gamePhase += 1;
+
+            updateUnitReadouts(null);
+
+            hexMap.deselectAllSelectedHexes();
+            hexMap.adjacentHexes.clear();
+            ogrePanel.hexMapRenderer.updateMapImage();
+
+            currentTarget = null;
+            selectedOgreWeapons.clear();
+            targettedOgreWeapon = null;
+            currentOgre = null;
+
+
+            switch (gamePhase)
             {
-                eventManager = new EventManager(this);
-            }
-            //currentGameState.eventManager = eventManager;
-            eventManager.eventQueue = currentGameState.eventQueue;
-        }
-        
-        
-        switch (gamePhase)
-        {
-            case 0:
-                phaseLabel.setText("Phase: PRE-GAME SETUP");
-                break;
-            //Pre-game setup -> P1 Setup
-            case 1:
-                phaseLabel.setText("Phase: SETUP (" + playerOne.name + ")");
-                break;
-            case 2:
-                phaseLabel.setText("Phase: SETUP (" + playerTwo.name + ")");
-                break;
-            case 3:
-                gamePhase = 11;
-            //Player 1 MOVE
-            case 11:
-                reportArea.append("Round " + gameRound);
-                reportArea.append(": " + currentPlayer.name + "'s turn\n");
-                
-                phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
-                
-                undoButton.setEnabled(true);
-                
-                //Disable the attack readouts
-                attackButton.setEnabled(false);
-                weaponList.setEnabled(false);
-                upperCurrentTargetLabel.setText("");
-                currentTargetLabel.setText("");
-                ratioLabel.setText("");
-                break;
-                
-            //Player 1 SHOOT
-            case 12:
-                phaseLabel.setText("Phase: SHOOT (" + playerOne.name + ")");
-                
-                undoButton.setEnabled(false);
-                
-                //enable attack readouts
-                attackButton.setEnabled(false);
-                weaponList.setEnabled(true);
-                upperCurrentTargetLabel.setText("Current Target:");
-                currentTargetLabel.setText("NONE");
-                break;
-                
-            //player 1 second move
-            case 13:
-                phaseLabel.setText("Phase: 2nd MOVE (" + playerOne.name + ")");
-                
-                playerOne.readyForSecondMove();
-                
-                undoButton.setEnabled(true);
-                
-                //Disable the attack readouts
-                attackButton.setEnabled(false);
-                weaponList.setEnabled(false);
-                upperCurrentTargetLabel.setText("");
-                currentTargetLabel.setText("");
-                ratioLabel.setText("");
-                break;
-            
-            //End of playerOne's turn
-            //Commit the game state to the server here
-            case 14:
-                switchCurrentPlayer();
-                
-                //Upload changes to gameState
-                uploader = new GameStateUploadManager(server, port, activePlayerCredentials);
-                uploader.uploadGameState(currentGameState);
-                
-                gamePhase = 21;
-            case 21:
-                phaseLabel.setText("Phase: MOVE (" + playerTwo.name + ")");
-                
-                //Disable the attack readouts
-                attackButton.setEnabled(false);
-                weaponList.setEnabled(false);
-                upperCurrentTargetLabel.setText("");
-                currentTargetLabel.setText("");
-                ratioLabel.setText("");
-                break;
-                
-            case 22:
-                phaseLabel.setText("Phase: SHOOT (" + playerTwo.name + ")");
-                
-                undoButton.setEnabled(false);
-                
-                //enable attack readouts
-                attackButton.setEnabled(false);
-                weaponList.setEnabled(true);
-                upperCurrentTargetLabel.setText("Current Target:");
-                currentTargetLabel.setText("NONE");
-                break;
-                
-            case 23:
-                phaseLabel.setText("Phase: 2nd MOVE (" + playerTwo.name + ")");
-                
-                playerTwo.readyForSecondMove();
-                
-                undoButton.setEnabled(true);
-                
-                //Disable the attack readouts
-                attackButton.setEnabled(false);
-                weaponList.setEnabled(false);
-                upperCurrentTargetLabel.setText("");
-                currentTargetLabel.setText(""); 
-                ratioLabel.setText("");
-                break;
-            
-            case 24:
-                gameRound++;               
-                
+                case 0:
+                    phaseLabel.setText("Phase: PRE-GAME SETUP");
+                    break;
+                //Pre-game setup -> P1 Setup
+                case 1:
+                    phaseLabel.setText("Phase: SETUP (" + playerOne.name + ")");
+                    break;
+                case 2:
+                    phaseLabel.setText("Phase: SETUP (" + playerTwo.name + ")");
+                    break;
+                case 3:
+                    gamePhase = 11;
+                //Player 1 MOVE
+                case 10:
+                    gamePhase = 11;
+                case 11:
+                    reportArea.append("Round " + gameRound);
+                    reportArea.append(": " + currentPlayer.name + "'s turn\n");
+
+                    phaseLabel.setText("Phase: MOVE (" + currentPlayer.name + ")");
+
+                    undoButton.setEnabled(true);
+
+                    //Disable the attack readouts
+                    attackButton.setEnabled(false);
+                    weaponList.setEnabled(false);
+                    upperCurrentTargetLabel.setText("");
+                    currentTargetLabel.setText("");
+                    ratioLabel.setText("");
+                    break;
+
+                //Player 1 SHOOT
+                case 12:
+                    phaseLabel.setText("Phase: SHOOT (" + currentPlayer.name + ")");
+
+                    undoButton.setEnabled(false);
+
+                    //enable attack readouts
+                    attackButton.setEnabled(false);
+                    weaponList.setEnabled(true);
+                    upperCurrentTargetLabel.setText("Current Target:");
+                    currentTargetLabel.setText("NONE");
+                    break;
+
+                //player 1 second move
+                case 13:
+                    phaseLabel.setText("Phase: 2nd MOVE (" + currentPlayer.name + ")");
+
+                    playerOne.readyForSecondMove();
+
+                    undoButton.setEnabled(true);
+
+                    //Disable the attack readouts
+                    attackButton.setEnabled(false);
+                    weaponList.setEnabled(false);
+                    upperCurrentTargetLabel.setText("");
+                    currentTargetLabel.setText("");
+                    ratioLabel.setText("");
+                    break;
+
+                //End of turn
                 //Commit the game state to the server here
-                
-                switchCurrentPlayer();
-                
-                gamePhase = 11;
-                phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
-                
-                undoButton.setEnabled(true);
-                
-                //Disable the attack readouts
-                attackButton.setEnabled(false);
-                weaponList.setEnabled(false);
-                upperCurrentTargetLabel.setText("");
-                currentTargetLabel.setText("");
-                ratioLabel.setText("");
-                break;
-                
-            default:
-                break;
-        }
+                case 14:
+                    switchCurrentPlayer();
+                    gameRound++;
+                    
+                    //Upload changes to gameState
+                    uploader = new GameStateUploadManager(server, port, activePlayerCredentials);
+                    currentGameState.gamePhase = 10;
+                    currentGameState.turnNumber = gameRound;
+                    currentGameState.isOpen = false;
+                    
+                    uploader.uploadGameState(currentGameState);
+
+                    undoButton.setEnabled(false);
+                    advancePhaseButton.setEnabled(false);
+                    
+                    //Display end of turn message
+                    JOptionPane.showMessageDialog(myFrame, "Your turn is over.",
+            "END OF TURN", JOptionPane.WARNING_MESSAGE);
+                    
+                    //Clear the board
+                    loadGameState(null);
+                    ogrePanel.gameOver = true;
+                    
+                    break;
+                    /*
+                    gamePhase = 21;
+                case 20:
+                case 21:
+                    phaseLabel.setText("Phase: MOVE (" + playerTwo.name + ")");
+
+                    //Disable the attack readouts
+                    attackButton.setEnabled(false);
+                    weaponList.setEnabled(false);
+                    upperCurrentTargetLabel.setText("");
+                    currentTargetLabel.setText("");
+                    ratioLabel.setText("");
+                    break;
+
+                case 22:
+                    phaseLabel.setText("Phase: SHOOT (" + playerTwo.name + ")");
+
+                    undoButton.setEnabled(false);
+
+                    //enable attack readouts
+                    attackButton.setEnabled(false);
+                    weaponList.setEnabled(true);
+                    upperCurrentTargetLabel.setText("Current Target:");
+                    currentTargetLabel.setText("NONE");
+                    break;
+
+                case 23:
+                    phaseLabel.setText("Phase: 2nd MOVE (" + playerTwo.name + ")");
+
+                    playerTwo.readyForSecondMove();
+
+                    undoButton.setEnabled(true);
+
+                    //Disable the attack readouts
+                    attackButton.setEnabled(false);
+                    weaponList.setEnabled(false);
+                    upperCurrentTargetLabel.setText("");
+                    currentTargetLabel.setText(""); 
+                    ratioLabel.setText("");
+                    break;
+
+                case 24:
+                    gameRound++;               
+
+                    //Commit the game state to the server here
+
+                    switchCurrentPlayer();
+
+                    gamePhase = 11;
+
+                    uploader = new GameStateUploadManager(server, port, activePlayerCredentials);
+                    uploader.uploadGameState(currentGameState);
+
+                    phaseLabel.setText("Phase: MOVE (" + playerOne.name + ")");
+
+                    undoButton.setEnabled(true);
+
+                    //Disable the attack readouts
+                    attackButton.setEnabled(false);
+                    weaponList.setEnabled(false);
+                    upperCurrentTargetLabel.setText("");
+                    currentTargetLabel.setText("");
+                    ratioLabel.setText("");
+                    break;
+                */            
+                default:
+                    break;
+            }
+        }    
     }
     
     //SWITCH CURRENT PLAYER
@@ -902,8 +920,8 @@ public class OgreGame
             currentGameState.currentPlayer = playerOne;
         }    
         
-        reportArea.append("Round " + gameRound);
-        reportArea.append(": " + currentPlayer.name + "'s turn\n");
+        //reportArea.append("Round " + gameRound);
+        //reportArea.append(": " + currentPlayer.name + "'s turn\n");
         
         ogrePanel.hexMapRenderer.updateMapImage();
     }
@@ -1169,8 +1187,8 @@ public class OgreGame
             myGames.setVisible(true);
         }
         
-        else
-            System.out.println("creds are null");
+//        else
+//            System.out.println("creds are null");
     }
     
     
@@ -1180,8 +1198,8 @@ public class OgreGame
         //Check: if the current game state isn't null, there is a game in progress
         if (currentGameState != null)
         {
-            JOptionPane.showMessageDialog(myFrame, "GAME IN PROGRESS",
-            "There is a game in progress.", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(myFrame, "There is a game in progress.",
+            "GAME IN PROGRESS", JOptionPane.WARNING_MESSAGE);
         }
         
         //Check to see if the user is logged in
@@ -1192,8 +1210,8 @@ public class OgreGame
         
         else
         {
-            JOptionPane.showMessageDialog(myFrame, "ERROR",
-            "You must log in first", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(myFrame, "You must log in first!",
+            "ERROR", JOptionPane.WARNING_MESSAGE);
         }
     }
     
@@ -1238,11 +1256,20 @@ public class OgreGame
             selectedOgreWeapons = null;
             currentOgre = null;
             allUnits = null;
+            
+            currentGameState = null;
+            
+            if (ogrePanel != null)
+            {
+                ogrePanel.setEnabled(false);
+            }
         }
         
         else
         {
             //Begin loading prior gamestate info
+            
+            currentGameState = loadState;          
             
             eventManager = new EventManager(this);
             if (loadState.eventQueue == null)
@@ -1272,16 +1299,17 @@ public class OgreGame
             ogrePanel.setMaster(this);
             
             gameRound = loadState.turnNumber;
+            gamePhase = loadState.gamePhase;
             
-            gamePhase = 10;
-            
-            //hexMap.setMaster(this);
-            
-            currentGameState = loadState;
+            loadState.isOpen = true;
+                       
             advanceGamePhase();
             
             advancePhaseButton.setEnabled(true);
             undoButton.setEnabled(true);
+            
+            ogrePanel.setEnabled(true);
+            ogrePanel.gameOver = false;
             
             success = true;
 

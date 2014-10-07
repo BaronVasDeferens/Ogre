@@ -453,13 +453,13 @@ class GameStateIOList extends IOList
             dataList.remove(targetGame);
             dataList.add(updateMe);
             writeToDisk();
-            System.out.println("Updated game #" + updateMe.idNumber);
+            System.out.println("Updated game #" + updateMe.idNumber + ": " + updateMe.playerOne.name + " vs " + updateMe.playerTwo.name);
         }
         
         else
         {
             dataList.add(updateMe);
-            System.out.println("Added game #" + updateMe.idNumber);
+            System.out.println("Added game #" + updateMe.idNumber + ": " + updateMe.playerOne.name + " vs " + updateMe.playerTwo.name);
             writeToDisk();
         }
     }
@@ -480,7 +480,7 @@ class GameStateIOList extends IOList
             while (iter.hasNext())
             {
                 temp = (GameState)iter.next();
-                System.out.println(temp.idNumber + ":" + temp.playerOne.name + " vs " + temp.playerTwo.name);
+                System.out.println("#" + temp.idNumber + " / " + temp.playerOne.name + " vs " + temp.playerTwo.name + " / turn " + temp.turnNumber);
             }
         }
     }

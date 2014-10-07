@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public class GameState implements Serializable
 {
-    boolean isOpen;         //true when one player is "checked out" this game
+    boolean isOpen;         //indicates a game in progress
     Date dateCreated;
     Date lastModified;
     int idNumber;
@@ -23,6 +23,7 @@ public class GameState implements Serializable
     Player playerOne, playerTwo, currentPlayer;
 
     int turnNumber;
+    int gamePhase;
     
     Scenario scenario;
     HexMap hexMap;
@@ -55,6 +56,7 @@ public class GameState implements Serializable
         UnitPlacementManager.placeUnits(hexMap, scenario.allUnits);
         
         turnNumber = 1;
+        gamePhase = 10;
         
         isOpen = false;
     }

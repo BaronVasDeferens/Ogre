@@ -178,7 +178,7 @@ public class ServerThreadHandler
                 deadThreads.add(thisThread);
         }
         
-        System.out.println("Removed " + deadThreads.size() + " dead threads");
+        //System.out.println("Removed " + deadThreads.size() + " dead threads");
         serverThreadList.removeAll(deadThreads);
         deadThreads.clear();
     }

@@ -204,7 +204,7 @@ public class ServerThread implements Runnable
                 //Accepts a GameUploadObject and either stores or updates a gamestate with those same properties
                 else if (transObj.commitGameStateRequest)
                 {
-                    System.out.println("UPLOAD REQUEST");
+                    //System.out.println("UPLOAD REQUEST");
                     
                     GameStateUploadObject gameUpload = null;
                     

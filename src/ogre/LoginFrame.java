@@ -148,6 +148,7 @@ public class LoginFrame extends javax.swing.JFrame {
             if (myManager.login(UsernameJTextField.getText(), new String(PasswordJTextArea.getPassword())))
             {
                 feedbackTextArea.append("\nClick OK to continue..\n");
+                LoginButton.setEnabled(false);
                 OKButton.setEnabled(true);
             }
 

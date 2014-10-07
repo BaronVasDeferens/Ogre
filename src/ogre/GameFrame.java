@@ -6,6 +6,10 @@
 
 package ogre;
 
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
+import static ogre.MyGamesFrame.gameMaster;
+
 /**
  *
  * @author Skot
@@ -22,6 +26,8 @@ public class GameFrame extends javax.swing.JFrame {
         ogreGame = new OgreGame(ogrePanel1);
         ogreGame.attachComponents(this, WeaponSystemsList, selectedUnitLabel, unitStatLabel, phaseLabel, 
                 upperCurrentTargetLabel, currentTargetLabel, attackButton, reportArea, ratioLabel, undoButton, advancePhaseButton);
+        
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     /**
@@ -57,6 +63,11 @@ public class GameFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                GameFrame.this.windowClosing(evt);
+            }
+        });
 
         upperCurrentTargetLabel.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         upperCurrentTargetLabel.setText("Current target:");
@@ -143,6 +154,11 @@ public class GameFrame extends javax.swing.JFrame {
         jMenu1.add(registerMenuItem);
 
         ViewMyGamesMenuItem.setText("View My Games");
+        ViewMyGamesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ViewMyGamesMenuItemActionPerformed(evt);
+            }
+        });
         jMenu1.add(ViewMyGamesMenuItem);
 
         jMenuBar1.add(jMenu1);
@@ -301,6 +317,8 @@ public class GameFrame extends javax.swing.JFrame {
                             ogreGame.updateCurrentTarget(null);
                         }
                     }
+                    
+                    ogreGame.ogrePanel.hexMapRenderer.updateMapImage();
                 }
             }
             //currentPlayer is TARGETTING an enemy Ogre's weapon
@@ -345,6 +363,77 @@ public class GameFrame extends javax.swing.JFrame {
         ogreGame.createNewGame();
     }//GEN-LAST:event_createNewGameMenuItemActionPerformed
 
+    private void windowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_windowClosing
+        // If the user attempt to close the window while a game is in progress,
+        //issue a warning and upload the gameState
+        if (ogreGame.currentGameState != null)
+        {
+            Object[] options = { "QUIT", "CANCEL" };
+            
+            JOptionPane pane = new JOptionPane();
+            
+//            pane.showOptionDialog(this, "Quitting now will end your current turn!", "WARNING",
+//            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+//            null, options, options[1]);
+//            
+//            Object selectedValue = pane.getValue();
+            
+            Object selectedValue = pane.showOptionDialog(this, "Quitting now will end your current turn!", "WARNING",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+            null, options, options[1]);
+            
+            //while (selectedValue == "uninitializedValue") {}
+            
+            if (selectedValue.equals(0))
+            {
+                //Set to phase 13 and advance the game state
+                //which will perform the necessary state changes
+                ogreGame.gamePhase = 13;
+                ogreGame.advanceGamePhase();
+                
+                //Wait until the sequence has completed before dismissing the window
+
+                    if (ogreGame.currentGameState == null)
+                    {
+                        this.setVisible(false);
+//                        try
+//                        {
+//                            Thread.sleep(10);
+//                        }
+//                        catch (InterruptedException e)
+//                        {
+//                            
+//                        }
+                    }    
+                
+                
+            }
+            
+            else
+            {
+                //cancel the window close operation....somehow
+                JOptionPane.showMessageDialog(this, "Nothing happened...",
+            "AW SHIT", JOptionPane.WARNING_MESSAGE);
+                
+            }
+        }
+    }//GEN-LAST:event_windowClosing
+
+    private void ViewMyGamesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ViewMyGamesMenuItemActionPerformed
+        //Check #1: is somebody logged in?
+        if (ogreGame.activePlayerCredentials == null)
+        {
+            JOptionPane.showMessageDialog(this, "You are not logged in!",
+            "LOG IN FIRST", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        else
+        {
+            //ogreGame.login();
+            ogreGame.displayMyGames();
+        }
+    }//GEN-LAST:event_ViewMyGamesMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -378,7 +467,7 @@ public class GameFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new GameFrame().setVisible(true);
-
+    
             }
         });
     }

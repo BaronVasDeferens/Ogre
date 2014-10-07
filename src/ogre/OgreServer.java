@@ -76,7 +76,7 @@ public class OgreServer
             if (socket.isConnected() == true)
             {
                 serverThreadHandler.addServerThread(socket);
-                System.out.println("Incoming connection...");
+                //System.out.println("Incoming connection...");
             }
             
             serverThreadHandler.cullDeadThreads();
