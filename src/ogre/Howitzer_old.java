@@ -10,11 +10,11 @@ package ogre;
  *
  * @author Skot
  */
-public class Howitzer extends ogre.Unit
+public class Howitzer_old extends ogre.Unit
 {
-    public Howitzer(int id)
+    public Howitzer_old()
     {
-        super(id);
+        super();
         
         unitName = "Howitzer";
         unitType = UnitType.Howitzer;

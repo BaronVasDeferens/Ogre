@@ -384,7 +384,7 @@ public class HexMapRenderer
                     //Draw Units (if any)
                     if (hexMap.hexArray[i][j].isOccupied())
                     {
-                        //color gray to disabled
+                        //Color the hex gray if the occupying unit is disabled
                         if ((hexMap.hexArray[i][j].getUnit().isDisabled()) && ((hexMap.hexArray[i][j].isSelected() == false)))
                         {
                             newMapGraphics.setColor(Color.GRAY);

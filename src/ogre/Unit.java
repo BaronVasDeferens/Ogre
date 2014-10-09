@@ -53,10 +53,8 @@ public class Unit implements Serializable
     String currentImage;
     
     //Default constructor
-    public Unit(int id)
-    {
-        unitID = id;
-        
+    public Unit()
+    {   
         isAlive = true;
         
         hasMoved = false;
@@ -179,3 +177,250 @@ public class Unit implements Serializable
         
 }
 
+
+
+class CommandPost extends ogre.Unit
+{
+    public CommandPost()
+    {
+        super();
+        
+        unitName = "Command Post";
+        unitType = UnitType.CommandPost;
+        
+        movement = 0;
+        defense = 1;
+        
+        image = "command_post.png";
+        imageAlternate = "command_post_b.png";
+        currentImage = image;
+        
+        unitWeapon = new Weapon(0,0,true,"none",0);
+    }
+    
+    @Override
+    public String takeDamage(String result)
+    {
+        String report = unitName;
+        
+        switch (result)
+        {
+            case "NE":
+                //no result
+                report = report.concat(" is UNHARMED.");
+                break;
+            case "D":
+            case "X":
+                //destroyed
+                report = report.concat(" is DESTROYED!");
+                isAlive = false;
+                break;
+            default:
+                break;
+        }
+        
+        return (report);
+    }
+}
+
+
+class MobileCommandPost extends ogre.Unit
+{
+    public MobileCommandPost()
+    {
+        super();
+        
+        unitName = "Mobile Command Post";
+        unitType = UnitType.MobileCommandPost;
+        
+        movement = 1;
+        defense = 1;
+        
+        image = "mobile_command_post.png";
+        imageAlternate = "mobile_command_post_b.png";
+        currentImage = image;
+        
+        unitWeapon = new Weapon(0,0,true,"none",0);
+    }
+}
+
+class GEV extends ogre.Unit
+{
+    public GEV()
+    {
+        super();
+        
+        unitName = "G.E.V.";
+        unitType = UnitType.GEV;
+        
+        movement = 4;
+        movementPostShooting = 3;
+        
+        defense = 2;
+        
+        //Weapon(int atk, int rng, boolean infOnly, String name, int id)
+        unitWeapon = new Weapon(2, 2, false, "GEV", 0);
+        image = "GEV.png";
+        imageAlternate = "GEV_b.png";
+        currentImage = image;
+    }
+}
+
+
+
+class HeavyTank extends Unit
+{
+    public HeavyTank()
+    {
+        super();
+        unitName = "Heavy Tank";
+        unitType = UnitType.HeavyTank;
+        movement = 3;
+        defense = 3;
+        
+        unitWeapon = new Weapon(4,2, false, "Tank", 0);
+        
+        image = "heavy_tank.png";
+        imageAlternate = "heavy_tank_b.png";
+        currentImage = image;
+    }
+}
+
+
+
+class Howitzer extends ogre.Unit
+{
+    public Howitzer()
+    {
+        super();
+        
+        unitName = "Howitzer";
+        unitType = UnitType.Howitzer;
+        
+        movement = 0;
+        defense = 1;
+        
+        //Weapon(int atk, int rng, boolean infOnly, String name, int id)
+        unitWeapon = new Weapon(6, 8, false, "Howitzer", 0);
+        image = "howitzer.png";
+        imageAlternate = "howitzer_b.png";
+        currentImage = image;
+        
+    }
+}
+
+
+class Infantry extends ogre.Unit
+{
+    
+    public Infantry(int def)
+    {
+        super();
+        unitName = "Infantry";
+        unitType = UnitType.Infantry;
+        
+        movement = 2;
+        defense = def;
+        unitWeapon = new Weapon(def, 1, false, "anti-tank", 0);
+        
+        image = "infantry_" + def + ".png";
+        imageAlternate = "infantry_" + def + "_b.png";
+        currentImage = image;
+    }
+    
+    //TAKE DAMAGE
+    //Self-manages based on the result of the damage taken
+    @Override
+    public String takeDamage(String result)
+    {
+       
+        String report = unitName;
+        
+        switch (result)
+        {
+            case "NE":
+                //no result
+                report = report.concat(" is UNHARMED.");
+                break;
+            case "D":
+                //*** Strength reduced by one; if already 1, then death
+                    unitWeapon.strength--;
+                    defense--;
+
+                    //Modify image name to reflect the new strength
+                    switch (defense)
+                    {
+                        //The switch to UnitIMageLoader necessitated some changes here
+                        case 2:
+                            if (currentImage == image)
+                            {
+                                image = "infantry_2.png";
+                                imageAlternate = "infantry_2_b.png";
+                                currentImage = image;
+                            }
+                            else
+                            {
+                                image = "infantry_2.png";
+                                imageAlternate = "infantry_2_b.png";
+                                currentImage = imageAlternate;
+                            }
+                            
+                            report = report.concat(" TAKES A CASUALTY.");
+                            break;
+                        case 1:
+                            if (currentImage == image)
+                            {
+                                image = "infantry_1.png";
+                                imageAlternate = "infantry_1_b.png";
+                                currentImage = image;
+                            }
+                            else
+                            {
+                                image = "infantry_1.png";
+                                imageAlternate = "infantry_1_b.png";
+                                currentImage = imageAlternate;
+                            }
+                            report = report.concat(" TAKES A CASUALTY.");
+                            break;
+                        case 0:
+                            report = report.concat(" is DESTROYED!");
+                            isAlive = false;
+                            break;
+                        default:
+                            break;
+                    }
+
+                break;
+            case "X":
+                //destroyed
+                report = report.concat(" is DESTROYED!");
+                isAlive = false;
+                break;
+            default:
+                break;
+        }
+        
+        return report;
+    }
+}
+
+
+class MissileTank extends ogre.Unit
+{
+    public MissileTank()
+    {
+        super();
+        
+        unitName = "Missile Tank";
+        unitType = UnitType.MissileTank;
+        
+        movement = 2;
+        defense = 2;
+        
+        //Weapon(int atk, int rng, boolean infOnly, String name, int id)
+        unitWeapon = new Weapon(3, 4, false, "missile", 0);
+        image = "missile_tank.png";
+        imageAlternate = "missile_tank_b.png";
+        currentImage = image;
+    }
+}

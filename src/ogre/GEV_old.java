@@ -10,11 +10,11 @@ package ogre;
  *
  * @author Skot
  */
-public class GEV extends ogre.Unit
+public class GEV_old extends ogre.Unit
 {
-    public GEV(int id)
+    public GEV_old(int id)
     {
-        super(id);
+        super();
         
         unitName = "G.E.V.";
         unitType = UnitType.GEV;

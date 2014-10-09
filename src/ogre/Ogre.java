@@ -31,7 +31,7 @@ public class Ogre extends ogre.Unit
     
     public Ogre(int mark)
     {
-        super(666);
+        super();
         
         unitType = UnitType.Ogre;
         

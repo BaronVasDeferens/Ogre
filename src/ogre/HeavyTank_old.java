@@ -10,11 +10,11 @@ package ogre;
  *
  * @author Skot
  */
-public class HeavyTank extends Unit
+public class HeavyTank_old extends Unit
 {
-    public HeavyTank(int id)
+    public HeavyTank_old()
     {
-        super(id);
+        super();
         unitName = "Heavy Tank";
         unitType = UnitType.HeavyTank;
         movement = 3;

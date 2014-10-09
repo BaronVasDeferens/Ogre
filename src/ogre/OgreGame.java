@@ -152,7 +152,7 @@ public class OgreGame
                     //TODO: HOW DO WE "UNDO" THIS?
                     //Create a subclass of the GameEvent?
                     
-                    Unit newUnit = new Infantry(e.agent.unitID, (e.agent.defense + e.destination.getUnit().defense));
+                    Unit newUnit = new Infantry_old(e.agent.unitID, (e.agent.defense + e.destination.getUnit().defense));
                     
                     //set newUnit to have "moved"
                     newUnit.hasMoved = true;
@@ -530,8 +530,14 @@ public class OgreGame
                         {
                             hexMap.deselect(ogrePanel.hexMapRenderer.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation));
                             ogrePanel.hexMapRenderer.getHexFromCoords(currentTarget.yLocation, currentTarget.xLocation).setOccupyingUnit(null);
-
                         }
+                        
+                        //Reload the damaged unit's image
+                        else if (currentTarget.unitType.equals(UnitType.Infantry))
+                        {
+                            ogrePanel.hexMapRenderer.updateMapImage();
+                        }
+                        
                     }
                     
                     //Ogre weapon
@@ -816,6 +822,8 @@ public class OgreGame
                     
                     uploader.uploadGameState(currentGameState);
 
+                    
+                    phaseLabel.setText("No game loaded");
                     undoButton.setEnabled(false);
                     advancePhaseButton.setEnabled(false);
                     

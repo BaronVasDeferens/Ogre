@@ -10,12 +10,12 @@ package ogre;
  *
  * @author Skot
  */
-public class Infantry extends ogre.Unit
+public class Infantry_old extends ogre.Unit
 {
     
-    public Infantry(int id, int def)
+    public Infantry_old(int id, int def)
     {
-        super(id);
+        super();
         unitName = "Infantry";
         unitType = UnitType.Infantry;
         

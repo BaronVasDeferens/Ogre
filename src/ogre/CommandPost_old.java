@@ -10,11 +10,11 @@ package ogre;
  *
  * @author Skot
  */
-public class CommandPost extends ogre.Unit
+public class CommandPost_old extends ogre.Unit
 {
-    public CommandPost(int id)
+    public CommandPost_old(int id)
     {
-        super(id);
+        super();
         
         unitName = "Command Post";
         unitType = UnitType.CommandPost;

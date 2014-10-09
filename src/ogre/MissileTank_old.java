@@ -10,11 +10,11 @@ package ogre;
  *
  * @author Skot
  */
-public class MissileTank extends ogre.Unit
+public class MissileTank_old extends ogre.Unit
 {
-    public MissileTank(int id)
+    public MissileTank_old(int id)
     {
-        super(id);
+        super();
         
         unitName = "Missile Tank";
         unitType = UnitType.MissileTank;
