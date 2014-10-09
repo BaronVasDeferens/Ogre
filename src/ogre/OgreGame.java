@@ -1167,7 +1167,8 @@ public class OgreGame
     //LOGIN
     public void login()
     {
-        LoginManager loginManager = new LoginManager(server, port, this, activePlayerCredentials);   
+        LoginManager loginManager = new LoginManager(server, port, this, activePlayerCredentials);  
+        loginManager.displayUI();
     }
     
     //REGISTER

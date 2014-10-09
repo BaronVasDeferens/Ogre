@@ -61,7 +61,7 @@ public class IOList implements Serializable
     
     //CLEAR ALL
     //Clears all data but does not not overwrite the file
-    public void clearAll()
+    public synchronized void clearAll()
     {
         if (dataList != null)
         {
@@ -71,7 +71,7 @@ public class IOList implements Serializable
     
     //DESTROY ALL DATA
     //CLears all data and overwrites the file. Requires the name of the filename as a security check.
-    public void destroyAllData(String filename)
+    public synchronized void destroyAllData(String filename)
     {
         if (dataFileName.equals(filename))
         {
@@ -83,7 +83,7 @@ public class IOList implements Serializable
     
     //DISPLAY ALL
     //Prints all user data to System.out
-    public void displayAll()
+    public synchronized void displayAll()
     {
         //OUTPUT DATA
         if (dataList != null)
@@ -105,7 +105,7 @@ public class IOList implements Serializable
     
     //READ FROM DISK (NO ARGS)
     //Reads from the dataFileName supplied at instantiation.
-    public boolean readFromDisk()
+    public synchronized boolean readFromDisk()
     {
         if (dataFileName == null)
             return false;
@@ -116,7 +116,7 @@ public class IOList implements Serializable
     
     //READ FROM DISK (WITH ARG)
     //Reads a data structure from specified file
-    public boolean readFromDisk(String file)
+    public synchronized boolean readFromDisk(String file)
     {
         try
         {
@@ -140,7 +140,7 @@ public class IOList implements Serializable
     
     //WRITE TO DISK (NO ARGS)
     //Commits the contents of the list to a previously specified file
-    public boolean writeToDisk()
+    public synchronized boolean writeToDisk()
     {
         if (dataFileName == null)
             return (false);
@@ -151,7 +151,7 @@ public class IOList implements Serializable
     //WRITE TO DISK
     //Commits the contents of the data structure to disk
     //Returns true upon success.
-    public boolean writeToDisk(String file)
+    public synchronized boolean writeToDisk(String file)
     {
         //WRITE TO DISK
         try
@@ -199,7 +199,7 @@ class PlayerIOList extends IOList
     //ADD USER
     //Determines whether or not the candidate to add has a unique name
     //If so, add it to the list
-    public boolean addPlayer(Player addMe)
+    public synchronized boolean addPlayer(Player addMe)
     {
         if (addMe == null)
         {
@@ -233,7 +233,7 @@ class PlayerIOList extends IOList
     
     //MATCHES
     //Returns true if an exact match (both name an password) is found
-    public boolean matches(Player findMe)
+    public synchronized boolean matches(Player findMe)
     {
         if (dataList == null)
             return (false);
@@ -260,7 +260,7 @@ class PlayerIOList extends IOList
     
     //GET PLAYER MATCHING
     //Returns the player from the records matching the one described
-    public Player getPlayerMatching(Player findMe)
+    public synchronized Player getPlayerMatching(Player findMe)
     {
         if (dataList == null)
             return (null);
@@ -287,7 +287,7 @@ class PlayerIOList extends IOList
     
     //HAS ENTRY NAMED
     //Scans through the records and returns truw if there is an entry matching the argument
-    public boolean hasEntryNamed(String user)
+    public synchronized boolean hasEntryNamed(String user)
     {
         if (dataList == null)
             return false;
@@ -315,7 +315,7 @@ class PlayerIOList extends IOList
     
     //REMOVE USER
     //Returns true if the user 
-    public boolean remove(String deleteMe)
+    public synchronized boolean remove(String deleteMe)
     {        
         if (dataList == null)
             return false;
@@ -343,7 +343,7 @@ class PlayerIOList extends IOList
     //DISPLAY ALL
     //Prints all user data to System.out
     @Override
-    public void displayAll()
+    public synchronized void displayAll()
     {
         //OUTPUT DATA
         if (dataList != null)
@@ -381,7 +381,7 @@ class GameStateIOList extends IOList
     
     //GET GAME STATES
     //Returns a list of all games matching the playerName to ether player or matching the id number
-    public HashSet<GameState> getGamesList(String playerName, int id)
+    public synchronized HashSet<GameState> getGamesList(String playerName, int id)
     {
         HashSet<GameState> gameList = new HashSet();
         gameList.clear();
@@ -413,7 +413,7 @@ class GameStateIOList extends IOList
     
     //GET GAME BY ID
     //Returns a GameState matching the id provided
-    private GameState getGameByID(int id)
+    private synchronized GameState getGameByID(int id)
     {
         GameState thisState, returnState = null;
         Iterator iter = dataList.iterator();
@@ -432,17 +432,17 @@ class GameStateIOList extends IOList
     }
     
     
-    public void removeGameState(GameState removeMe)
+    public synchronized void removeGameState(GameState removeMe)
     {
         
     }
     
-    private void remove(GameState removeMe)
+    private synchronized void remove(GameState removeMe)
     {
         
     }
     
-    public void updateGameState(GameState updateMe)
+    public synchronized void updateGameState(GameState updateMe)
     {
         GameState targetGame = getGameByID(updateMe.idNumber);
         
@@ -466,7 +466,7 @@ class GameStateIOList extends IOList
     
         //DISPLAY ALL
     //Prints all user data to System.out
-    public void displayAll()
+    public synchronized void displayAll()
     {
         //OUTPUT DATA
         if (dataList != null)
@@ -488,7 +488,7 @@ class GameStateIOList extends IOList
     
     //READ FROM DISK (NO ARGS)
     //Reads from the dataFileName supplied at instantiation.
-    public boolean readFromDisk()
+    public synchronized boolean readFromDisk()
     {
         if (dataFileName == null)
             return false;
@@ -499,7 +499,7 @@ class GameStateIOList extends IOList
     
     //READ FROM DISK (WITH ARG)
     //Reads a data structure from specified file
-    public boolean readFromDisk(String file)
+    public synchronized boolean readFromDisk(String file)
     {
         try
         {
@@ -530,9 +530,7 @@ class GameStateIOList extends IOList
 //DATA LIST
 //This is basically a serialized HashSet (no duplicate entries!)
 class DataList<Object> extends HashSet implements Serializable
-{
-    
-
+{ 
     
 }
 

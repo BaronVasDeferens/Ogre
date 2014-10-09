@@ -32,20 +32,25 @@ public class LoginManager
     ObjectOutputStream objectOut = null;
     ObjectInputStream objectIn = null;
     
-    
+    //LOGIN MANAGER (WITH WINDOW UI)
     LoginManager(String srvr, int prt, OgreGame master, LoginObject activUsr)
     {
         server = srvr;
         port = prt;
         myMaster = master;
-        
         activePlayerCredentials = activUsr;
-        
+    }
+    
+    //DISPLAY UI
+    //Activate the user interface
+    public void displayUI()
+    {
         loginFrame = new LoginFrame(this);
         loginFrame.setDefaultCloseOperation(LoginFrame.DISPOSE_ON_CLOSE);
         loginFrame.setTitle("Login To Ogre");
         loginFrame.setVisible(true);
     }
+        
     
     //CONNECT TO SERVER
     //Handles the connection to (and establishemnt of) network ommunication resources
@@ -53,10 +58,13 @@ public class LoginManager
     {
         boolean connectionSuccess = false;
         
-        loginFrame.feedbackTextArea.setText("");
-        loginFrame.feedbackTextArea.append("Connecting to server...");
-        loginFrame.feedbackTextArea.append("\n");
-            
+        if (loginFrame != null)
+        {
+            loginFrame.feedbackTextArea.setText("");
+            loginFrame.feedbackTextArea.append("Connecting to server...");
+            loginFrame.feedbackTextArea.append("\n");
+        }
+        
         try
         {
             sckt = new Socket(server, port);
@@ -67,14 +75,14 @@ public class LoginManager
             objectOut = new ObjectOutputStream(out);
             objectIn = new ObjectInputStream(in);
 
-            loginFrame.feedbackTextArea.append("connected!\n");
+            //loginFrame.feedbackTextArea.append("connected!\n");
             connectionSuccess = true;
 
         }
 
         catch(java.io.IOException e)
         {
-            loginFrame.feedbackTextArea.append("ERROR: Uh-oh! No server found.\n");
+            //loginFrame.feedbackTextArea.append("ERROR: Uh-oh! No server found.\n");
         }
         
         return (connectionSuccess);
@@ -168,6 +176,84 @@ public class LoginManager
         
         disconnectFromServer();
         return (AOK);
+    }
+    
+    
+    //LOGIN
+    public LoginObject getLoginObject(String username, String password)
+    {
+        LoginObject returnObject = null;
+        
+        if (connectToServer())
+        {
+            //Generate a loginObject
+            LoginObject loginObj = new LoginObject(username, password);
+            TransportObject responseObject = null;
+
+            //Transmit a connection request object and wait for receipt of answer object
+            if (objectOut != null)
+            {
+                try
+                {
+                    objectOut.writeObject(loginObj);
+                }
+                catch (IOException e)
+                {
+                    disconnectFromServer();
+                }
+
+                //Await a response from server...
+                boolean answerReceived = false;
+                loginObj = null;
+                responseObject = null;
+
+                //TODO: include a timeout here
+                while (answerReceived == false)
+                {
+                    try
+                    {
+                        responseObject = (TransportObject)objectIn.readObject();
+                    }
+                    
+                    catch (ClassNotFoundException | IOException e)
+                    {
+
+                    }
+
+                    if (responseObject != null)
+                    {                        
+                        //Reponse recieved:
+                        //if it is a generic transportObject, it is a failure notice
+                        //if it is a loginObject, it contains login data
+                        if (responseObject.isLoginRequest)
+                        {
+                            loginObj = (LoginObject)responseObject;
+                            responseObject = null;
+                            answerReceived = true;
+
+                        }
+                        
+                        else
+                        {
+                            loginObj = null;
+                            answerReceived = true;
+                        }
+
+                    }
+               
+                }//while
+
+                if ((answerReceived == true) && (loginObj != null))
+                {
+                    //Login success
+                    returnObject = (LoginObject)loginObj;
+                }
+                
+            }
+        }
+        
+        disconnectFromServer();
+        return (returnObject);
     }
     
     

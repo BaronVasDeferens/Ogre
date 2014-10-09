@@ -106,6 +106,8 @@ public class ServerThread implements Runnable
                     
                 }
                 
+                //ERROR CHECKING
+                //Probably OK to remove entirely, since hese have never come up....yet
                 if (bytesAvailable > 0)
                 {
                     System.out.println("not yet...");
@@ -138,6 +140,9 @@ public class ServerThread implements Runnable
                             
                             //Return a loginObject with an empty gamestate list and all registered users
                             loginObj = new LoginObject(player, "Registration SUCCESS!", master.getGamesList(player.name), master.getRegisteredPlayerList(player));
+                            
+                            //Attach the password: kludge
+                            loginObj.password = master.registeredPlayers.getPlayerMatching(player).password;
                             
                             send(loginObj);  
                         }
@@ -177,6 +182,9 @@ public class ServerThread implements Runnable
                     {
                         System.out.println(player.name + " logged in");
                         LoginObject loginObj = new LoginObject(player, "Login SUCCESS!", master.getGamesList(player.name),master.getRegisteredPlayerList(player));
+                        
+                        //Attach the password: kludge
+                        loginObj.password = master.registeredPlayers.getPlayerMatching(player).password;
                         
                         send(loginObj);
                     }

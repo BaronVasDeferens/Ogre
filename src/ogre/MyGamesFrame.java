@@ -28,10 +28,13 @@ import static ogre.CreateNewGameFrame.credentials;
  */
 public class MyGamesFrame extends javax.swing.JFrame {
 
-    static LoginObject activePlayerCredentials;
+    static LoginObject activePlayerCredentials = null;
     static OgreGame gameMaster;
     static GameState [] readyGameArray;
-    //static GameState [] pendingGameArray;
+    
+    static LinkedList<GameState> readyGameStates;
+    static LinkedList<GameState> pendingGameStates;
+    
     /**
      * Creates new form MyGamesFrame
      */
@@ -44,10 +47,10 @@ public class MyGamesFrame extends javax.swing.JFrame {
         gameMaster = master;
         activePlayerCredentials = userCreds;
         
-        LinkedList<GameState> readyGameStates = new LinkedList();
+        readyGameStates = new LinkedList();
         readyGameStates.clear();
         
-        LinkedList<GameState> pendingGameStates = new LinkedList();
+        pendingGameStates = new LinkedList();
         pendingGameStates.clear();
         
         
@@ -58,8 +61,6 @@ public class MyGamesFrame extends javax.swing.JFrame {
         
         DefaultListModel readyListModel = new DefaultListModel();
         DefaultListModel pendingListModel = new DefaultListModel();
-        
-        
         
         Iterator iter = userCreds.gameStateList.iterator();
         GameState thisState = null;
@@ -126,6 +127,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         pendingGamesJList = new javax.swing.JList();
         jLabel2 = new javax.swing.JLabel();
+        refreshButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -169,20 +171,31 @@ public class MyGamesFrame extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
         jLabel2.setText("Waiting For Other Player");
 
+        refreshButton.setText("REFRESH");
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(cancelJButton)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(playJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(surrenderJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(surrenderJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(playJButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(cancelJButton))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
@@ -202,9 +215,11 @@ public class MyGamesFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(playJButton)
-                    .addComponent(surrenderJButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 81, Short.MAX_VALUE)
+                    .addComponent(surrenderJButton)
+                    .addComponent(refreshButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addComponent(playJButton)
+                .addGap(26, 26, 26)
                 .addComponent(cancelJButton)
                 .addContainerGap())
         );
@@ -254,6 +269,99 @@ public class MyGamesFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_playJButtonActionPerformed
 
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
+        // TODO add your handling code here:
+        refreshAndPopulate();
+    }//GEN-LAST:event_refreshButtonActionPerformed
+
+    //REFRESH AND POPULATE
+    //Performs the messy business of sorting the GameStates returned by the server into
+    //two groups and placing them in the correct JList
+    public void refreshAndPopulate()
+    {
+        if (gameMaster.activePlayerCredentials == null)
+        {
+            JOptionPane.showMessageDialog(this, "Aw, crap: activePlayerCredntials are null.",
+            "UH OH", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        else if ((gameMaster.activePlayerCredentials.player.name == null) || (gameMaster.activePlayerCredentials.player.password == null))
+        {
+            //error msg
+            JOptionPane.showMessageDialog(this, "Aw, crap: username/password are null.",
+            "UH OH", JOptionPane.WARNING_MESSAGE);
+        }        
+        
+        else
+        {
+            //Reach out and obtain a refreshed version of the loginObject
+            LoginManager loginMan = new LoginManager(gameMaster.server, gameMaster.port, null, null);
+            LoginObject refreshedCreds = loginMan.getLoginObject(activePlayerCredentials.player.name, gameMaster.activePlayerCredentials.player.password);
+            
+            if (refreshedCreds != null)
+            {
+                readyGameStates.clear();
+                pendingGameStates.clear();
+
+                gamesList.removeAll();
+                gamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+                pendingGamesJList.removeAll();
+                //pendingGamesJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+                DefaultListModel readyListModel = new DefaultListModel();
+                DefaultListModel pendingListModel = new DefaultListModel();
+
+                Iterator iter = refreshedCreds.gameStateList.iterator();
+                GameState thisState = null;
+
+                int readyIndex = 0;
+                int pendingIndex = 0;
+
+                //Seperate the games into two groups: ready/not ready
+                while (iter.hasNext())
+                {
+                    thisState = (GameState)iter.next();
+
+                    if ((thisState.isOpen == false) && (thisState.currentPlayer.name.equals(activePlayerCredentials.player.name)))
+                    {
+                        readyGameStates.add(thisState);
+                    }
+
+                    else
+                    {
+                        pendingGameStates.add(thisState);
+                        pendingListModel.add(pendingIndex, ("#" + thisState.idNumber + " / " + thisState.playerOne.name + " vs " + thisState.playerTwo.name + " / " + thisState.scenario.scenarioType.toString() + " / turn " + thisState.turnNumber));
+                    }    
+                }
+
+                //Create the ready array and populate the lists
+                readyGameArray = new GameState[readyGameStates.size()];
+                iter = readyGameStates.iterator();
+                thisState = null;
+
+                while (iter.hasNext())
+                {
+                    thisState = (GameState)iter.next();
+                    readyGameArray[readyIndex] = thisState;
+                    readyIndex++;
+                }
+
+                for (int i = 0; i < readyGameArray.length; i++)
+                {
+                    readyListModel.add(i, ("#" + thisState.idNumber + " / " + thisState.playerOne.name + " vs " + thisState.playerTwo.name + " / " + thisState.scenario.scenarioType.toString() + " / turn " + thisState.turnNumber));
+                }
+
+                gamesList.setModel(readyListModel);
+                gamesList.setSelectedIndex(0);
+
+                pendingGamesJList.setModel(pendingListModel);
+                
+                gameMaster.activePlayerCredentials = refreshedCreds;
+            }    
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -298,6 +406,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList pendingGamesJList;
     private javax.swing.JButton playJButton;
+    private javax.swing.JButton refreshButton;
     private javax.swing.JButton surrenderJButton;
     // End of variables declaration//GEN-END:variables
 }
