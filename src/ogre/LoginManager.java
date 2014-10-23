@@ -259,6 +259,11 @@ public class LoginManager
     
     public void postLoginScreen()
     {
+        if (myMaster.activePlayerCredentials != null)
+        {
+            myMaster.myFrame.setTitle("OGRE - Logged in as " + myMaster.activePlayerCredentials.player.name);
+        }
+
         //If the player has no current games, take them to the new game screen
         if (myMaster.activePlayerCredentials.gameStateList.size() == 0)
         {

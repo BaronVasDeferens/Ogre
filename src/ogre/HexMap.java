@@ -812,7 +812,7 @@ public class HexMap implements Serializable
     
     
     //GET HEXES WITHIN RANGE
-    //Retruns a list of hexes in a "shell" radius within range.
+    //Returns a list of hexes in a "shell" radius within range.
     //If the ignoreCrater flag is set to false, then craters are considered obstructions
     //Likewise, if ignoreRidges is set to false, hexes which share a ridge will be obstructions
     //Relies upon the recursive version of the function of the same name (below)
@@ -869,7 +869,8 @@ public class HexMap implements Serializable
             }
         
             //SCENARIO 2:
-            //RIDGES and CRATERS should be processes/weeded out
+            //RIDGES and CRATERS should be processed/weeded out
+            //for MOVEMENT. We should also consider hexes occupied by enemy units to be blocked
             else
             {
                 
@@ -878,7 +879,7 @@ public class HexMap implements Serializable
                 returnList.addAll(getHexesWithinRange(fromHere, convertToHexLinkedList(doneThese), convertToHexLinkedList(ignoreThese), ignoreRidges));
                 ignoreThese.clear();
                 
-                //NOTE: the ignoreLIst is cleared at the end of each "ring's" examination;
+                //NOTE: the ignoreList is cleared at the end of each "ring's" examination;
                 //a hex which is not accessible from one hex (shares a ridge) might be accessible from another.
                 //If those "ignored" hexes are allowed to persists from one concentric exam to another,
                 //they will appaear as totally inaccessible-- not good.
@@ -933,9 +934,11 @@ public class HexMap implements Serializable
                     //check for crater
                     if (thisHex.isCrater)
                         ignoreThese.add(thisHex);
-                    
+                    //Shares a ridge
                     if ((ignoreRidges == false) && ((center.sharesRidgeWithThisHex(thisHex)) && (!doneThese.contains(thisHex))))
                         ignoreThese.add(thisHex);
+                    //Contains an enemy Unit
+                    //TODO: add this here. What do we need? An Ogre will be able to RAM...
                     
                     if (!ignoreThese.contains(thisHex))
                     {

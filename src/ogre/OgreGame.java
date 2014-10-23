@@ -152,7 +152,7 @@ public class OgreGame
                     //TODO: HOW DO WE "UNDO" THIS?
                     //Create a subclass of the GameEvent?
                     
-                    Unit newUnit = new Infantry_old(e.agent.unitID, (e.agent.defense + e.destination.getUnit().defense));
+                    Unit newUnit = new Infantry(e.agent.defense + e.destination.getUnit().defense);
                     
                     //set newUnit to have "moved"
                     newUnit.hasMoved = true;
