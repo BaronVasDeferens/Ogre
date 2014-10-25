@@ -15,6 +15,7 @@ import javax.swing.*;
 public class OgreGame
 {
     //Network resources
+    //String server = "167.114.68.235";
     String server = "127.0.1.1";
     int port = 12321;
     

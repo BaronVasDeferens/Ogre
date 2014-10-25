@@ -417,7 +417,7 @@ public class HexMapRenderer
                 }
                 
                //Coordinates
-                if (hexMap.showCoordinates)
+                if (showCoordinates)
                 {
                     newMapGraphics.setColor(Color.BLUE);
                     newMapGraphics.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));

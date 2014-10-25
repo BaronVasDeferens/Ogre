@@ -30,8 +30,6 @@ public class HexMap implements Serializable
 {
     int rows, cols;
     
-    //OgreGame gameMaster;
-    
     Hex hexArray[][];
     
     LinkedList<Hex> hexList;
@@ -39,15 +37,9 @@ public class HexMap implements Serializable
     LinkedList<Hex> selectedHexes;
     LinkedList<Hex> adjacentHexes;
     
-    //BufferedImage mapImage;
-    //BufferedImage offScreenDraw;
-    
-    //UnitImageLoader unitImages; 
-    
-    int beginDrawingFromX, beginDrawingFromY;//, hexagonSize;
-    //int minimumMapWidth, minimumMapHeight;
-    
-    public boolean showCoordinates = false;
+ 
+    int beginDrawingFromX, beginDrawingFromY;
+
     
     //Constructor
     public HexMap(int rws, int cls, int hexsize)
@@ -77,55 +69,47 @@ public class HexMap implements Serializable
             }
         }
 
-        //hexagonSize = 64;
-        //minimumMapWidth = 800;
-        //minimumMapHeight = 600;
-        
-        //setHexSize(hexsize);
         
         //TODO:
         //This doesn't belong here! Move it after testing
-        makeCrater(hexArray[2][5]);
-        makeCrater(hexArray[1][7]);
+        makeCrater(0,6);
+        makeCrater(1,7);
+        makeCrater(2,2);
+        makeCrater(2,11);
+        makeCrater(4,4);
+        makeCrater(0,6);
+        makeCrater(5,7);
+        makeCrater(5,10);
+        makeCrater(6,11);
+        makeCrater(8,7);
+        makeCrater(8,13);
+        makeCrater(10,3);
+        makeCrater(12,3);
+        makeCrater(12,8);
+        makeCrater(13,2);
+        makeCrater(13,4);
+        makeCrater(13,12);
+        makeCrater(14,6);
+        
         
         addRidge(hexArray[3][4],6,hexArray[2][3],3);
         addRidge(hexArray[3][4],1,hexArray[2][4],4);
         
-        //unitImages = new UnitImageLoader(); 
         
     }
     
-    /*
-    //SET GAME MASTER
-    //give this object awareness of its owner
     
-    public void setMaster(OgreGame msr)
+    //MAKE CRATER
+    //in X,Y notation
+    public void makeCrater(int col, int row)
     {
-        gameMaster = msr;
+        Hex target = hexArray[row][col];
+        
+        if (target != null)
+        {
+            target.isCrater = true;
+        }
     }
-    
-    
-    //SET HEXAGON SIZE
-    public void setHexSize(int newSize)
-    {
-        hexagonSize = newSize;
-        //setupMap();
-    }
-    
-    public int getHexSize()
-    {
-        return (hexagonSize);
-    }
-    
-    
-    //SET MINIMUM MAP SIZE
-    //ba-derp
-    public void setMinimumMapSize(int minWidth, int minHeight)
-    {
-        minimumMapWidth = minWidth;
-        minimumMapHeight = minHeight;
-    }
-    */
     
     
     //MAKE CRATER
@@ -146,521 +130,7 @@ public class HexMap implements Serializable
             h2.addRidge(h2, f2, h1, f1);
         }
     }
-    
-    //CREATE MAP
-    //Returns a blank BufferedImage sized according to the size of the hexes to be drawn upon it.
-    //If smaller than the viewing window (minX, minY), a BufferedImage of minWidth x minLength is returned instead.
-    //Drawing offset coordinates are also adjusted to 2*hexagonSize from 0,0
-    /*
-    private BufferedImage createNewImage()
-    {
-        
-        beginDrawingFromX = 4 * hexagonSize;
-        beginDrawingFromY = 4 * hexagonSize;
-        
-
-        //The formula for the image size is:
-        //(hexSize * 1.5 * cols + ( 4 * hexSize)) by (hexSize * 1.5 * rows + ( 4 * hexSize))
-        int sizeX = (int)((hexagonSize * 2 * cols) + (4 * hexagonSize));
-        int sizeY = (int)((hexagonSize * 2 * rows) + (4 * hexagonSize));
-        
-        if (sizeX < minimumMapWidth)
-            sizeX = minimumMapWidth;
-        if (sizeY < minimumMapHeight)
-            sizeY = minimumMapHeight;
-        
-        BufferedImage newImage = new BufferedImage(sizeX,sizeY,BufferedImage.OPAQUE);
-      
-        return (newImage);
-        
-    }
-    
-    //CREATE MAP
-    //Creates an image of a map by drawing a hex field on it
-    //OriginX/Y are the coordinates from which drawing shall begin (thr origin)
-    public void setupMap()
-    {
-        if (polyList != null)
-            polyList.clear();
  
-        LinkedList<Hex> ridgeList = new LinkedList();
-        ridgeList.clear();
- 
-        offScreenDraw = createNewImage();
-        Graphics newMapGraphics = offScreenDraw.getGraphics();
-        
-        //Clear background
-        newMapGraphics.setColor(java.awt.Color.WHITE);
-        newMapGraphics.fillRect(0,0,offScreenDraw.getWidth(),offScreenDraw.getHeight());
-
-        
-        int x = beginDrawingFromX;
-        int y = beginDrawingFromY;
-
-        for (int i = 0; i < rows; i++)
-        {
-           
-           for (int j = 0; j < cols; j++)
-           {           
-               if ((j%2) != 0)
-                    y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
-               else
-                    y = beginDrawingFromY;
-               
-               
-               java.awt.Polygon p = new java.awt.Polygon();
-               p.reset();
-               
-               p.addPoint(x +(hexagonSize/2), y);
-               p.addPoint(x+(hexagonSize/2) + hexagonSize, y);
-               p.addPoint(x + 2*hexagonSize, (int)(.8660* hexagonSize + y));
-               p.addPoint(x+(hexagonSize/2) + hexagonSize, (int)(.8660 * 2 * hexagonSize + y));
-               p.addPoint(x+(hexagonSize/2),(int)(.8660*2*hexagonSize + y));
-               p.addPoint(x,y+(int)(.8660 * hexagonSize));
-               
-               //Draw solid black crater
-               if (hexArray[i][j].isCrater())
-               {
-                   newMapGraphics.setColor(Color.BLACK);
-                   newMapGraphics.fillPolygon(p);
-               }
-               
-               else
-               {
-                   newMapGraphics.setColor(Color.WHITE);
-                   
-                   //Adjacent colorization 
-                   if (adjacentHexes.contains(hexArray[i][j]))
-                     {
-                         newMapGraphics.setColor(Color.PINK);
-                         newMapGraphics.fillPolygon(p);
-                         newMapGraphics.setColor(Color.BLACK);
-                         newMapGraphics.drawPolygon(p);
-                         newMapGraphics.setColor(Color.PINK);
-                     }
-
-                    //Paint RED on selected hexes
-                    if (hexArray[i][j].isSelected())
-                    {
-                        newMapGraphics.setColor(Color.RED);
-                        newMapGraphics.fillPolygon(p);
-                    }
-
-                    //Draw Units (if any)
-                    if (hexArray[i][j].isOccupied())
-                    {
-                        //if occupying unit is disabled, "keep it gray"
-                        if ((hexArray[i][j].getUnit().isDisabled()) && ((hexArray[i][j].isSelected() == false)))
-                        {
-                            newMapGraphics.setColor(Color.GRAY);
-                            newMapGraphics.fillPolygon(p); 
-                        }
-
-
-                        //Rescale and offset
-                        BufferedImage unitImage = unitImages.getImage(hexArray[i][j].getUnit().currentImage);
-
-                        int Xoffset, Yoffset, imageSize;
-
-                        Xoffset = (int)((2 * hexagonSize)/5.464);
-                        Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
-                        imageSize = (int)(2 * (1.732 * Xoffset));
-                        
-                        newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
-                        //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null); 
-                    }
-               
-               }
-               
-               //Draw basic polygon
-                newMapGraphics.setColor(Color.BLACK);
-                newMapGraphics.drawPolygon(p);
-                
-                
-                //Collect any ridges (drawn LAST)
-                if (hexArray[i][j].ridges != null)
-                {
-                    ridgeList.add(hexArray[i][j]);
-                } 
-                
-               
-               //Draw coordinates
-                if (showCoordinates)
-                {
-                    newMapGraphics.setColor(Color.BLUE);
-                    newMapGraphics.drawString("[" + (j) + "," + (i) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
-                }
-
-               //associate a hex with this polygon
-               associatePolygonWithHex(i,j,p);
-               polyList.add(p);
-               
-               
-               //scoot the pencil over
-               x = x + (hexagonSize/2) + hexagonSize;   
-               
-           }// for j (columns)
-        
-           //Reset for the next row
-           beginDrawingFromY += (int)2 *(.8660 * hexagonSize);
-           x = beginDrawingFromX;
-
-           
-            if ((i%2) != 0)
-               y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
-            else
-                y = beginDrawingFromY;
-            
-        }
-        
-        //Finally, draw ridges
-        if (ridgeList.isEmpty() == false)
-        {
-            Hex rHex;
-            Polygon rPoly;
-            Ridge rRidge;
-            int a,b,c,d;    
-            
-            Iterator hexIter = ridgeList.iterator();
-            Iterator ridgeIter;
-             
-            while (hexIter.hasNext())
-            {
-                rHex = (Hex)hexIter.next();
-                
-                ridgeIter = rHex.ridges.iterator();
-                
-                while (ridgeIter.hasNext())
-                {
-                    rRidge = (Ridge)ridgeIter.next();
-                    rPoly = rRidge.hexA.getPolygon();
-                    
-                    newMapGraphics.setColor(Color.BLACK);
-
-                    //if the face is 1 or 4, then the "thick lines" need
-                    //to be adjusted vertically
-                    if ((rRidge.faceA == 1) || (rRidge.faceA == 4))
-                    {
-                        a = rPoly.xpoints[rRidge.faceA -1];
-                        b = rPoly.ypoints[rRidge.faceA -1];
-                        c = rPoly.xpoints[rRidge.faceA];
-                        d = rPoly.ypoints[rRidge.faceA]; 
-                        
-                        newMapGraphics.drawLine(a,b,c,d);
-                        newMapGraphics.drawLine(a,b+1,c,d+1);
-                        newMapGraphics.drawLine(a,b+2,c,d+2);
-                        newMapGraphics.drawLine(a,b-1,c,d-1);
-                        newMapGraphics.drawLine(a,b-2,c,d-2);
-
-                    }
-                    
-                    else if (rRidge.faceA == 6)
-                    {
-                        a = rPoly.xpoints[0];
-                        b = rPoly.ypoints[0];
-                        c = rPoly.xpoints[5];
-                        d = rPoly.ypoints[5]; 
-                        
-                        newMapGraphics.drawLine(a,b,c,d);
-                        newMapGraphics.drawLine(a-1,b,c-1,d);
-                        newMapGraphics.drawLine(a-2,b,c-2,d);
-                        newMapGraphics.drawLine(a+1,b,c+1,d);
-                        newMapGraphics.drawLine(a+2,b,c+2,d);
-                    }
-                    
-                    else
-                    {
-                        a = rPoly.xpoints[rRidge.faceA -1];
-                        b = rPoly.ypoints[rRidge.faceA -1];
-                        c = rPoly.xpoints[rRidge.faceA];
-                        d = rPoly.ypoints[rRidge.faceA];
-
-                        newMapGraphics.drawLine(a,b,c,d);
-                        newMapGraphics.drawLine(a-1,b,c-1,d);
-                        newMapGraphics.drawLine(a-2,b,c-2,d);
-                        newMapGraphics.drawLine(a+1,b,c+1,d);
-                        newMapGraphics.drawLine(a+2,b,c+2,d);
-                    }
-                }
-            }
-            
-            ridgeList.clear();
-        }
-           
-        newMapGraphics.dispose();
-        mapImage = offScreenDraw;
-    }
-    
-    //GET UPDATED MAP IMAGE
-    //Updates the map image ONLY. Does not reconfigure polygon or hex lists
-    public void updateMapImage()
-    {                  
-        LinkedList<Hex> ridgeList = new LinkedList();
-        ridgeList.clear();
-       
-        offScreenDraw = createNewImage();
-        
-        Graphics newMapGraphics = offScreenDraw.getGraphics();
-        
-        //Clear background
-        newMapGraphics.setColor(java.awt.Color.WHITE);
-        newMapGraphics.fillRect(0,0,offScreenDraw.getWidth(), offScreenDraw.getHeight());
-
-        int x = beginDrawingFromX;
-        int y = beginDrawingFromY;
-        
-        //Draw hex field
-        for (int i = 0; i < rows; i++)
-        {
-           
-           for (int j = 0; j < cols; j++)
-           {           
-               if ((j%2) != 0)
-                    y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
-               else
-                    y = beginDrawingFromY;
-               
-               java.awt.Polygon p = new java.awt.Polygon();
-               p.reset();
-               
-               p.addPoint(x +(hexagonSize/2), y);
-               p.addPoint(x+(hexagonSize/2) + hexagonSize, y);
-               p.addPoint(x + 2*hexagonSize, (int)(.8660* hexagonSize + y));
-               p.addPoint(x+(hexagonSize/2) + hexagonSize, (int)(.8660 * 2 * hexagonSize + y));
-               p.addPoint(x+(hexagonSize/2),(int)(.8660*2*hexagonSize + y));
-               p.addPoint(x,y+(int)(.8660 * hexagonSize));
-               
-                //Draw solid black crater
-               if (hexArray[i][j].isCrater())
-               {
-                   newMapGraphics.setColor(Color.BLACK);
-                   newMapGraphics.fillPolygon(p);
-               }
-               
-               else
-               {                
-                    newMapGraphics.setColor(Color.WHITE);
-
-                    //Adjacent hex colorization
-                    if (adjacentHexes.contains(hexArray[i][j]))
-                    {
-                         newMapGraphics.setColor(Color.PINK);
-                         newMapGraphics.fillPolygon(p);
-                         newMapGraphics.setColor(Color.BLACK);
-                         newMapGraphics.drawPolygon(p);
-                         newMapGraphics.setColor(Color.PINK);
-                     }
-
-                    //Paint RED on selected hexes
-                    if (hexArray[i][j].isSelected())
-                    {
-                        newMapGraphics.setColor(Color.RED);
-                        newMapGraphics.fillPolygon(p);
-                        //newMapGraphics.setColor(Color.BLACK);
-                        //newMapGraphics.drawPolygon(p);
-
-                    }
-
-                    //Draw Units (if any)
-                    if (hexArray[i][j].isOccupied())
-                    {
-                        //color gray to disabled
-                        if ((hexArray[i][j].getUnit().isDisabled()) && ((hexArray[i][j].isSelected() == false)))
-                        {
-                            newMapGraphics.setColor(Color.GRAY);
-                            newMapGraphics.fillPolygon(p); 
-                        }
-
-                        //Rescale and offset
-                        BufferedImage unitImage = unitImages.getImage(hexArray[i][j].getUnit().currentImage);
-
-                        int Xoffset, Yoffset, imageSize;
-
-                        Xoffset = (int)((2 * hexagonSize)/5.464);
-                        Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
-                        imageSize = (int)(2 * (1.732 * Xoffset));
-                        
-                        newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
-                        //newMapGraphics.drawImage(unitImage, x+Xoffset, y+Yoffset, imageSize, imageSize, null);
-                    } 
-                }
-
-                //Draw basic polygon 
-                newMapGraphics.setColor(Color.BLACK);
-                newMapGraphics.drawPolygon(p);
-             
-                
-                //Collect any ridge faces (drawn last)
-                if (hexArray[i][j].ridges != null)
-                {
-                    ridgeList.add(hexArray[i][j]);
-                }
-                
-               //Coordinates
-                if (showCoordinates)
-                {
-                    newMapGraphics.setColor(Color.BLUE);
-                    newMapGraphics.drawString("[" + hexArray[i][j].getCol() + "," + hexArray[i][j].getRow() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
-                }
-                
-                //Move the pencil over
-                x = x + (hexagonSize/2) + hexagonSize;
-
-           }
-         
-           beginDrawingFromY += (int)2 * (.8660 * hexagonSize);
-           
-           x = beginDrawingFromX;
-           y = y + (int)(2 * .8660 * hexagonSize); 
-            
-            if ((i%2) != 0)
-               y = beginDrawingFromY + (int)(.8660 * hexagonSize); 
-            else
-                y = beginDrawingFromY;
-        }
-        
-        //Finally, draw ridges
-        if (ridgeList.isEmpty() == false)
-        {
-            Hex rHex;
-            Polygon rPoly;
-            Ridge rRidge;
-            int a,b,c,d;
-            
-            Iterator hexIter = ridgeList.iterator();
-            Iterator ridgeIter;
-             
-            while (hexIter.hasNext())
-            {
-                rHex = (Hex)hexIter.next();
-                
-                ridgeIter = rHex.ridges.iterator();
-                
-                while (ridgeIter.hasNext())
-                {
-                    rRidge = (Ridge)ridgeIter.next();
-                    rPoly = rRidge.hexA.getPolygon();
-                    
-                    newMapGraphics.setColor(Color.BLACK);
-
-                    //if the face is 1 or 4, then the "thick lines" need
-                    //to be adjusted vertically
-                    if ((rRidge.faceA == 1) || (rRidge.faceA == 4))
-                    {
-                        a = rPoly.xpoints[rRidge.faceA -1];
-                        b = rPoly.ypoints[rRidge.faceA -1];
-                        c = rPoly.xpoints[rRidge.faceA];
-                        d = rPoly.ypoints[rRidge.faceA]; 
-                        
-                        newMapGraphics.drawLine(a,b,c,d);
-                        newMapGraphics.drawLine(a,b+1,c,d+1);
-                        newMapGraphics.drawLine(a,b+2,c,d+2);
-                        newMapGraphics.drawLine(a,b-1,c,d-1);
-                        newMapGraphics.drawLine(a,b-2,c,d-2);
-
-                    }
-                    
-                    else if (rRidge.faceA == 6)
-                    {
-                        a = rPoly.xpoints[0];
-                        b = rPoly.ypoints[0];
-                        c = rPoly.xpoints[5];
-                        d = rPoly.ypoints[5]; 
-                        
-                        newMapGraphics.drawLine(a,b,c,d);
-                        newMapGraphics.drawLine(a-1,b,c-1,d);
-                        newMapGraphics.drawLine(a-2,b,c-2,d);
-                        newMapGraphics.drawLine(a+1,b,c+1,d);
-                        newMapGraphics.drawLine(a+2,b,c+2,d);
-                    }
-                    
-                    else
-                    {
-                        a = rPoly.xpoints[rRidge.faceA -1];
-                        b = rPoly.ypoints[rRidge.faceA -1];
-                        c = rPoly.xpoints[rRidge.faceA];
-                        d = rPoly.ypoints[rRidge.faceA];
-
-                        newMapGraphics.drawLine(a,b,c,d);
-                        newMapGraphics.drawLine(a-1,b,c-1,d);
-                        newMapGraphics.drawLine(a-2,b,c-2,d);
-                        newMapGraphics.drawLine(a+1,b,c+1,d);
-                        newMapGraphics.drawLine(a+2,b,c+2,d);
-                    }
-                }
-            }
-            
-            ridgeList.clear();
-        }
-        
-        
-        newMapGraphics.dispose();
-        mapImage = offScreenDraw;
-    }
-    
-    //ASSOCIATE POLYGON WITH HEX
-    private void associatePolygonWithHex(int rw, int cl, Polygon poly)
-    {
-        hexArray[rw][cl].setPolygon(poly);
-    }
-    
-
-    public Polygon getPolygon(int pointX, int pointY)
-    {
-        //bounds checking
-        Iterator polys = polyList.iterator();
-        Polygon currentPoly;
-        
-        while (polys.hasNext())
-        {
-            currentPoly = (Polygon)polys.next();
-            
-            if (currentPoly.contains(pointX, pointY))
-            {
-                return currentPoly;
-            }
-        }
-        
-        return null;
-    }
-    
-    public Hex getHexFromPoly(Polygon thisOne)
-    {
-        Iterator hexes = hexList.iterator();
-        Hex current;
-        
-        while (hexes.hasNext())
-        {
-            current = (Hex)hexes.next();
-            
-            if (current.getPolygon() == thisOne)
-            {
-                return (current);
-            }
-        }
-        
-        return null;
-    }
-    
-    public Hex getHexFromCoords(int rw, int cl)
-    {
-        if ((rw <= rows) && (rw >= 0) && (cl <= cols) && (cl >= 0))
-        {
-            return hexArray[rw][cl];
-        }
-        
-        else
-            return null;
-    }
-    
-    
-    public BufferedImage getImage()
-    {
-        return (mapImage);
-    }
-    
-    */
-    
     
     //*** UNIT MANAGMENT ***
     //Adds a unit to a hex. Checks for crater, existing unit
@@ -794,19 +264,7 @@ public class HexMap implements Serializable
             if ((col-1) >= 0)
                 adjHexes.add(hexArray[row][col-1]);
         }
-        
-//        
-//        LinkedList<Hex> returnList = new LinkedList();
-//        returnList.clear();
-//        Iterator iter = adjHexes.iterator();
-//        Hex thisHex;
-//        
-//        while (iter.hasNext())
-//        {
-//            thisHex = (Hex)iter.next();
-//            returnList.add(thisHex);
-//        }
-        
+                
         return (convertToHexLinkedList(adjHexes));
     }
     

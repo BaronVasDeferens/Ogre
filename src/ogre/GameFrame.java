@@ -347,7 +347,7 @@ public class GameFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (ogreGame.hexMap != null)
         {
-            ogreGame.hexMap.showCoordinates = !(ogreGame.hexMap.showCoordinates);
+            ogreGame.ogrePanel.hexMapRenderer.showCoordinates = !(ogreGame.ogrePanel.hexMapRenderer.showCoordinates);
             ogreGame.ogrePanel.hexMapRenderer.updateMapImage();
         }
 
