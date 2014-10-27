@@ -92,8 +92,57 @@ public class HexMap implements Serializable
         makeCrater(14,6);
         
         
-        addRidge(hexArray[3][4],6,hexArray[2][3],3);
-        addRidge(hexArray[3][4],1,hexArray[2][4],4);
+        //addRidge(hexArray[3][4],6,hexArray[2][3],3);
+        //addRidge(hexArray[3][4],1,hexArray[2][4],4);
+        
+        addRidge(0,1,3,1,1,6);
+        addRidge(1,1,5,0,2,2);
+        addRidge(1,5,3,2,6,6);
+        addRidge(2,5,4,2,6,1);
+        addRidge(2,3,3,3,3,6);
+        addRidge(3,2,4,3,3,1);
+        addRidge(3,2,3,4,3,6);
+        addRidge(5,0,5,4,1,2);
+        addRidge(5,0,4,5,1,1);
+        addRidge(6,1,5,5,1,2);
+        addRidge(7,0,3,8,1,6);
+        addRidge(9,2,2,10,2,5);
+        addRidge(9,2,4,9,3,1);
+        addRidge(9,3,3,10,4,6);
+        addRidge(9,4,1,9,3,4);
+        addRidge(11,3,4,11,4,1);
+        addRidge(11,4,2,12,4,5);
+        addRidge(3,6,3,4,7,6);
+        addRidge(3,7,6,2,7,3);
+        addRidge(2,8,3,3,8,6);
+        addRidge(1,8,3,2,9,6);
+        addRidge(2,9,4,2,10,1);
+        addRidge(2,10,2,3,9,5);
+        addRidge(1,9,3,2,10,6);
+        addRidge(2,10,5,1,10,2);
+        addRidge(8,6,3,9,6,6);
+        addRidge(11,5,4,11,6,1);
+        addRidge(10,6,3,11,6,6);
+        addRidge(10,7,2,11,6,5);
+        addRidge(10,7,3,11,7,6);
+        addRidge(10,7,4,10,8,1);
+        addRidge(9,7,2,10,7,5);
+        addRidge(13,6,4,13,7,1);
+        addRidge(2,15,3,3,15,6);
+        addRidge(2,15,4,2,16,1);
+        addRidge(4,14,2,5,13,5);
+        addRidge(4,13,3,5,13,6);
+        addRidge(5,12,4,5,13,1);
+        addRidge(6,13,2,2,12,5);
+        addRidge(6,13,3,7,13,6);
+        addRidge(6,15,3,7,15,6);
+        addRidge(7,14,4,7,15,1);
+        addRidge(7,15,2,8,15,5);
+        addRidge(8,15,4,8,16,1);
+        addRidge(9,14,3,10,15,6);
+        addRidge(12,15,4,12,16,1);
+        addRidge(12,15,3,13,15,6);
+        addRidge(13,14,4,13,15,1);
         
         
     }
@@ -119,6 +168,20 @@ public class HexMap implements Serializable
         {
             target.isCrater = true;
         }
+    }
+    
+    //ADD RIDGE
+    public void addRidge(int x1, int y1, int f1, int x2, int y2, int f2)
+    {
+        Hex hex1, hex2;
+        
+        //TODO:
+        //Bounds check: the responsible thing
+        
+        hex1 = hexArray[y1][x1];
+        hex2 = hexArray[y2][x2];
+        
+        addRidge(hex1,f1,hex2,f2);
     }
     
     //ADD RIDGE
