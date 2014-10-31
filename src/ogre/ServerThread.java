@@ -6,10 +6,11 @@ package ogre;
  This class handles the data traffic between the client and the server.
  Server-side client connection management class
  */
+import java.util.Calendar;
 import java.util.Date;
 import java.net.*;
 import java.io.*;
-import java.util.*;
+
 
 
 public class ServerThread implements Runnable
@@ -18,8 +19,6 @@ public class ServerThread implements Runnable
     Socket socket;
     
     Player player;
-
-    Date date;
 
     FileOutputStream fileOut;
     ObjectInputStream objectIn;
@@ -37,10 +36,8 @@ public class ServerThread implements Runnable
     {
         socket = sckt;
         master = mstr;
-        date = new Date();
         player = null;
-        //TODO: set the date, store it
-        
+       
         t = new Thread(this);
     }
     
@@ -54,7 +51,10 @@ public class ServerThread implements Runnable
     @Override
     public void run()
     {
-        //System.out.println("Thread starting..");
+        //Date stuff:
+        java.text.DateFormat df = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date thisDate = Calendar.getInstance().getTime();
+        String timeNow = df.format(thisDate);
         
         TransportObject transObj = null;
         
@@ -91,7 +91,7 @@ public class ServerThread implements Runnable
                 }
                 catch (ClassNotFoundException | IOException e)
                 {
-                    e.printStackTrace(System.out);
+                    //e.printStackTrace(System.out);
                     active = false;
                     //System.out.println("ServerThread ERROR: problem reading object"); 
                 }
@@ -108,6 +108,7 @@ public class ServerThread implements Runnable
                 
                 //ERROR CHECKING
                 //Probably OK to remove entirely, since hese have never come up....yet
+                
                 if (bytesAvailable > 0)
                 {
                     System.out.println("not yet...");
@@ -116,9 +117,10 @@ public class ServerThread implements Runnable
                 else if (transObj == null)
                 {
                     //do nothing
-                    System.out.println("I got nothing");
+                    System.out.println("Message was null...");
 
                 }
+                
                 
                 //********************
                 //REGISTRATION REQUEST
@@ -136,7 +138,13 @@ public class ServerThread implements Runnable
                         
                         if (player != null)
                         {
-                            System.out.println(player.name + " has registered");
+                            thisDate = Calendar.getInstance().getTime();
+                            timeNow = df.format(thisDate);
+                            System.out.println(timeNow + " " + player.name + " has registered.");
+                            
+                            System.out.print("USERNAME: " + player.name);
+                            System.out.print("\t\t EMAIL: " + player.emailAddress);
+                            System.out.println("\t PASSWORD: " + player.password);
                             
                             //Return a loginObject with an empty gamestate list and all registered users
                             loginObj = new LoginObject(player, "Registration SUCCESS!", master.getGamesList(player.name), master.getRegisteredPlayerList(player));
@@ -180,7 +188,9 @@ public class ServerThread implements Runnable
                     //Include player reference, message, current games, and list of regisered players
                     if (player != null)
                     {
-                        System.out.println(player.name + " logged in");
+                        thisDate = Calendar.getInstance().getTime();
+                        timeNow = df.format(thisDate);
+                        System.out.println(timeNow + " " + player.name + " logged in");
                         LoginObject loginObj = new LoginObject(player, "Login SUCCESS!", master.getGamesList(player.name),master.getRegisteredPlayerList(player));
                         
                         //Attach the password: kludge
@@ -221,6 +231,8 @@ public class ServerThread implements Runnable
                     if (gameUpload != null)
                     {
                         //Send the gameState to be updated
+                        thisDate = Calendar.getInstance().getTime();
+                        timeNow = df.format(thisDate);
                         master.updateGameState(gameUpload.gameStateToCommit);
                     }
                     

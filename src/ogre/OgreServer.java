@@ -19,6 +19,8 @@ import java.net.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -40,6 +42,9 @@ public class OgreServer
         InputStream in = null;
         OutputStream out = null;
        
+        java.text.DateFormat df = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date thisDate = Calendar.getInstance().getTime();
+        String timeNow = df.format(thisDate);
         
         //If an port argument was supplied, set the port:
         if (args != null)
@@ -50,6 +55,7 @@ public class OgreServer
             }
         }
             
+        System.out.println(timeNow);
         System.out.println("Server starting...");
         
         try
