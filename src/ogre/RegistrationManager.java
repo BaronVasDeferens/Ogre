@@ -183,25 +183,28 @@ public class RegistrationManager
     //Safely closes socket and streams.
     public void disconnectFromServer()
     {
-        try 
+        if (sckt != null)
         {
-            sckt.close();
-            sckt = null;                           
-            in.close();
-            in = null;
-            out.close();
-            out = null;
-            objectIn.close();
-            objectIn = null;
-            objectOut.close();
-            objectOut = null;
-            
-            //regFrame.feedbackTextArea.append("You have safely disconected from the server.");
-        }
+            try 
+            {
+                sckt.close();
+                sckt = null;                           
+                in.close();
+                in = null;
+                out.close();
+                out = null;
+                objectIn.close();
+                objectIn = null;
+                objectOut.close();
+                objectOut = null;
 
-        catch(IOException e)
-        {
-            //regFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
+                //regFrame.feedbackTextArea.append("You have safely disconected from the server.");
+            }
+
+            catch(IOException e)
+            {
+                //regFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
+            }
         }
     }
 }        

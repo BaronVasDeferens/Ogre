@@ -233,6 +233,7 @@ public class ServerThread implements Runnable
                         //Send the gameState to be updated
                         thisDate = Calendar.getInstance().getTime();
                         timeNow = df.format(thisDate);
+                        System.out.print(timeNow + "  ");
                         master.updateGameState(gameUpload.gameStateToCommit);
                     }
                     
@@ -250,7 +251,7 @@ public class ServerThread implements Runnable
             }
             
         } //while active
-        
+              
         
         //Close out the connection
         closeStreamsAndSocket();
