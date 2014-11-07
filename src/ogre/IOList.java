@@ -285,6 +285,33 @@ class PlayerIOList extends IOList
         }
     }
     
+    public synchronized String getEmailAddress(String playerName)
+    {
+        String address =  null;
+        
+        if (dataList == null)
+            return (null);
+        else
+        {
+            Iterator iter = dataList.iterator();
+            Player currentPlayer;
+            
+            while (iter.hasNext())
+            {
+                currentPlayer = (Player)iter.next();
+                
+                if (currentPlayer.name.equals(playerName))
+                {
+                    return (currentPlayer.emailAddress);
+                }
+                
+            }
+        }
+        
+        return address;
+    }
+    
+    
     //HAS ENTRY NAMED
     //Scans through the records and returns truw if there is an entry matching the argument
     public synchronized boolean hasEntryNamed(String user)

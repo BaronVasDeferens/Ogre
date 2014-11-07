@@ -219,7 +219,7 @@ public class HexMap implements Serializable
         
         if ((target.isCrater() == false) && (target.isOccupied() == false))
         {
-            hexArray[col][row].setOccupyingUnit(toAdd);
+            hexArray[row][col].setOccupyingUnit(toAdd);
             target.occupyingUnit.xLocation = target.getCol();
             target.occupyingUnit.yLocation = target.getRow();
             return true;

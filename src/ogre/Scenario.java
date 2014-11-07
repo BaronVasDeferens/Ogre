@@ -77,20 +77,94 @@ public class Scenario implements Serializable
             default:
                 
                 //TEST SCENARIO
-
-                player1.units.add(new HeavyTank());
-                player1.units.add(new Howitzer());
-                player1.units.add(new Infantry(2));
-                player1.units.add(new Infantry(3));
-                player1.units.add(new GEV());
-                player1.units.add(new Ogre(3));
-  
-                player1VictoryCondition = VictoryCondition.None;
+                Unit maker;
                 
+                //5 heavy tanks
+                maker = new HeavyTank();
+                maker.setLocation(12,1);
+                player1.units.add(maker);
+                
+                maker = new HeavyTank();
+                maker.setLocation(12,5);
+                player1.units.add(maker);
+
+                maker = new HeavyTank();
+                maker.setLocation(11,9);
+                player1.units.add(maker);
+                
+                maker = new HeavyTank();
+                maker.setLocation(14,12);
+                player1.units.add(maker);
+                
+                maker = new HeavyTank();
+                maker.setLocation(14,6);
+                player1.units.add(maker);
+
+                //2 howitzers
+                maker = new Howitzer();
+                maker.setLocation(6,5);
+                player1.units.add(maker);
+                
+                maker = new Howitzer();
+                maker.setLocation(5,10);
+                player1.units.add(maker);
+                
+                maker = new Howitzer();
+                maker.setLocation(6,5);
+                player1.units.add(maker);
+                
+                //6 3-man infantry
+                maker = new Infantry(3);
+                maker.setLocation(13,1);
+                player1.units.add(maker);
+                
+                maker = new Infantry(3);
+                maker.setLocation(14,3);
+                player1.units.add(maker);
+                
+                maker = new Infantry(3);
+                maker.setLocation(14,5);
+                player1.units.add(maker);
+                
+                maker = new Infantry(3);
+                maker.setLocation(14,10);
+                player1.units.add(maker);
+                
+                maker = new Infantry(3);
+                maker.setLocation(14,14);
+                player1.units.add(maker);
+                
+                maker = new Infantry(3);
+                maker.setLocation(6,7);
+                player1.units.add(maker);
+                
+                //1 2-man infantry
+                maker = new Infantry(2);
+                maker.setLocation(7,4);
+                player1.units.add(maker);
+                
+                //3 GEVs
+                maker = new GEV();
+                maker.setLocation(14,0);
+                player1.units.add(maker);
+                
+                maker = new GEV();
+                maker.setLocation(15,7);
+                player1.units.add(maker);
+                
+                maker = new GEV();
+                maker.setLocation(15,11);
+                player1.units.add(maker);
+                
+                //1 command post
+                maker = new CommandPost();
+                maker.setLocation(1,2);
+                player1.units.add(maker);
+             
                 //Add player two's single ogre unit
-                player2.units.add(new Ogre(3));
-                player2.units.add(new Infantry(3));
-                player2.units.add(new HeavyTank());
+                maker = new Ogre(3);
+                maker.setLocation(19,7);
+                player2.units.add(maker);
                 
                 player1VictoryCondition = VictoryCondition.None;
                 

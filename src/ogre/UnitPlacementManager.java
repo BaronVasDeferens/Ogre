@@ -18,14 +18,10 @@ public class UnitPlacementManager
         Iterator iter = allUnits.iterator();
         Unit thisUnit;
         
-        
-        int x = 0, y = 0;
         while (iter.hasNext())
         {
             thisUnit = (Unit)iter.next();
-            hexMap.addUnit(x,y, thisUnit);
-            x++;
-            y++;
+            hexMap.addUnit(thisUnit.xLocation, thisUnit.yLocation, thisUnit);
         }
         
     }

@@ -14,6 +14,9 @@ import javax.swing.*;
  */
 public class OgreGame
 {
+    //Version info:
+    String version = "1.0.0.0";
+
     //Network resources
     String server = "167.114.68.235";
     //String server = "127.0.1.1";
@@ -98,7 +101,7 @@ public class OgreGame
         undoButton = undoBtn;
         advancePhaseButton = advPhase;
         
-        myFrame.setTitle("OGRE");
+        myFrame.setTitle("OGRE" + version);
         ratioLabel.setText("");
         
         //Disable certain functions until a gameState has been loaded
@@ -816,6 +819,7 @@ public class OgreGame
                     gameRound++;
                     
                     //Upload changes to gameState
+                    //TOD: find a way to guarantee that moves made will be committed automatically
                     uploader = new GameStateUploadManager(server, port, activePlayerCredentials);
                     currentGameState.gamePhase = 10;
                     currentGameState.turnNumber = gameRound;

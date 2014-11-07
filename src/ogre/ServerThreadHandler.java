@@ -9,6 +9,7 @@ Maintains and serves the player lists and gamestates.
 
 import java.util.*;
 import java.net.*;
+import java.io.*;
 /**
  *
  * @author Skot
@@ -160,6 +161,31 @@ public class ServerThreadHandler
     public void updateGameState(GameState updateMe)
     {
         currentGames.updateGameState(updateMe);
+        
+        //IS IT NOT CRUCIAL FOR THIS TO WORK RIGHT NOW
+        /*
+        String recipient, mailMsg;
+        Player plyr;
+        
+        if (updateMe.currentPlayer == updateMe.playerOne)
+            plyr = updateMe.playerOne;
+        else
+            plyr = updateMe.playerTwo;
+        
+        recipient = registeredPlayers.getEmailAddress(plyr.name);
+        mailMsg = "echo | mailx -s \"your move\"" + recipient;
+        //Dispatch a quick email!
+        try 
+        {
+            System.out.println("Contacting " + recipient);
+            Runtime rt = Runtime.getRuntime();
+            Process p = rt.getRuntime().exec(mailMsg);
+        }
+        catch (IOException e)
+        {
+            System.out.println(e.toString());
+        }          
+        */
     }
     
     

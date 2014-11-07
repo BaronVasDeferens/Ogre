@@ -281,25 +281,29 @@ public class LoginManager
     //Safely closes socket and streams.
     public void disconnectFromServer()
     {
-        try 
-        {
-            sckt.close();
-            sckt = null;                           
-            in.close();
-            in = null;
-            out.close();
-            out = null;
-            objectIn.close();
-            objectIn = null;
-            objectOut.close();
-            objectOut = null;
-            
-            //loginFrame.feedbackTextArea.append("You have safely disconected from the server.");
-        }
+        if (sckt != null)
+        {    
+        
+            try 
+            {
+                sckt.close();
+                sckt = null;                           
+                in.close();
+                in = null;
+                out.close();
+                out = null;
+                objectIn.close();
+                objectIn = null;
+                objectOut.close();
+                objectOut = null;
 
-        catch(IOException e)
-        {
-            //loginFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
+                //loginFrame.feedbackTextArea.append("You have safely disconected from the server.");
+            }
+
+            catch(IOException e)
+            {
+                //loginFrame.feedbackTextArea.append("ERROR: problems closing streams and socket.");
+            }
         }
     }
     
