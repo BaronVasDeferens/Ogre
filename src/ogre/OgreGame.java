@@ -15,8 +15,14 @@ import javax.swing.*;
 public class OgreGame
 {
     //Version info:
-    String version = "1.0.0.0";
+    String version = "1.0.0.1";
 
+    /*
+    VERSION:
+    1.0.0.1:    fixed bug in MyGAmesPanel where games were mis-lableded
+                upon Registration, sets username in gameFrame title
+    */
+    
     //Network resources
     String server = "167.114.68.235";
     //String server = "127.0.1.1";

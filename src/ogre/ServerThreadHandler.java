@@ -162,30 +162,51 @@ public class ServerThreadHandler
     {
         currentGames.updateGameState(updateMe);
         
-        //IS IT NOT CRUCIAL FOR THIS TO WORK RIGHT NOW
-        /*
-        String recipient, mailMsg;
-        Player plyr;
-        
-        if (updateMe.currentPlayer == updateMe.playerOne)
-            plyr = updateMe.playerOne;
-        else
-            plyr = updateMe.playerTwo;
-        
-        recipient = registeredPlayers.getEmailAddress(plyr.name);
-        mailMsg = "echo | mailx -s \"your move\"" + recipient;
-        //Dispatch a quick email!
-        try 
+        if (updateMe.isOpen == false)  
         {
-            System.out.println("Contacting " + recipient);
-            Runtime rt = Runtime.getRuntime();
-            Process p = rt.getRuntime().exec(mailMsg);
+            String recipient, mailMsg;
+            Player plyr;
+            Runtime runtime = Runtime.getRuntime();
+            Process process = null;
+            OutputStream out;
+            InputStream in;
+            String type = null;
+
+            if (updateMe.currentPlayer == updateMe.playerOne)
+                plyr = updateMe.playerOne;
+            else
+                plyr = updateMe.playerTwo;
+
+            recipient = registeredPlayers.getEmailAddress(plyr.name);
+
+            mailMsg = "bash ogremail.sh " + recipient;
+            //Dispatch a quick email!
+            try
+            {
+                //System.out.println(runtime.availableProcessors());
+                process = runtime.exec(mailMsg);
+                process.waitFor();
+
+                in = process.getInputStream();
+                InputStreamReader isr = new InputStreamReader(in);
+                BufferedReader br = new BufferedReader(isr);
+                String line=null;
+                
+                while ( (line = br.readLine()) != null)
+                {
+                    System.out.println(line);    
+                } 
+
+                br.close();
+                isr.close();
+                in.close();
+            }
+            catch (Exception e)
+            {
+                System.out.print(e.toString());
+            }  
         }
-        catch (IOException e)
-        {
-            System.out.println(e.toString());
-        }          
-        */
+
     }
     
     

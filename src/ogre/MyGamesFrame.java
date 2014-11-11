@@ -32,8 +32,8 @@ public class MyGamesFrame extends javax.swing.JFrame {
     static OgreGame gameMaster;
     static GameState [] readyGameArray;
     
-    static LinkedList<GameState> readyGameStates;
-    static LinkedList<GameState> pendingGameStates;
+    static HashSet<GameState> readyGameStates;
+    static HashSet<GameState> pendingGameStates;
     
     /**
      * Creates new form MyGamesFrame
@@ -47,10 +47,10 @@ public class MyGamesFrame extends javax.swing.JFrame {
         gameMaster = master;
         activePlayerCredentials = userCreds;
         
-        readyGameStates = new LinkedList();
+        readyGameStates = new HashSet();
         readyGameStates.clear();
         
-        pendingGameStates = new LinkedList();
+        pendingGameStates = new HashSet();
         pendingGameStates.clear();
         
         
@@ -100,7 +100,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
         
         for (int i = 0; i < readyGameArray.length; i++)
         {
-            readyListModel.add(i, ("#" + thisState.idNumber + " / " + thisState.playerOne.name + " vs " + thisState.playerTwo.name + " / " + thisState.scenario.scenarioType.toString() + " / turn " + thisState.turnNumber));
+            readyListModel.add(i, ("#" + readyGameArray[i].idNumber + " / " + readyGameArray[i].playerOne.name + " vs " + readyGameArray[i].playerTwo.name + " / " + readyGameArray[i].scenario.scenarioType.toString() + " / turn " + readyGameArray[i].turnNumber));
         }
         
         gamesList.setModel(readyListModel);

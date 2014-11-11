@@ -155,9 +155,10 @@ public class RegistrationManager
 
                     if ((answerReceived == true) && (activePlayerCredentials.player != null))
                     {
-                        regFrame.feedbackTextArea.append("Welcome to Ogre. One moment, please...\n");
+                        regFrame.feedbackTextArea.append("Welcome to Ogre...\n");
                         player = activePlayerCredentials.player;
                         myMaster.activePlayerCredentials = activePlayerCredentials;
+                        myMaster.myFrame.setTitle("OGRE - Logged in as " + activePlayerCredentials.player.name);
                         AOK = true;
 
                         //Deploy the myGames window

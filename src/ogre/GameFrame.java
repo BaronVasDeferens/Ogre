@@ -39,6 +39,7 @@ public class GameFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         upperCurrentTargetLabel = new java.awt.Label();
         undoButton = new javax.swing.JButton();
         advancePhaseButton = new javax.swing.JButton();
@@ -60,6 +61,11 @@ public class GameFrame extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         optionHexNumbers = new javax.swing.JMenuItem();
         createNewGameMenuItem = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        aboutMenuItem = new javax.swing.JMenuItem();
+
+        jCheckBoxMenuItem1.setSelected(true);
+        jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -183,6 +189,18 @@ public class GameFrame extends javax.swing.JFrame {
         jMenu2.add(createNewGameMenuItem);
 
         jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Help");
+
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu3.add(aboutMenuItem);
+
+        jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
 
@@ -434,6 +452,13 @@ public class GameFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ViewMyGamesMenuItemActionPerformed
 
+    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+        //Spawn a pop-up with info
+        JOptionPane.showMessageDialog(this, ("OGRE v" + ogreGame.version + "\n info at web.pdx.edu/~scowest/ogre"),
+            "OGRE VERSION", JOptionPane.WARNING_MESSAGE);
+        
+    }//GEN-LAST:event_aboutMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -476,12 +501,15 @@ public class GameFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem LogInMenuItem;
     private javax.swing.JMenuItem ViewMyGamesMenuItem;
     public java.awt.List WeaponSystemsList;
+    private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton advancePhaseButton;
     public static javax.swing.JButton attackButton;
     private javax.swing.JMenuItem createNewGameMenuItem;
     public java.awt.Label currentTargetLabel;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     public static ogre.OgrePanel ogrePanel1;
     private javax.swing.JMenuItem optionHexNumbers;
