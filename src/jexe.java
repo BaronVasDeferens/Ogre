@@ -25,7 +25,7 @@ public class jexe {
         //String argumentArray= "ls";
         //String argumentArray = "echo | mailx -s \"OGRE: opponent made their move\" " + "baronvasdeferens@gmail.com";
         //String argumentArray[] = {"echo", "| mailx -s", "\"OGRE: opponent made their move\"" , "baronvasdeferens@gmail.com"};
-        String argumentArray = "bash ./ogremail baronvasdeferens@gmail.com";
+        String argumentArray = "bash ogremail.sh baronvasdeferens@gmail.com";
         try
         {
             //System.out.println(runtime.availableProcessors());

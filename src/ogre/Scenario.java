@@ -79,17 +79,13 @@ public class Scenario implements Serializable
                 //TEST SCENARIO
                 Unit maker;
                 
-                //5 heavy tanks
+                //4 heavy tanks
                 maker = new HeavyTank();
                 maker.setLocation(12,1);
                 player1.units.add(maker);
                 
                 maker = new HeavyTank();
                 maker.setLocation(12,5);
-                player1.units.add(maker);
-
-                maker = new HeavyTank();
-                maker.setLocation(11,9);
                 player1.units.add(maker);
                 
                 maker = new HeavyTank();
@@ -100,6 +96,11 @@ public class Scenario implements Serializable
                 maker.setLocation(14,6);
                 player1.units.add(maker);
 
+                //1 missile tank
+                maker = new MissileTank();
+                maker.setLocation(11,9);
+                player1.units.add(maker);
+                
                 //2 howitzers
                 maker = new Howitzer();
                 maker.setLocation(6,5);

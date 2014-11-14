@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public class GameState implements Serializable
 {
-    boolean isOpen;         //indicates a game in progress
+    boolean isOpen;         //"true" indicates a player is actively taking turns
     Date dateCreated;
     Date lastModified;
     int idNumber;
@@ -58,6 +58,6 @@ public class GameState implements Serializable
         turnNumber = 1;
         gamePhase = 10;
         
-        isOpen = false;
+        isOpen = true;
     }
 }

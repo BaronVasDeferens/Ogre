@@ -15,12 +15,16 @@ import javax.swing.*;
 public class OgreGame
 {
     //Version info:
-    String version = "1.0.0.1";
+    String version = "1.0.0.3";
 
     /*
     VERSION:
-    1.0.0.1:    fixed bug in MyGAmesPanel where games were mis-lableded
+    1.0.0.1:    (11-07-14) fixed bug in MyGAmesPanel where games were mis-lableded
                 upon Registration, sets username in gameFrame title
+    1.0.0.2:    (11-11-14) actually fixed the MyGames bug
+                fixed bug with Refresh games button, which resulted in mis-labelling
+    1.0.0.3     (11-11-14) tweaked output to mail script in ServerThreadHandler
+                replaced a HeavyTank with a MissileTank
     */
     
     //Network resources

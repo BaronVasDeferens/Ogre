@@ -480,13 +480,13 @@ class GameStateIOList extends IOList
             dataList.remove(targetGame);
             dataList.add(updateMe);
             writeToDisk();
-            System.out.println("Updated game #" + updateMe.idNumber + ": " + updateMe.playerOne.name + " vs " + updateMe.playerTwo.name);
+            System.out.println("UPDATED game #" + updateMe.idNumber + ": " + updateMe.playerOne.name + " vs " + updateMe.playerTwo.name);
         }
         
         else
         {
             dataList.add(updateMe);
-            System.out.println("Added game #" + updateMe.idNumber + ": " + updateMe.playerOne.name + " vs " + updateMe.playerTwo.name);
+            System.out.println("ADDED game #" + updateMe.idNumber + ": " + updateMe.playerOne.name + " vs " + updateMe.playerTwo.name);
             writeToDisk();
         }
     }

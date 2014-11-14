@@ -4,11 +4,11 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/skot/Documents/ogre/src/ogre/Scenario.java</file>
-            <file>file:/home/skot/Documents/ogre/src/ogre/HexMap.java</file>
-            <file>file:/home/skot/Documents/ogre/src/ogre/UnitPlacementManager.java</file>
-            <file>file:/home/skot/Documents/ogre/src/ogre/GameState.java</file>
+            <file>file:/home/skot/Documents/ogre/src/ogre/MyGamesFrame.java</file>
+            <file>file:/home/skot/Documents/ogre/src/ogre/OgreGame.java</file>
             <file>file:/home/skot/Documents/ogre/src/ogre/Unit.java</file>
-            <file>file:/home/skot/Documents/ogre/src/ogre/NewGameManager.java</file>
+            <file>file:/home/skot/Documents/ogre/src/ogre/ServerThreadHandler.java</file>
+            <file>file:/home/skot/Documents/ogre/src/jexe.java</file>
         </group>
     </open-files>
 </project-private>

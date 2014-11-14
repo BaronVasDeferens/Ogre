@@ -72,12 +72,13 @@ public class MyGamesFrame extends javax.swing.JFrame {
         while (iter.hasNext())
         {
             thisState = (GameState)iter.next();
-            
+            //Add to ready list
             if ((thisState.isOpen == false) && (thisState.currentPlayer.name.equals(userCreds.player.name)))
             {
                 readyGameStates.add(thisState);
             }
             
+            //Add to pending list
             else
             {
                 pendingGameStates.add(thisState);
@@ -164,6 +165,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        pendingGamesJList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         pendingGamesJList.setEnabled(false);
         pendingGamesJList.setFocusable(false);
         jScrollPane2.setViewportView(pendingGamesJList);
@@ -349,7 +351,7 @@ public class MyGamesFrame extends javax.swing.JFrame {
 
                 for (int i = 0; i < readyGameArray.length; i++)
                 {
-                    readyListModel.add(i, ("#" + thisState.idNumber + " / " + thisState.playerOne.name + " vs " + thisState.playerTwo.name + " / " + thisState.scenario.scenarioType.toString() + " / turn " + thisState.turnNumber));
+                    readyListModel.add(i, ("#" + readyGameArray[i].idNumber + " / " + readyGameArray[i].playerOne.name + " vs " + readyGameArray[i].playerTwo.name + " / " + readyGameArray[i].scenario.scenarioType.toString() + " / turn " + readyGameArray[i].turnNumber));
                 }
 
                 gamesList.setModel(readyListModel);
