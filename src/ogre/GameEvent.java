@@ -12,6 +12,7 @@ import java.util.LinkedList;
 /**
  *
  * @author Skot
+ * 
  */
 public class GameEvent implements Serializable
 {
