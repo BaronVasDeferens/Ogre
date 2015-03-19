@@ -12,7 +12,10 @@ import java.util.LinkedList;
 /**
  *
  * @author Skot
+<<<<<<< HEAD
  * 
+=======
+>>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
  */
 public class GameEvent implements Serializable
 {
@@ -59,12 +62,15 @@ class MoveEvent extends GameEvent
         gamePhase = phase;
         message = msg;
         canUndoThis = undo;
+<<<<<<< HEAD
         
         // Create a journal of the action (eg "Missile tanks moves from X to Y") 
         String eventDescription = agt.unitName;
         eventDescription += " " + tp + "S  ";
         eventDescription += "[" + src.getCol() + "," + src.getRow() +"] to [" + dest.getCol() + "," + dest.getRow() + "]";
         message = eventDescription;       
+=======
+>>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
     }
 }
 
@@ -89,6 +95,7 @@ class AttackEvent extends GameEvent
         defendingWeapon = dfndWeap;
         
         result = rslt;
+<<<<<<< HEAD
         
         //Format message as follows:
         // If only one attacker, format: OWNER'S UNIT attacks DFENDING UNIT: RESULT!
@@ -149,6 +156,9 @@ class AttackEvent extends GameEvent
         }
         //eventDescription += "\n";
         message = eventDescription;
+=======
+
+>>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
     }
 }
 
