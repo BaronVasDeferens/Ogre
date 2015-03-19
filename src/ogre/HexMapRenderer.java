@@ -206,11 +206,9 @@ public class HexMapRenderer
                //Draw coordinates
                 if (showCoordinates)
                 {
-<<<<<<< HEAD
+
                     newMapGraphics.setColor(Color.GRAY);
-=======
                     newMapGraphics.setColor(Color.BLUE);
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
                     newMapGraphics.drawString("[" + (j) + "," + (i) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
                 }
 
@@ -423,11 +421,8 @@ public class HexMapRenderer
                //Coordinates
                 if (showCoordinates)
                 {
-<<<<<<< HEAD
                     newMapGraphics.setColor(Color.GRAY);
-=======
                     newMapGraphics.setColor(Color.BLUE);
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
                     newMapGraphics.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
                 }
                 

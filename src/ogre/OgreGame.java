@@ -19,30 +19,27 @@ public class OgreGame
 
     /*
     VERSION:
-<<<<<<< HEAD
+
     1.0.0.1:    (11-07-14) fixed bug in MyGamesPanel where games were mis-lableded
-=======
+
     1.0.0.1:    (11-07-14) fixed bug in MyGAmesPanel where games were mis-lableded
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
+
                 upon Registration, sets username in gameFrame title
     1.0.0.2:    (11-11-14) actually fixed the MyGames bug
                 fixed bug with Refresh games button, which resulted in mis-labelling
     1.0.0.3     (11-11-14) tweaked output to mail script in ServerThreadHandler
-<<<<<<< HEAD
+
                 Replaced a HeavyTank with a MissileTank
     */
     
     //Network resources
     //String server = "167.114.68.235";
     String server = "127.0.1.1";
-=======
-                replaced a HeavyTank with a MissileTank
-    */
-    
+
     //Network resources
-    String server = "167.114.68.235";
+    //String server = "167.114.68.235";
     //String server = "127.0.1.1";
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
+
     int port = 12321;
     
     
@@ -441,11 +438,11 @@ public class OgreGame
                         strength += currentUnit.dischargeWeapon();
                         attackingUnits.add(currentUnit);
                     }
-<<<<<<< HEAD
+
                     else
                         attackingUnits.add(currentUnit);
-=======
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
+
+
                         
                 }
 
@@ -581,10 +578,10 @@ public class OgreGame
                     
                     //Log the event into the EventQueue
                     ///(Player atkr, Unit dfndr, Weapon dfndWeap, LinkedList<Unit> atckUnits, LinkedList<Weapon> slctdWeapons, int phase, String msg, String rslt)
-<<<<<<< HEAD
+
                     ///(Player atkr, Unit dfndr, Weapon dfndWeap, LinkedList<Unit> atckUnits, LinkedList<Weapon> slctdWeapons, int phase, String msg, String rslt)
-=======
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
+
+
                     eventManager.addEvent(new AttackEvent(currentPlayer, currentTarget, targettedOgreWeapon, attackingUnits, attackingWeapons, gamePhase, resultText, result));
  
                 }
@@ -847,7 +844,7 @@ public class OgreGame
                 //End of turn
                 //Commit the game state to the server here
                 case 14:
-<<<<<<< HEAD
+
                     //Append a Turn End GameState....
                     //GameEvent(String tp, int phase, String msg, boolean undo)
                     String msg = ">> " + currentGameState.currentPlayer.name + " ENDS TURN <<<";
@@ -859,10 +856,10 @@ public class OgreGame
                     msg = ">>> " + currentPlayer.name + " BEGIN TURN " + gameRound + " <<<";
                     marker = new GameEvent("BEGINTURN",currentGameState.turnNumber, msg, false);
                     currentGameState.eventQueue.add(marker);
-=======
+
                     switchCurrentPlayer();
                     gameRound++;
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
+
                     
                     //Upload changes to gameState
                     //TOD: find a way to guarantee that moves made will be committed automatically
@@ -1305,13 +1302,13 @@ public class OgreGame
     {
         boolean success = false;
         
-<<<<<<< HEAD
+
         // Generate a journal of events
         String gameEventJournal;
         
         
-=======
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
+
+
         //The initial load state is null. Fresh start.
         if (loadState == null)
         {
@@ -1344,7 +1341,7 @@ public class OgreGame
             
             eventManager.eventQueue = loadState.eventQueue;
             
-<<<<<<< HEAD
+
             //Scan across the Event List and create a list of all moves made
 
             gameEventJournal = "*** " + loadState.playerOne.name + " vs " + loadState.playerTwo.name + " ***\n";
@@ -1359,8 +1356,8 @@ public class OgreGame
                 gameEventJournal += aGameEvent.message + "\n";
             }
             
-=======
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
+
+
             hexMap = null;
             hexMap = loadState.hexMap;
 
@@ -1396,15 +1393,15 @@ public class OgreGame
             ogrePanel.gameOver = false;
             
             success = true;
-<<<<<<< HEAD
+
             
             // Display the game log
             EventJournalFrame journal = new EventJournalFrame();
             journal.textArea.setText(gameEventJournal);
             journal.setTitle(loadState.playerOne.name + " vs " + loadState.playerTwo.name + " (#" + loadState.idNumber + ")\n");
             journal.setVisible(true);
-=======
->>>>>>> 8d7f5cbdf7760da591003eb16bb3fc5c8218352c
+
+
 
         }
         
