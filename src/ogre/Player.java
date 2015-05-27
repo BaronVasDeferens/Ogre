@@ -121,7 +121,7 @@ public class Player implements Serializable
             //reset OGRE all weapons
             else
             {
-                Ogre thisOgre = (Ogre)thisUnit;
+                OgreUnit thisOgre = (OgreUnit)thisUnit;
                 thisOgre.hasMoved = false;
                 thisOgre.resetWeapons();
             }

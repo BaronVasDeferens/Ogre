@@ -259,14 +259,6 @@
         <Property name="text" type="java.lang.String" value="null"/>
       </Properties>
     </Component>
-    <Component class="java.awt.Label" name="phaseLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="18" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="no game loaded"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JButton" name="attackButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="ATTACK"/>
@@ -289,6 +281,14 @@
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
+    </Component>
+    <Component class="java.awt.Label" name="phaseLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Dialog" size="18" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="no game loaded"/>
+      </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="outputArea">
       <AuxValues>

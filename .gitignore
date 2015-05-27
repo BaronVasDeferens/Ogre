@@ -37,3 +37,4 @@ Icon
 .Trashes
 /build/
 /dist/
+/nbproject/private/

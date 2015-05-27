@@ -609,7 +609,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             //Ogres ignore ridges
                                             if (thisHex.occupyingUnit.unitType == UnitType.Ogre)
                                             {
-                                                Ogre tempOgre = (Ogre)thisHex.occupyingUnit;
+                                                OgreUnit tempOgre = (OgreUnit)thisHex.occupyingUnit;
                                                 hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement(),false,true));
                                             }
                                             //Infantry, like Ogres, ignore ridges
@@ -660,9 +660,9 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                         
                         //*** SHOOTING PHASE
                         //Multiple units may be selected. A single enemy unit may be selected.
-                        //In the event that the Ogre is selected as a DEFENDER, only single-unit attacks may be made
+                        //In the event that the OgreUnit is selected as a DEFENDER, only single-unit attacks may be made
                         //against the TRACKS; otherwise, all units may fire.
-                        //In the event that the Ogre is the attacker, only a single target may be selected. 
+                        //In the event that the OgreUnit is the attacker, only a single target may be selected. 
                             
                         //The key here is CONTEXT. Either player may have an ogre at their disposal.
                         //At this stage, we'll just round up everthing the player has selected and send it all
@@ -682,10 +682,10 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                         //Action: deselect this hex...
                                         hexMap.deselect(thisHex);
                                         
-                                        //....Remove any Ogre weapons
+                                        //....Remove any OgreUnit weapons
                                         if (thisHex.occupyingUnit.unitType == UnitType.Ogre)
                                         {
-                                            Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
+                                            OgreUnit thisOgre = (OgreUnit)thisHex.occupyingUnit;
                                             gameMaster.selectedOgreWeapons.removeAll(thisOgre.getWeapons());
                                             gameMaster.currentOgre = null;
                                             gameMaster.updateUnitReadouts(null);
@@ -750,7 +750,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             else
                                             {
                                                 hexMap.select(thisHex);
-                                                Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
+                                                OgreUnit thisOgre = (OgreUnit)thisHex.occupyingUnit;
                                                 gameMaster.updateOgreWeaponSelectionList(thisOgre);
                                                 gameMaster.weaponList.setEnabled(true);
                                                 hexMapRenderer.updateMapImage();
@@ -847,7 +847,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             //Should the ATTACK button be lit?
                             //MIN REQUIREMENTS: a currentTarget; one unit from the current players units
                             //Since target may only be selected from within attack radius (adjacentHexes) which,
-                            //in the case of an Ogre, means a weapon has been selected.
+                            //in the case of an OgreUnit, means a weapon has been selected.
                             if ((gameMaster.currentTarget != null) && (gameMaster.hexMap.selectedHexes.size() >= 2))
                             {
                                 gameMaster.attackButton.setEnabled(true);

@@ -15,7 +15,7 @@ import javax.swing.*;
 public class OgreGame
 {
     //Version info:
-    String version = "1.0.0.3";
+    String version = "1.0.0.3 AI v0.0.0";
 
     /*
     VERSION:
@@ -38,11 +38,10 @@ public class OgreGame
 
     //Network resources
     //String server = "167.114.68.235";
-    //String server = "127.0.1.1";
 
     int port = 12321;
     
-    
+    // UI Components (from GameFrame)
     javax.swing.JFrame myFrame;
     java.awt.List weaponList;
     java.awt.Label unitNameLabel, unitStatLabel, phaseLabel, upperCurrentTargetLabel, currentTargetLabel, ratioLabel;
@@ -70,11 +69,11 @@ public class OgreGame
     EventManager eventManager;
     Scenario scenario;
     LinkedList<Unit> allUnits;
-    LinkedList<Weapon> selectedOgreWeapons;     //tracks which Ogre weapons are selected for FIRING
-    Weapon targettedOgreWeapon = null;          //which Ogre weapon has been selected for destruction
+    LinkedList<Weapon> selectedOgreWeapons;     //tracks which OgreUnit weapons are selected for FIRING
+    Weapon targettedOgreWeapon = null;          //which OgreUnit weapon has been selected for destruction
     Unit currentTarget;
     
-    Ogre currentOgre = null;
+    OgreUnit currentOgre = null;
     
     int gameRound = 1;
     
@@ -94,21 +93,23 @@ public class OgreGame
     23      Player 2 SECOND MOVE
     */     
    
-    //Default constructor
-    //TODO: put the ogrePanel in attachComponents function below instead 
-    OgreGame(OgrePanel ogrPnl)
+    
+    OgreGame()
     {
-        ogrePanel = ogrPnl;
-        loadGameState(null); 
+        currentGameState = null;
+        activePlayerCredentials = null;
+        hexMap = null;       
     }
     
     
-    //Give Ogre game awarness of the frame in which it lives
-    public void attachComponents(javax.swing.JFrame myframe, java.awt.List list, Label label,
+    //Give OgreUnit game awarness of the frame in which it lives
+    // and load a "null" game
+    public void attachComponents(javax.swing.JFrame myframe, OgrePanel ogpnl, java.awt.List list, Label label,
             Label statsLabel, Label phaselabel, Label upperTargetLbl, Label currTargetLbl,
             JButton atkButton, JTextArea repArea, Label ratLabel, JButton undoBtn, JButton advPhase)
     {
         myFrame = myframe;
+        ogrePanel = ogpnl;
         weaponList = list;
         unitNameLabel = label;
         unitStatLabel = statsLabel;
@@ -124,12 +125,8 @@ public class OgreGame
         myFrame.setTitle("OGRE" + version);
         ratioLabel.setText("");
         
-        //Disable certain functions until a gameState has been loaded
-        attackButton.setEnabled(false);
-        advancePhaseButton.setEnabled(false);
-        undoButton.setEnabled(false);
-        
-        
+        loadGameState(null);
+           
     }
     
     
@@ -291,7 +288,7 @@ public class OgreGame
         else if (thisUnit.unitType == UnitType.Ogre)
         {
             currentTarget = thisUnit;
-            Ogre thisOgre = (Ogre)thisUnit;
+            OgreUnit thisOgre = (OgreUnit)thisUnit;
 //            updateOgreWeaponSelectionList(thisOgre);
             
             //Set the default target weapon to the first entry on the list
@@ -352,7 +349,7 @@ public class OgreGame
             AOK = false;
         }
         
-        //Target is an Ogre, but no specific system is targetted: shouldn't happen
+        //Target is an OgreUnit, but no specific system is targetted: shouldn't happen
         else if ((currentTarget.unitType == UnitType.Ogre) && (targettedOgreWeapon == null))
         {
             reportArea.append("ERROR: (Attack): no Ogre sub-system is targetted\n");
@@ -416,7 +413,7 @@ public class OgreGame
                     defense = targettedOgreWeapon.defense;
             }
             
-            else //non-Ogre target
+            else //non-OgreUnit target
                 defense = currentTarget.defense;
             
             
@@ -446,7 +443,7 @@ public class OgreGame
                         
                 }
 
-                //Next, total up any Ogre weapons 
+                //Next, total up any OgreUnit weapons 
                 if (selectedOgreWeapons.isEmpty() == false)
                 {
                     Weapon currentWeapon;
@@ -548,7 +545,7 @@ public class OgreGame
                 
                 if (!result.equals("ERR"))
                 {
-                    //Non-Ogre Unit: 
+                    //Non-OgreUnit Unit: 
                     if (currentTarget.unitType != UnitType.Ogre)
                     {
                         resultText = currentTarget.takeDamage(result);
@@ -984,7 +981,7 @@ public class OgreGame
     
     //UPDATE UNIT READOUTS
     //Called (mostly) during NON-COMBAT
-    //Non-Ogre units: change the labels to reflect unit stats and ownership
+    //Non-OgreUnit units: change the labels to reflect unit stats and ownership
     //Ogre units have their weapons populate the weaponList
     public void updateUnitReadouts(Unit thisUnit)
     {
@@ -995,7 +992,7 @@ public class OgreGame
             //OGRE routine
             if (thisUnit.unitType == UnitType.Ogre)
             {
-                Ogre thisOgre = (Ogre)thisUnit;
+                OgreUnit thisOgre = (OgreUnit)thisUnit;
                 currentOgre = thisOgre;
                 
                 if (currentPlayer.units.contains(thisOgre))
@@ -1019,7 +1016,7 @@ public class OgreGame
                     index++;
                 }
             }
-            //All other non-Ogre units
+            //All other non-OgreUnit units
             else
             {
                 weaponList.removeAll();
@@ -1051,10 +1048,10 @@ public class OgreGame
     }
     
     //UPDATE OGRE WEAPON SELECTION LIST
-    //Displays an Ogre's arsenal for COMBAT
-    //If the Ogre is friendly, display its arsenal and allow multiple selections to be made.
+    //Displays an OgreUnit's arsenal for COMBAT
+    //If the OgreUnit is friendly, display its arsenal and allow multiple selections to be made.
     //If the ogre is an enemy, only allow a single system to be selected.
-    public void updateOgreWeaponSelectionList(Ogre thisOgre)
+    public void updateOgreWeaponSelectionList(OgreUnit thisOgre)
     {
         if (thisOgre == null)
         {
@@ -1302,13 +1299,9 @@ public class OgreGame
     {
         boolean success = false;
         
-
         // Generate a journal of events
         String gameEventJournal;
         
-        
-
-
         //The initial load state is null. Fresh start.
         if (loadState == null)
         {
@@ -1322,6 +1315,11 @@ public class OgreGame
             allUnits = null;
             
             currentGameState = null;
+            
+            //Disable certain functions until a gameState has been loaded
+            attackButton.setEnabled(false);
+            advancePhaseButton.setEnabled(false);
+            undoButton.setEnabled(false);
             
             if (ogrePanel != null)
             {

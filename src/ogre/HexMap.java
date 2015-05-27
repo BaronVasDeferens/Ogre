@@ -459,7 +459,7 @@ public class HexMap implements Serializable
                     if ((ignoreRidges == false) && ((center.sharesRidgeWithThisHex(thisHex)) && (!doneThese.contains(thisHex))))
                         ignoreThese.add(thisHex);
                     //Contains an enemy Unit
-                    //TODO: add this here. What do we need? An Ogre will be able to RAM...
+                    //TODO: add this here. What do we need? An OgreUnit will be able to RAM...
                     
                     if (!ignoreThese.contains(thisHex))
                     {
@@ -560,7 +560,7 @@ public class HexMap implements Serializable
 
                 if (thisHex.occupyingUnit.unitType == UnitType.Ogre)
                 {
-                    Ogre thisOgre = (Ogre)thisHex.occupyingUnit;
+                    OgreUnit thisOgre = (OgreUnit)thisHex.occupyingUnit;
                     
                     if ((weaponIter.hasNext()) && (adjacentHexes.size() <= 1))
                     {

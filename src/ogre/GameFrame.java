@@ -1,33 +1,41 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package ogre;
 
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
-import static ogre.MyGamesFrame.gameMaster;
 
-/**
- *
- * @author Skot
- */
+
 public class GameFrame extends javax.swing.JFrame {
 
     
-    static OgreGame ogreGame;
+    public static OgreGame ogreGame = null;
     /**
      * Creates new form GameFrame
      */
+
+    
     public GameFrame() {
         initComponents();
-        ogreGame = new OgreGame(ogrePanel1);
-        ogreGame.attachComponents(this, WeaponSystemsList, selectedUnitLabel, unitStatLabel, phaseLabel, 
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+    
+        
+    public GameFrame(OgreGame ogrGm) {
+        ogreGame = ogrGm;
+        initComponents();
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+    
+    public void connectToGameBrain(OgreGame ogrGm)
+    {
+        ogreGame = ogrGm;
+        ogreGame.attachComponents(this, ogrePanel1, WeaponSystemsList, selectedUnitLabel, unitStatLabel, phaseLabel, 
                 upperCurrentTargetLabel, currentTargetLabel, attackButton, reportArea, ratioLabel, undoButton, advancePhaseButton);
         
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        System.out.println("got here...");
+        
+        //this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     /**
@@ -47,9 +55,9 @@ public class GameFrame extends javax.swing.JFrame {
         WeaponSystemsList = new java.awt.List();
         selectedUnitLabel = new java.awt.Label();
         unitStatLabel = new java.awt.Label();
-        phaseLabel = new java.awt.Label();
         attackButton = new javax.swing.JButton();
         currentTargetLabel = new java.awt.Label();
+        phaseLabel = new java.awt.Label();
         outputArea = new javax.swing.JScrollPane();
         reportArea = new javax.swing.JTextArea();
         ratioLabel = new java.awt.Label();
@@ -118,9 +126,6 @@ public class GameFrame extends javax.swing.JFrame {
 
         unitStatLabel.setText("null");
 
-        phaseLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        phaseLabel.setText("no game loaded");
-
         attackButton.setText("ATTACK");
         attackButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -130,6 +135,9 @@ public class GameFrame extends javax.swing.JFrame {
 
         currentTargetLabel.setMaximumSize(new java.awt.Dimension(38, 20));
         currentTargetLabel.setText("currentTarget");
+
+        phaseLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        phaseLabel.setText("no game loaded");
 
         reportArea.setEditable(false);
         reportArea.setColumns(20);
@@ -289,7 +297,7 @@ public class GameFrame extends javax.swing.JFrame {
         //If multi-select is on, we're USING weapons
         //If multi-select is off, we're TARGETTING weapons
         
-        //We are going to assume that the only way to access an Ogre is by having it be the last
+        //We are going to assume that the only way to access an OgreUnit is by having it be the last
         //unit in hexMap.selectedHexes
         if (ogreGame.hexMap.selectedHexes.isEmpty() == true)
         {
@@ -339,7 +347,7 @@ public class GameFrame extends javax.swing.JFrame {
                     ogreGame.ogrePanel.hexMapRenderer.updateMapImage();
                 }
             }
-            //currentPlayer is TARGETTING an enemy Ogre's weapon
+            //currentPlayer is TARGETTING an enemy OgreUnit's weapon
             else
             {
                 if (ogreGame.currentOgre != null)
@@ -459,9 +467,7 @@ public class GameFrame extends javax.swing.JFrame {
         
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -485,17 +491,16 @@ public class GameFrame extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(GameFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
         
-        
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GameFrame().setVisible(true);
-    
-            }
-        });
+//
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new GameFrame().setVisible(true);
+//
+//            }
+//        });
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem LogInMenuItem;

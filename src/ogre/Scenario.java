@@ -72,7 +72,7 @@ public class Scenario implements Serializable
         {
             //TEST (0)
             //Player One: defender
-            //Player Two: Ogre, attacker
+            //Player Two: OgreUnit, attacker
             case Test:
             default:
                 
@@ -163,7 +163,7 @@ public class Scenario implements Serializable
                 player1.units.add(maker);
              
                 //Add player two's single ogre unit
-                maker = new Ogre(3);
+                maker = new OgreUnit(3);
                 maker.setLocation(19,7);
                 player2.units.add(maker);
                 
