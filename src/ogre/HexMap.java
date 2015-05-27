@@ -36,7 +36,7 @@ public class HexMap implements Serializable
     LinkedList<Polygon> polyList;
     LinkedList<Hex> selectedHexes;
     LinkedList<Hex> adjacentHexes;
-    
+    LinkedList<Hex> highlightedHexes;
  
     int beginDrawingFromX, beginDrawingFromY;
 
@@ -47,17 +47,20 @@ public class HexMap implements Serializable
         rows = rws;
         cols = cls;
         
-        hexList = new LinkedList();
+        hexList = new <Hex>LinkedList();
         hexList.clear();
         
-        polyList = new LinkedList();
+        polyList = new <Polygon>LinkedList();
         polyList.clear();
         
-        selectedHexes = new LinkedList();
+        selectedHexes = new <Hex>LinkedList();
         selectedHexes.clear();
         
-        adjacentHexes = new LinkedList();
+        adjacentHexes = new <Hex>LinkedList();
         adjacentHexes.clear();
+        
+        highlightedHexes = new <Hex>LinkedList();
+        highlightedHexes.clear();
         
         hexArray = new Hex[rows][cols];
         for (int i = 0; i < rows; i++)
@@ -239,9 +242,20 @@ public class HexMap implements Serializable
         {
             selectedHexes.add(thisOne);
             thisOne.select();
-            //updateMapImage();
         }
-
+    }
+    
+    // Select Unoccupied Hex
+    // For temporarily highlighting a hex
+    public void highlightHex(Hex thisOne) {
+        if (thisOne != null)
+        {
+            highlightedHexes.add(thisOne);
+        }
+    }
+    
+    public void removeHighlights() {
+        highlightedHexes.clear();
     }
     
     public void deselect(Hex thisOne)

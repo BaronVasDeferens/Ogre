@@ -69,7 +69,9 @@ public class NewGameManager
             newGameState = new GameState(userCredentials.player, opponent, chosenSecanrio, myMaster.HEX_ROWS, myMaster.HEX_COLS, myMaster.hexSide);
             
             GameStateUploadManager gameUploader = new GameStateUploadManager(myMaster.server, myMaster.port, userCredentials);
-            gameUploader.uploadGameState(newGameState); 
+            
+            // Temporarily disable game saving
+            //gameUploader.uploadGameState(newGameState); 
         }
         
         else

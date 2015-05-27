@@ -382,6 +382,12 @@ public class HexMapRenderer
                         newMapGraphics.setColor(Color.RED);
                         newMapGraphics.fillPolygon(p);
                     }
+                    
+                    // paint magenta on highlighted hexes
+                    if (hexMap.highlightedHexes.contains(hexMap.hexArray[i][j])) {
+                        newMapGraphics.setColor(Color.MAGENTA);
+                        newMapGraphics.fillPolygon(p);
+                    }
 
                     //Draw Units (if any)
                     if (hexMap.hexArray[i][j].isOccupied())

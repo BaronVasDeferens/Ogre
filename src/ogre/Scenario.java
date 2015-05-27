@@ -167,6 +167,16 @@ public class Scenario implements Serializable
                 maker.setLocation(19,7);
                 player2.units.add(maker);
                 
+                // A few additional units for testing the AI
+                maker = new MissileTank();
+                maker.setLocation(18,5);
+                player2.units.add(maker);
+                
+                maker = new HeavyTank();
+                maker.setLocation(18,9);
+                player2.units.add(maker);
+                
+                
                 player1VictoryCondition = VictoryCondition.None;
                 
                 player2.flipAllUnitImages();

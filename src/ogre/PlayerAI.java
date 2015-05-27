@@ -5,12 +5,14 @@
  */
 package ogre;
 
+import java.util.Iterator;
+
 /**
  *
  * @author skot
  */
 public class PlayerAI extends Player {
-    
+     
     PlayerAI(String name) { super(name); }
     
     public void act(OgreGame gameMaster, GameState gameState) {
@@ -35,17 +37,23 @@ public class PlayerAI extends Player {
     
     private void move(OgreGame gameMaster, GameState gameState) {
         
-        // make a dumb move for now
+        // Makes each unit perform a move
         
-        // Find a valid, unmoved unit
-        Unit currentUnit = gameState.currentPlayer.units.peekFirst();
+        // Iterate across all units under AI control
+        Iterator allUnits = gameState.currentPlayer.units.iterator();
+        Unit currentUnit;
         Hex currentHex = null;
+        Hex targetHex = null;
+        MoveEvent me;
+        java.util.Random rando = new java.util.Random();
         
-        if (currentUnit == null)
-            System.out.println("no unit to select...");
-        else {
-            // select the hex the current unit is in, all hexes within range, update readouts, and sit
-            //currentHex = gameMaster.ogrePanel.hexMapRenderer.getHexFromCoords( currentUnit.xLocation, currentUnit.yLocation);
+        // Announce the move:
+        gameMaster.reportArea.append(gameState.currentPlayer.name + " is MOVING...\n");
+        
+        while (allUnits.hasNext()) {
+            
+            // select the hex the current unit is in, all hexes within movement range, update readouts
+            currentUnit = (Unit)allUnits.next();
             currentHex = gameMaster.hexMap.hexArray[currentUnit.yLocation][currentUnit.xLocation];
             
             if (currentHex == null)
@@ -54,51 +62,54 @@ public class PlayerAI extends Player {
             else {
                 gameMaster.hexMap.deselectAllSelectedHexes();
                 gameMaster.hexMap.adjacentHexes.clear();
+                
+                // Center on the active unit
+                //TODO: center code
+                
                 gameMaster.hexMap.select(currentHex);
                 gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex,currentHex.getUnit().movement,false,false, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                 gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
                 gameMaster.updateUnitReadouts(currentUnit);
                 
-                try {
-                    Thread.sleep(2000);
-                }
-                catch (Exception e) {
+                delay(2000);
                     
-                }
-                
-                // attempt to move to a hex
-                //public MoveEvent(String typ, Unit agt, Hex src, Hex dest, int phase, String msg, boolean undo)
-    
-                MoveEvent me;
-                Hex targetHex;
-                //gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getAdjacentHexes(currentHex));
                 gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex, currentUnit.movement, false, true, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                 
+                // Obtain a random hex within currentUnit's movement range
+                targetHex = gameMaster.hexMap.adjacentHexes.get(rando.nextInt(gameMaster.hexMap.adjacentHexes.size()));
                 
-                targetHex = gameMaster.hexMap.adjacentHexes.peekFirst();
-                
-                if (targetHex == null) {
-                    gameMaster.hexMap.deselectAllSelectedHexes();
-                    gameMaster.hexMap.adjacentHexes.clear();
+                // If the hex is valid, try making a move
+                if (targetHex != null) {
+                    
+                    // Highlight the target hex...
+                    gameMaster.hexMap.highlightHex(targetHex);
                     gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
-                    return;
-                }    
-                
-                targetHex = gameMaster.hexMap.adjacentHexes.poll();
-                me = new MoveEvent("MOVE", currentUnit, currentHex, targetHex, gameMaster.gamePhase, "", false);
-                
-                while ((gameMaster.move(me) == false) && (targetHex != null)) {
-                    targetHex = gameMaster.hexMap.adjacentHexes.poll();
-                    me = new MoveEvent("MOVE", currentUnit, currentHex, targetHex, gameMaster.gamePhase, "", false);     
+                    delay(500);
+                    
+                    me = new MoveEvent("MOVE", currentUnit, currentHex, targetHex, gameMaster.gamePhase, "", false);
+
+                    // Upon a successful move, report it
+                    if (gameMaster.move(me)) {
+                        gameMaster.reportArea.append(me.message + "\n");
+                    }
+
                 }
+                
+                
                 gameMaster.hexMap.deselectAllSelectedHexes();
+                gameMaster.hexMap.removeHighlights();
                 gameMaster.hexMap.adjacentHexes.clear();
                 gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
-                
-            
+
+                currentHex = null;
+                targetHex = null;
+                delay(1000);
             }
-        
+            
         }
+        
+        gameMaster.reportArea.append(gameState.currentPlayer.name + "...MOVE finished.\n");
+        
     }
     
     private void shoot(OgreGame gameMaster, GameState gameState) {
@@ -114,5 +125,10 @@ public class PlayerAI extends Player {
         gameMaster.hexMap.deselectAllSelectedHexes();
         gameMaster.hexMap.adjacentHexes.clear();
         gameMaster.updateUnitReadouts(null);
+    }
+    
+    private void delay(int millis) {
+        try { Thread.sleep(millis); }
+        catch (Exception e) { }
     }
 }
