@@ -62,7 +62,7 @@ public class OgreGame
     public final int VIEW_WINDOW_WIDTH = 800;
     public final int VIEW_WINDOW_HEIGHT = 600;
     
-    Player playerOne, playerTwo, currentPlayer;
+    Player playerOne, playerTwo, currentPlayer, passivePlayer = null;
     
     boolean gameOver = false;
     
@@ -76,6 +76,8 @@ public class OgreGame
     OgreUnit currentOgre = null;
     
     int gameRound = 1;
+    
+    PhaseType phaseType = PhaseType.SETUP;
     
     int gamePhase = 10;
     /*
@@ -767,6 +769,9 @@ public class OgreGame
     22      Player 2 SHOOT
     23      Player 2 SECOND MOVE
     */
+    
+    public enum PhaseType { SETUP, MOVE, SHOOT, SECONDMOVE }
+    
     public void advanceGamePhase()
     {
         if (currentGameState != null)
@@ -792,9 +797,11 @@ public class OgreGame
                     break;
                 //Pre-game setup -> P1 Setup
                 case 1:
+                    phaseType = PhaseType.SETUP;
                     phaseLabel.setText("Phase: SETUP (" + playerOne.name + ")");
                     break;
                 case 2:
+                    phaseType = PhaseType.SETUP;
                     phaseLabel.setText("Phase: SETUP (" + playerTwo.name + ")");
                     break;
                 case 3:
@@ -803,6 +810,7 @@ public class OgreGame
                 case 10:
                     gamePhase = 11;
                 case 11:
+                    phaseType = PhaseType.MOVE;
                     reportArea.append("Round " + gameRound);
                     reportArea.append(": " + currentPlayer.name + "'s turn\n");
 
@@ -816,10 +824,17 @@ public class OgreGame
                     upperCurrentTargetLabel.setText("");
                     currentTargetLabel.setText("");
                     ratioLabel.setText("");
+                    
+                    if (currentPlayer instanceof PlayerAI) {
+                        PlayerAI ai = (PlayerAI)currentPlayer;
+                        ai.act(this, currentGameState);
+                    }
+                    
                     break;
 
                 //Player 1 SHOOT
                 case 12:
+                    phaseType = PhaseType.SHOOT;
                     phaseLabel.setText("Phase: SHOOT (" + currentPlayer.name + ")");
 
                     undoButton.setEnabled(false);
@@ -833,6 +848,7 @@ public class OgreGame
 
                 //player 1 second move
                 case 13:
+                    phaseType = PhaseType.SECONDMOVE;
                     phaseLabel.setText("Phase: 2nd MOVE (" + currentPlayer.name + ")");
 
                     playerOne.readyForSecondMove();
@@ -863,12 +879,17 @@ public class OgreGame
                     marker = new GameEvent("BEGINTURN",currentGameState.turnNumber, msg, false);
                     currentGameState.eventQueue.add(marker);
 
-                    switchCurrentPlayer();
-                    gameRound++;
+                    gamePhase = 10;
+                    
+                    //switchCurrentPlayer();
+                    //gameRound++;
 
                     
                     //Upload changes to gameState
                     //TOD: find a way to guarantee that moves made will be committed automatically
+                    
+                    /*
+                    
                     uploader = new GameStateUploadManager(server, port, activePlayerCredentials);
                     currentGameState.gamePhase = 10;
                     currentGameState.turnNumber = gameRound;
@@ -888,7 +909,7 @@ public class OgreGame
                     //Clear the board
                     loadGameState(null);
                     ogrePanel.gameOver = true;
-                    
+                    */
                     break;
                     /*
                     gamePhase = 21;
@@ -974,11 +995,13 @@ public class OgreGame
         if (currentPlayer == playerOne)
         {
             currentPlayer = playerTwo;
+            passivePlayer = playerOne;
             currentGameState.currentPlayer = playerTwo;
         }    
         else
         {
             currentPlayer = playerOne;
+            passivePlayer = playerTwo;
             currentGameState.currentPlayer = playerOne;
         }    
         
@@ -1372,6 +1395,10 @@ public class OgreGame
             playerTwo = loadState.playerTwo;
             
             currentPlayer = loadState.currentPlayer;
+            if (currentPlayer == playerOne)
+                passivePlayer = playerTwo;
+            else
+                passivePlayer = playerOne;
 
             currentOgre = null;
             targettedOgreWeapon = null;

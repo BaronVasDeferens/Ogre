@@ -106,8 +106,6 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     public void setMaster(OgreGame msr)
     {
         gameMaster = msr;
-
-        
         startGame();
     }
     
@@ -610,17 +608,17 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                             if (thisHex.occupyingUnit.unitType == UnitType.Ogre)
                                             {
                                                 OgreUnit tempOgre = (OgreUnit)thisHex.occupyingUnit;
-                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement(),false,true));
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,tempOgre.getCurrentMovement(),false,true,hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                                             }
                                             //Infantry, like Ogres, ignore ridges
                                             else if (thisHex.occupyingUnit.unitType == UnitType.Infantry)
                                             {
-                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement,false,true));
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement,false,true,hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                                             }
                                             
                                             else 
                                             {
-                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement,false,false));
+                                                hexMap.adjacentHexes.addAll(hexMap.getHexesWithinRange(thisHex,thisHex.getUnit().movement,false,false,hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                                             }
                                         }
                                             
@@ -889,7 +887,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     {
                                         hexMap.select(thisHex);
                                         gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
-                                        hexMap.adjacentHexes = hexMap.getHexesWithinRange(thisHex, thisHex.occupyingUnit.movementPostShooting,false,false);
+                                        hexMap.adjacentHexes = hexMap.getHexesWithinRange(thisHex, thisHex.occupyingUnit.movementPostShooting,false,false,gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer));
                                         hexMapRenderer.updateMapImage();
                                     }
                                 }
@@ -972,6 +970,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         }
     }
     
-    
+    public void centerOnUnit(Unit centerOnMe) {
+        
+    }
     
 }

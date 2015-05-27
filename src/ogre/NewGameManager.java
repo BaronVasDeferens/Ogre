@@ -45,21 +45,28 @@ public class NewGameManager
         Scenario newScenario = null;
         java.util.Iterator iter = userCredentials.registeredPlayers.iterator();
         
-        //get the opponent reference
-        while (iter.hasNext())
-        {
-            thisPlayer = (Player)iter.next();
-            
-            if (thisPlayer.name.equals(opponentName))
+        // Create an AI game or vs remote player
+        if (opponentName.equals("Ogre AI"))
+            opponent = new PlayerAI("Ogre AI");
+        
+        else {
+        
+            //get the opponent reference
+            while (iter.hasNext())
             {
-                opponent = thisPlayer;
+                thisPlayer = (Player)iter.next();
+
+                if (thisPlayer.name.equals(opponentName))
+                {
+                    opponent = thisPlayer;
+                }
             }
         }
         
         //Final check: if all is ready, create a new gameState and upload it to the server
         if (opponent != null)
         {
-            newGameState = new GameState(userCredentials.player, opponent, ScenarioType.Test, myMaster.HEX_ROWS, myMaster.HEX_COLS, myMaster.hexSide);
+            newGameState = new GameState(userCredentials.player, opponent, chosenSecanrio, myMaster.HEX_ROWS, myMaster.HEX_COLS, myMaster.hexSide);
             
             GameStateUploadManager gameUploader = new GameStateUploadManager(myMaster.server, myMaster.port, userCredentials);
             gameUploader.uploadGameState(newGameState); 

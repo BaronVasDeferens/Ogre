@@ -53,9 +53,9 @@ class MoveEvent extends GameEvent
         destination = null; 
     }
     
-    public MoveEvent(String tp, Unit agt, Hex src, Hex dest, int phase, String msg, boolean undo)
+    public MoveEvent(String typ, Unit agt, Hex src, Hex dest, int phase, String msg, boolean undo)
     {
-        type = tp;
+        type = typ;
         agent = agt;
         source = src;
         destination = dest;
@@ -66,7 +66,7 @@ class MoveEvent extends GameEvent
         
         // Create a journal of the action (eg "Missile tanks moves from X to Y") 
         String eventDescription = agt.unitName;
-        eventDescription += " " + tp + "S  ";
+        eventDescription += " " + typ + "S  ";
         eventDescription += "[" + src.getCol() + "," + src.getRow() +"] to [" + dest.getCol() + "," + dest.getRow() + "]";
         message = eventDescription;       
     }

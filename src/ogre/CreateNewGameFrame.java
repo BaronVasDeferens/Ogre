@@ -41,7 +41,7 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
        //Create an array to populate the list
         DefaultListModel listModel = new DefaultListModel();
         
-        Player [] playerArray = new Player[credentials.registeredPlayers.size()];
+        Player [] playerArray = new Player[credentials.registeredPlayers.size() + 1];
         
         Iterator iter = credentials.registeredPlayers.iterator();
         Player plyr;
@@ -55,6 +55,9 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
             listModel.add(index, plyr.name);
             index++;
         }
+        
+        listModel.add(index, new PlayerAI("Ogre AI").name);
+        
               
         OpponentList.setModel(listModel);
         OpponentList.setSelectedIndex(0);

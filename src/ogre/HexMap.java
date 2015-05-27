@@ -233,6 +233,8 @@ public class HexMap implements Serializable
     
     public void select(Hex thisOne)
     {
+        if (this == null) { return; }
+        
         if (thisOne.isOccupied())
         {
             selectedHexes.add(thisOne);
@@ -337,7 +339,7 @@ public class HexMap implements Serializable
     //If the ignoreCrater flag is set to false, then craters are considered obstructions
     //Likewise, if ignoreRidges is set to false, hexes which share a ridge will be obstructions
     //Relies upon the recursive version of the function of the same name (below)
-    public LinkedList<Hex> getHexesWithinRange(Hex fromHere, int distance, boolean ignoreCrater, boolean ignoreRidges)
+    public LinkedList<Hex> getHexesWithinRange(Hex fromHere, int distance, boolean ignoreCrater, boolean ignoreRidges, LinkedList<Hex> obstructedHexes)
     {
         //NOTE: the use of sets here was CRUCIAL to solving this problem.
         //A set, as you know, may not contain duplicates. Duplicate entries caused all manner of grief
@@ -365,9 +367,9 @@ public class HexMap implements Serializable
             //add all the concentric rings
             if ((ignoreCrater == true) && (ignoreRidges == true))
             {
-                   tempAdjacents.addAll(getAdjacentHexes(fromHere));
-                   returnList.addAll(tempAdjacents);
-                   doneThese.add(fromHere);
+               tempAdjacents.addAll(getAdjacentHexes(fromHere));
+               returnList.addAll(tempAdjacents);
+               doneThese.add(fromHere);
                 
                 for (int i = 0; i < distance-1; i++)
                 {
@@ -397,7 +399,7 @@ public class HexMap implements Serializable
                 
                 //NOTE: strangely, casting the Sets to LinkedLists does not affect their "one instance per list" behavior.
                 //(Hex center, LinkedList<Hex> doneThese, LinkedList<Hex> ignoreThese, LinkedList<Hex> returnList)
-                returnList.addAll(getHexesWithinRange(fromHere, convertToHexLinkedList(doneThese), convertToHexLinkedList(ignoreThese), ignoreRidges));
+                returnList.addAll(getHexesWithinRange(fromHere, convertToHexLinkedList(doneThese), convertToHexLinkedList(ignoreThese), ignoreRidges, obstructedHexes));
                 ignoreThese.clear();
                 
                 //NOTE: the ignoreList is cleared at the end of each "ring's" examination;
@@ -412,16 +414,23 @@ public class HexMap implements Serializable
                      while (iter.hasNext())
                      {
                          thisHex = (Hex)iter.next();
-                         tempAdjacents.addAll(getHexesWithinRange(thisHex, convertToHexLinkedList(doneThese), convertToHexLinkedList(ignoreThese), ignoreRidges));
+                         tempAdjacents.addAll(getHexesWithinRange(thisHex, convertToHexLinkedList(doneThese), convertToHexLinkedList(ignoreThese), ignoreRidges, obstructedHexes));
                      }
+                     
+                     if (obstructedHexes != null)
+                        tempAdjacents.removeAll(obstructedHexes);
                      
                      returnList.addAll(tempAdjacents);
                      tempAdjacents.clear();
                      ignoreThese.clear();
                 }
-                
-                
+
             }
+        }
+        
+        // Finally, weed out the enemy-occupied hexes
+        if (obstructedHexes != null) {
+            returnList.removeAll(obstructedHexes);
         }
         
         return (convertToHexLinkedList(returnList));
@@ -433,7 +442,7 @@ public class HexMap implements Serializable
     //then that hex is inaccessibe from the center hex and is "skipped" for a round of examinations.
     //That hex may be accessible from another neighbor hex, however, and if it can be found in the list of accessible
     //neighbors then it is removed from the skip list at the end.
-    public LinkedList<Hex> getHexesWithinRange(Hex center, LinkedList<Hex> doneThese, LinkedList<Hex> ignoreThese, boolean ignoreRidges)
+    public LinkedList<Hex> getHexesWithinRange(Hex center, LinkedList<Hex> doneThese, LinkedList<Hex> ignoreThese, boolean ignoreRidges, LinkedList<Hex> obstructedHexes)
     {
         
         LinkedList<Hex> returnList = new LinkedList();
@@ -460,6 +469,8 @@ public class HexMap implements Serializable
                         ignoreThese.add(thisHex);
                     //Contains an enemy Unit
                     //TODO: add this here. What do we need? An OgreUnit will be able to RAM...
+                    if (obstructedHexes.contains(thisHex))
+                        ignoreThese.add(thisHex);
                     
                     if (!ignoreThese.contains(thisHex))
                     {
@@ -529,7 +540,7 @@ public class HexMap implements Serializable
            //Get a single zone of fire from the friendly unit...
            if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
            {
-                adjacentHexes.addAll(getHexesWithinRange(thisHex, thisHex.occupyingUnit.unitWeapon.range,true,true));
+                adjacentHexes.addAll(getHexesWithinRange(thisHex, thisHex.occupyingUnit.unitWeapon.range,true,true, null));
            }
        }
        
@@ -539,7 +550,7 @@ public class HexMap implements Serializable
            //...and get the "intersection" between the first unit's zone and the rest of the frinedly units' zones
            if ((currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.unitWeapon != null))
            {
-                adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisHex.occupyingUnit.unitWeapon.range, true, true));
+                adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisHex.occupyingUnit.unitWeapon.range, true, true, null));
            }
        }
        
@@ -565,7 +576,7 @@ public class HexMap implements Serializable
                     if ((weaponIter.hasNext()) && (adjacentHexes.size() <= 1))
                     {
                         thisWeapon = (Weapon)weaponIter.next();
-                        adjacentHexes.addAll(getHexesWithinRange(thisHex, thisWeapon.range, true,true));
+                        adjacentHexes.addAll(getHexesWithinRange(thisHex, thisWeapon.range, true,true, null));
                     }
                     
                     while (weaponIter.hasNext())
@@ -574,7 +585,7 @@ public class HexMap implements Serializable
                         
                         if (thisOgre.getWeapons().contains(thisWeapon))
                         {
-                            adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisWeapon.range, true,true));
+                            adjacentHexes.retainAll(getHexesWithinRange(thisHex,thisWeapon.range, true,true, null));
                         }
                     }
                 }
@@ -601,6 +612,20 @@ public class HexMap implements Serializable
         }
         
         return (returnList);
+    }
+    
+        public LinkedList<Hex> getOccupiedHexes(Player player) {
+            Iterator iter = player.units.iterator();
+            Unit currentUnit;
+            LinkedList returnList = new <Hex>LinkedList();
+            returnList.clear();
+
+            while (iter.hasNext()){
+                currentUnit = (Unit)iter.next();
+                returnList.add(hexArray[currentUnit.yLocation][currentUnit.xLocation]);
+            }
+            
+            return returnList;
     }
     
 }
