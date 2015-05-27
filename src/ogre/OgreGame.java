@@ -740,6 +740,15 @@ public class OgreGame
     }
     
     
+    // Trigger AI Player
+    // Begins to the process of considering and executing AI player moves, attacks, etc
+    // Also handles enabling/disabling UI elements (off during AI turns, etc)
+    // 
+    
+    public void triggerAIPlayer() { 
+    
+    }
+    
     //ADVANCE GAME PHASE
     //Allows the UI to advance the game phase
      /*
