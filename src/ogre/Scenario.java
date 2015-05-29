@@ -98,9 +98,9 @@ public class Scenario implements Serializable
                 player1.units.add(maker);
 
                 //1 missile tank
-                primaryTarget = new MissileTank();
-                primaryTarget.setLocation(11,9);
-                player1.units.add(primaryTarget);
+                maker = new MissileTank();
+                maker.setLocation(11,9);
+                player1.units.add(maker);
                 
                 //2 howitzers
                 maker = new Howitzer();
@@ -159,9 +159,9 @@ public class Scenario implements Serializable
                 player1.units.add(maker);
                 
                 //1 command post
-                maker = new CommandPost();
-                maker.setLocation(1,2);
-                player1.units.add(maker);
+                primaryTarget = new CommandPost();
+                primaryTarget.setLocation(1,2);
+                player1.units.add(primaryTarget);
              
                 //Add player two's single ogre unit
                 maker = new OgreUnit(3);

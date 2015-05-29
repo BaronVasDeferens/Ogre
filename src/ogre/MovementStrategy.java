@@ -50,11 +50,15 @@ public class MovementStrategy {
             LinkedList<Hex> shortList = new <Hex>LinkedList();
             LinkedList<Hex> beenThere = new <Hex>LinkedList();
             beenThere.clear();
+            Random rando = new Random();
             
             for (int i = 0; i < thisUnit.movement; i++) {
                 
-                adjHexes = hexMap.getAdjacentHexes(candidateHex);
-                //adjHexes.removeAll(beenThere);
+                adjHexes = hexMap.getHexesWithinRange(candidateHex,
+                        1, false, 
+                        ((thisUnit.unitType==UnitType.Ogre) || (thisUnit.unitType == UnitType.Infantry)),
+                        gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer));
+               
                 
                 // Can we reach our destination? If we can move into it, do so
                 if ((adjHexes.contains(destination)) && (destination.isOccupied() == false)) {
@@ -72,6 +76,7 @@ public class MovementStrategy {
                 else {
                     // Perform a rough estimate of which way to travel
                     shortList.clear();
+                    beenThere.clear();
                     Iterator adjIter = adjHexes.iterator();
                     Hex tmpHex;
                     int adjCol, adjRow;
@@ -83,49 +88,51 @@ public class MovementStrategy {
                         
                         adjRow = candidateHex.getRow() - destination.getRow();
                         adjCol = candidateHex.getCol() - destination.getCol();
-                        
-                        // System.out.println("adjCol: " + adjCol + ", adjRow: " + adjRow);
-                        
-                        // Same row or same column? Add it to the short list 
-//                        if ((tmpHex.getRow() == adjRow) || (tmpHex.getCol() == adjCol)) {
-//                            shortList.add(tmpHex);
-//                            System.out.println("Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
-//                        }
-                        
+                                                
                         if ((adjCol > 0) && (tmpHex.getCol() < candidateHex.getCol())) {
-                            shortList.add(tmpHex);
-                            System.out.println("1 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
+                            if (tmpHex.isOccupied() == false) {
+                                shortList.add(tmpHex);
+                                System.out.println("1 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
+                            }
                         }
                         
                         else if ((adjCol < 0) && (tmpHex.getCol() > candidateHex.getCol())) {
-                            shortList.add(tmpHex);
-                            System.out.println("2 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
+                            if (tmpHex.isOccupied() == false) {
+                                shortList.add(tmpHex);
+                                System.out.println("2 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
+                            }
                         }
                         
                         if ((adjRow > 0) && (tmpHex.getRow() < candidateHex.getRow())) {
-                            shortList.add(tmpHex);
-                            System.out.println("3 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
+                            if (tmpHex.isOccupied() == false) {
+                                shortList.add(tmpHex);
+                                System.out.println("3 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
+                            }
+                            
                         }
                         
                         else if ((adjRow < 0) && (tmpHex.getRow() > candidateHex.getRow())) {
-                            shortList.add(tmpHex);
-                            System.out.println("4 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
+                            if (tmpHex.isOccupied() == false) {
+                                shortList.add(tmpHex);
+                                System.out.println("4 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
+                            }
                         }
                     }
                     
                     // If there was anything in the short list, choose a random hex and use it for next iteration
                     if (shortList.size() > 0) {
-                        Random rando = new Random();
                         candidateHex = shortList.get(rando.nextInt(shortList.size()));
-                        
-                        while ((beenThere.contains(candidateHex)) && (shortList.size() > 0) && (candidateHex.isOccupied())) {
-                            candidateHex = shortList.poll();
-                            System.out.println("************* no good....");
-                        }
                         
                         System.out.println(thisUnit.unitName + " (" + i + ") CHOSE " + thisUnit.xLocation + "," + thisUnit.yLocation + " -> " + candidateHex.getCol() + "," + candidateHex.getRow());
                         beenThere.addAll(adjHexes);
+                        beenThere.add(candidateHex);
                         shortList.clear();
+                    }
+                    
+                    // If all else fails, chose a random hex to move to...
+                    else {
+                        System.out.println("Choosing a rando from adjacents...");
+                        candidateHex = adjHexes.get(rando.nextInt(adjHexes.size()));
                     }
                     
                 }

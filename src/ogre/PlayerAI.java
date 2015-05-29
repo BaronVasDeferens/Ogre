@@ -56,34 +56,37 @@ public class PlayerAI extends Player {
             currentUnit = (Unit)allUnits.next();
             currentHex = gameMaster.hexMap.hexArray[currentUnit.yLocation][currentUnit.xLocation];
             
-            // If this is an AI unit, ask for it's move:
+            // Perform any AI moves
             if (currentUnit.moveStrategy != null) {
+                
                 me = currentUnit.moveStrategy.getMoveEvent(gameMaster, gameState);
                 
-                gameMaster.hexMap.select(currentHex);
-                gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex,currentHex.getUnit().movement,false,false, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
-                gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
-                gameMaster.updateUnitReadouts(currentUnit);
-                
-                delay(1000);
-                
-                gameMaster.hexMap.highlightHex(me.destination);
-                gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
-                delay(500);
-                
-                 // Upon a successful move, report it
-                if (gameMaster.move(me)) {
-                    gameMaster.reportArea.append(me.message + "\n");
-                }
-                
-                gameMaster.hexMap.deselectAllSelectedHexes();
-                gameMaster.hexMap.removeHighlights();
-                gameMaster.hexMap.adjacentHexes.clear();
-                gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
+                if (me != null) {
+                    gameMaster.hexMap.select(currentHex);
+                    gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex,currentHex.getUnit().movement,false,false, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
+                    gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
+                    gameMaster.updateUnitReadouts(currentUnit);
 
-                currentHex = null;
-                targetHex = null;
-                delay(1000);
+                    delay(1000);
+
+                    gameMaster.hexMap.highlightHex(me.destination);
+                    gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
+                    delay(500);
+
+                     // Upon a successful move, report it
+                    if (gameMaster.move(me)) {
+                        gameMaster.reportArea.append(me.message + "\n");
+                    }
+
+                    gameMaster.hexMap.deselectAllSelectedHexes();
+                    gameMaster.hexMap.removeHighlights();
+                    gameMaster.hexMap.adjacentHexes.clear();
+                    gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
+
+                    currentHex = null;
+                    targetHex = null;
+                    delay(1000);
+                }
             }
             
             // Only make a move if the current unit isn't disabled and has somewhere to go
