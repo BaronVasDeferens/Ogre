@@ -72,6 +72,13 @@ class MoveEvent extends GameEvent
     }
 }
 
+class RamEvent extends GameEvent {
+    
+    RamEvent() {
+        super();
+    }
+}
+
 class AttackEvent extends GameEvent
 {
     Player attacker;

@@ -56,26 +56,53 @@ public class PlayerAI extends Player {
             currentUnit = (Unit)allUnits.next();
             currentHex = gameMaster.hexMap.hexArray[currentUnit.yLocation][currentUnit.xLocation];
             
-            if (currentHex == null)
-                System.out.println("no hex found for current unit");
-            
-            else {
-                gameMaster.hexMap.deselectAllSelectedHexes();
-                gameMaster.hexMap.adjacentHexes.clear();
-                
-                // Center on the active unit
-                //TODO: center code
+            // If this is an AI unit, ask for it's move:
+            if (currentUnit.moveStrategy != null) {
+                me = currentUnit.moveStrategy.getMoveEvent(gameMaster, gameState);
                 
                 gameMaster.hexMap.select(currentHex);
                 gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex,currentHex.getUnit().movement,false,false, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                 gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
                 gameMaster.updateUnitReadouts(currentUnit);
                 
-                delay(2000);
-                    
-                gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex, currentUnit.movement, false, true, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
+                delay(1000);
                 
+                gameMaster.hexMap.highlightHex(me.destination);
+                gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
+                delay(500);
+                
+                 // Upon a successful move, report it
+                if (gameMaster.move(me)) {
+                    gameMaster.reportArea.append(me.message + "\n");
+                }
+                
+                gameMaster.hexMap.deselectAllSelectedHexes();
+                gameMaster.hexMap.removeHighlights();
+                gameMaster.hexMap.adjacentHexes.clear();
+                gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
+
+                currentHex = null;
+                targetHex = null;
+                delay(1000);
+            }
+            
+            // Only make a move if the current unit isn't disabled and has somewhere to go
+            else if((currentHex != null) && (currentUnit.disabled == false)) {
+                gameMaster.hexMap.deselectAllSelectedHexes();
+                gameMaster.hexMap.adjacentHexes.clear();
+                
+                // Center on the active unit
+                //TODO: center on currentUnit
+                
+                gameMaster.hexMap.select(currentHex);
+                gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex,currentHex.getUnit().movement,false,false, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
+                gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
+                gameMaster.updateUnitReadouts(currentUnit);
+                
+                delay(1000);
+                   
                 // Obtain a random hex within currentUnit's movement range
+                gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex, currentUnit.movement, false, true, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                 targetHex = gameMaster.hexMap.adjacentHexes.get(rando.nextInt(gameMaster.hexMap.adjacentHexes.size()));
                 
                 // If the hex is valid, try making a move
@@ -108,7 +135,7 @@ public class PlayerAI extends Player {
             
         }
         
-        gameMaster.reportArea.append(gameState.currentPlayer.name + "...MOVE finished.\n");
+        gameMaster.reportArea.append(gameState.currentPlayer.name + "MOVE finished.\n");
         
     }
     

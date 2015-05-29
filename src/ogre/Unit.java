@@ -30,6 +30,8 @@ public class Unit implements Serializable
 
     Player controllingPlayer;
     
+    MovementStrategy moveStrategy = null;
+    
     //Awareness of board position
     int xLocation;
     int yLocation;
@@ -70,6 +72,8 @@ public class Unit implements Serializable
         xLocation = x;
         yLocation = y;
     }
+    
+    public void setMoveStrategy(MovementStrategy move) { moveStrategy = move; }
     
     
     //TAKE DAMAGE

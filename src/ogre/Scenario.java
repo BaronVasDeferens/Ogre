@@ -77,6 +77,7 @@ public class Scenario implements Serializable
             default:
                 
                 //TEST SCENARIO
+                Unit primaryTarget;
                 Unit maker;
                 
                 //4 heavy tanks
@@ -97,9 +98,9 @@ public class Scenario implements Serializable
                 player1.units.add(maker);
 
                 //1 missile tank
-                maker = new MissileTank();
-                maker.setLocation(11,9);
-                player1.units.add(maker);
+                primaryTarget = new MissileTank();
+                primaryTarget.setLocation(11,9);
+                player1.units.add(primaryTarget);
                 
                 //2 howitzers
                 maker = new Howitzer();
@@ -165,15 +166,18 @@ public class Scenario implements Serializable
                 //Add player two's single ogre unit
                 maker = new OgreUnit(3);
                 maker.setLocation(19,7);
+                maker.setMoveStrategy(new MovementStrategy(maker,primaryTarget, null));
                 player2.units.add(maker);
                 
                 // A few additional units for testing the AI
                 maker = new MissileTank();
                 maker.setLocation(18,5);
+                maker.setMoveStrategy(new MovementStrategy(maker,primaryTarget, null));
                 player2.units.add(maker);
                 
                 maker = new HeavyTank();
                 maker.setLocation(18,9);
+                maker.setMoveStrategy(new MovementStrategy(maker,primaryTarget, null));
                 player2.units.add(maker);
                 
                 
