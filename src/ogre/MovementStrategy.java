@@ -90,21 +90,21 @@ public class MovementStrategy {
                         adjCol = candidateHex.getCol() - destination.getCol();
                                                 
                         if ((adjCol > 0) && (tmpHex.getCol() < candidateHex.getCol())) {
-                            if (tmpHex.isOccupied() == false) {
+                            if ((tmpHex.isOccupied() == false) && (shortList.contains(tmpHex) == false)) {
                                 shortList.add(tmpHex);
                                 System.out.println("1 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
                             }
                         }
                         
                         else if ((adjCol < 0) && (tmpHex.getCol() > candidateHex.getCol())) {
-                            if (tmpHex.isOccupied() == false) {
+                            if ((tmpHex.isOccupied() == false) && (shortList.contains(tmpHex) == false)) {
                                 shortList.add(tmpHex);
                                 System.out.println("2 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
                             }
                         }
                         
                         if ((adjRow > 0) && (tmpHex.getRow() < candidateHex.getRow())) {
-                            if (tmpHex.isOccupied() == false) {
+                            if ((tmpHex.isOccupied() == false) && (shortList.contains(tmpHex) == false)) {
                                 shortList.add(tmpHex);
                                 System.out.println("3 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
                             }
@@ -112,11 +112,12 @@ public class MovementStrategy {
                         }
                         
                         else if ((adjRow < 0) && (tmpHex.getRow() > candidateHex.getRow())) {
-                            if (tmpHex.isOccupied() == false) {
+                            if ((tmpHex.isOccupied() == false) && (shortList.contains(tmpHex) == false)) {
                                 shortList.add(tmpHex);
                                 System.out.println("4 Considering " + tmpHex.getCol() + "," + tmpHex.getRow());
                             }
                         }
+                        
                     }
                     
                     // If there was anything in the short list, choose a random hex and use it for next iteration
