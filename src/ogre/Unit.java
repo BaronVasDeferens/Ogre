@@ -31,6 +31,7 @@ public class Unit implements Serializable
     Player controllingPlayer;
     
     MovementStrategy moveStrategy = null;
+    AttackStrategy attackStrategy = null;
     
     //Awareness of board position
     int xLocation;

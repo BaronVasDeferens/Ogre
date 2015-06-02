@@ -26,6 +26,8 @@ public class PlayerAI extends Player {
                 endTurn(gameMaster, gameState);
                 break;
             case SHOOT:
+                shoot(gameMaster, gameState);
+                endTurn(gameMaster, gameState);
                 break;
             case SECONDMOVE:
                 break;
@@ -144,6 +146,14 @@ public class PlayerAI extends Player {
     
     private void shoot(OgreGame gameMaster, GameState gameState) {
         
+       // Iterate across all units under AI control
+        Iterator allUnits = gameState.currentPlayer.units.iterator();
+        Unit currentUnit;
+        
+        while (allUnits.hasNext()) {
+            currentUnit = (Unit)allUnits.next();
+            currentUnit.attackStrategy.makeAttack(currentUnit, gameMaster, gameState);
+        }
     }
     
     private void secondMove(OgreGame gameMaster, GameState gameState) {

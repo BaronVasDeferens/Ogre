@@ -844,6 +844,12 @@ public class OgreGame
                     weaponList.setEnabled(true);
                     upperCurrentTargetLabel.setText("Current Target:");
                     currentTargetLabel.setText("NONE");
+                    
+                    if (currentPlayer instanceof PlayerAI) {
+                        PlayerAI ai = (PlayerAI)currentPlayer;
+                        ai.act(this, currentGameState);
+                    }
+                    
                     break;
 
                 //player 1 second move
