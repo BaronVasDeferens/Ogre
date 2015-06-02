@@ -5,7 +5,7 @@
             <url>src/ogre/PlayerAI.java</url>
             <bookmark id="1">
                 <name/>
-                <line>69</line>
+                <line>100</line>
                 <key/>
             </bookmark>
         </file>
@@ -14,11 +14,7 @@
         <group>
             <file>file:/home/skot/NetBeansProjects/OgreAIproject/src/ogre/PlayerAI.java</file>
             <file>file:/home/skot/NetBeansProjects/OgreAIproject/src/ogre/HexMapRenderer.java</file>
-            <file>file:/home/skot/NetBeansProjects/OgreAIproject/src/ogre/Scenario.java</file>
-            <file>file:/home/skot/NetBeansProjects/OgreAIproject/src/ogre/Weapon.java</file>
-            <file>file:/home/skot/NetBeansProjects/OgreAIproject/src/ogre/HexMap.java</file>
-            <file>file:/home/skot/NetBeansProjects/OgreAIproject/src/ogre/OgreGame.java</file>
-            <file>file:/home/skot/NetBeansProjects/OgreAIproject/src/ogre/NewGameManager.java</file>
+            <file>file:/home/skot/NetBeansProjects/OgreAIproject/src/ogre/MovementStrategy.java</file>
         </group>
     </open-files>
 </project-private>

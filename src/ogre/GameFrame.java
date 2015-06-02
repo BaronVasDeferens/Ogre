@@ -33,7 +33,7 @@ public class GameFrame extends javax.swing.JFrame {
         ogreGame.attachComponents(this, ogrePanel1, WeaponSystemsList, selectedUnitLabel, unitStatLabel, phaseLabel, 
                 upperCurrentTargetLabel, currentTargetLabel, attackButton, reportArea, ratioLabel, undoButton, advancePhaseButton);
         
-        System.out.println("got here...");
+        
         
         //this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }

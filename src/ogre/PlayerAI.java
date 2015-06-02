@@ -104,7 +104,7 @@ public class PlayerAI extends Player {
                 
                 delay(1000);
                    
-                // Obtain a random hex within currentUnit's movement range
+                // Show all viable moves
                 gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex, currentUnit.movement, false, true, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                 targetHex = gameMaster.hexMap.adjacentHexes.get(rando.nextInt(gameMaster.hexMap.adjacentHexes.size()));
                 
@@ -138,7 +138,7 @@ public class PlayerAI extends Player {
             
         }
         
-        gameMaster.reportArea.append(gameState.currentPlayer.name + "MOVE finished.\n");
+        gameMaster.reportArea.append(gameState.currentPlayer.name + " MOVE finished.\n");
         
     }
     

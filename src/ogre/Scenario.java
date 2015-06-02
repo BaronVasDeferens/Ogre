@@ -159,17 +159,18 @@ public class Scenario implements Serializable
                 player1.units.add(maker);
                 
                 //1 command post
-                primaryTarget = new CommandPost();
+                primaryTarget = new MobileCommandPost();
                 primaryTarget.setLocation(1,2);
                 player1.units.add(primaryTarget);
              
                 //Add player two's single ogre unit
                 maker = new OgreUnit(3);
-                maker.setLocation(19,7);
-                maker.setMoveStrategy(new MovementStrategy(maker,primaryTarget, null));
+                maker.setLocation(20,13);
+                maker.setMoveStrategy(new DirectRoute(maker,primaryTarget, null));
                 player2.units.add(maker);
                 
                 // A few additional units for testing the AI
+                /*
                 maker = new MissileTank();
                 maker.setLocation(18,5);
                 maker.setMoveStrategy(new MovementStrategy(maker,primaryTarget, null));
@@ -179,7 +180,7 @@ public class Scenario implements Serializable
                 maker.setLocation(18,9);
                 maker.setMoveStrategy(new MovementStrategy(maker,primaryTarget, null));
                 player2.units.add(maker);
-                
+                */
                 
                 player1VictoryCondition = VictoryCondition.None;
                 

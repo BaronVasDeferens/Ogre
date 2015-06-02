@@ -208,7 +208,7 @@ public class HexMapRenderer
                 {
 
                     newMapGraphics.setColor(Color.GRAY);
-                    newMapGraphics.setColor(Color.BLUE);
+                    //newMapGraphics.setColor(Color.BLUE);
                     newMapGraphics.drawString("[" + (j) + "," + (i) + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
                 }
 
@@ -428,7 +428,7 @@ public class HexMapRenderer
                 if (showCoordinates)
                 {
                     newMapGraphics.setColor(Color.GRAY);
-                    newMapGraphics.setColor(Color.BLUE);
+                    //newMapGraphics.setColor(Color.BLUE);
                     newMapGraphics.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x+(int)(hexagonSize/2)), y +(int)(hexagonSize/2));
                 }
                 
