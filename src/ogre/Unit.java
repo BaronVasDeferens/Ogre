@@ -76,6 +76,7 @@ public class Unit implements Serializable
     
     public void setMoveStrategy(MovementStrategy move) { moveStrategy = move; }
     
+    public void setAttackStrategy(AttackStrategy attackStrat) { attackStrategy = attackStrat; }
     
     //TAKE DAMAGE
     //Self-manages based on the result of the damage taken.

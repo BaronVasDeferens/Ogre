@@ -13,7 +13,9 @@ import java.util.Iterator;
  */
 public class PlayerAI extends Player {
      
-    PlayerAI(String name) { super(name); }
+    PlayerAI(String name) {
+        super(name); 
+    }
     
     public void act(OgreGame gameMaster, GameState gameState) {
         
@@ -150,9 +152,17 @@ public class PlayerAI extends Player {
         Iterator allUnits = gameState.currentPlayer.units.iterator();
         Unit currentUnit;
         
+        
+        // Announce it:
+        gameMaster.reportArea.append(gameState.currentPlayer + " ATTACKS!\n");
+        
+        
         while (allUnits.hasNext()) {
+            
             currentUnit = (Unit)allUnits.next();
-            currentUnit.attackStrategy.makeAttack(currentUnit, gameMaster, gameState);
+            
+            if (currentUnit.attackStrategy != null)
+                currentUnit.attackStrategy.makeAttack( gameMaster, gameState);
         }
     }
     
