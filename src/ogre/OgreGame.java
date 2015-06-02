@@ -15,7 +15,7 @@ import javax.swing.*;
 public class OgreGame
 {
     //Version info:
-    String version = "1.0.0.3 AI v0.0.0";
+    String version = "1.0.0.3 AI v0.5.0";
 
     /*
     VERSION:
@@ -30,6 +30,11 @@ public class OgreGame
     1.0.0.3     (11-11-14) tweaked output to mail script in ServerThreadHandler
 
                 Replaced a HeavyTank with a MissileTank
+    
+    1.0.0.3 AI 0.5.0:
+                Implemented a direct-movement AI and a fire-at-everything firing AI
+                Yes, it's dumb, but it works. Not especially enjoyable without a smarter
+                opponent, sound, and effects.
     */
     
     //Network resources
