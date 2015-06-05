@@ -12,7 +12,7 @@
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="jMenu1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="File"/>
+            <Property name="text" type="java.lang.String" value="Connect"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="LogInMenuItem">
@@ -29,6 +29,27 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="registerMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Quit"/>
+                <Property name="actionCommand" type="java.lang.String" value="menuItemQuit"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenu4">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Games"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="createNewGameMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Create New Game"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createNewGameMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="ViewMyGamesMenuItem">
@@ -49,18 +70,11 @@
             <MenuItem class="javax.swing.JMenuItem" name="optionHexNumbers">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Show hex coordinates"/>
+                <Property name="opaque" type="boolean" value="true"/>
                 <Property name="selected" type="boolean" value="true"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="optionHexNumbersActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="createNewGameMenuItem">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Create New Game"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createNewGameMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

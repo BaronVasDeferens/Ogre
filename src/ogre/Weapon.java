@@ -163,6 +163,7 @@ class Treads extends Weapon
                 remainingTreads -= str;
                 lostTreads = maxTreads - remainingTreads;
                 report = (str + " tread units are DESTROYED!");
+                disabled = isDisabled();
                 break;
             default:
                 break;                
@@ -175,8 +176,11 @@ class Treads extends Weapon
     //IS DISABLED
     public boolean isDisabled()
     {
-        if (remainingTreads <= 0)
+        if (remainingTreads <= 0) {
+            weaponName = "TREADS DESTROYED!";
+            remainingTreads = 0;
             return true;
+        }
         else
             return false;
     }

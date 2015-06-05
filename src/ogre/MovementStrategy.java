@@ -77,7 +77,7 @@ class DirectRoute extends MovementStrategy {
                     }
                 }
                 
-                 hexMap.highlightHex(bestHex);
+                 //hexMap.highlightHex(bestHex);
                  move = new MoveEvent("MOVE", thisUnit, from, bestHex, gameMaster.gamePhase, "", false);
                  
             }

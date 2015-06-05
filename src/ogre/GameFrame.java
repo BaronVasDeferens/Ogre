@@ -65,10 +65,12 @@ public class GameFrame extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         LogInMenuItem = new javax.swing.JMenuItem();
         registerMenuItem = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        createNewGameMenuItem = new javax.swing.JMenuItem();
         ViewMyGamesMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         optionHexNumbers = new javax.swing.JMenuItem();
-        createNewGameMenuItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -149,7 +151,7 @@ public class GameFrame extends javax.swing.JFrame {
         ratioLabel.setAlignment(java.awt.Label.RIGHT);
         ratioLabel.setText("ratioLabel");
 
-        jMenu1.setText("File");
+        jMenu1.setText("Connect");
 
         LogInMenuItem.setText("Log In");
         LogInMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -167,26 +169,13 @@ public class GameFrame extends javax.swing.JFrame {
         });
         jMenu1.add(registerMenuItem);
 
-        ViewMyGamesMenuItem.setText("View My Games");
-        ViewMyGamesMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ViewMyGamesMenuItemActionPerformed(evt);
-            }
-        });
-        jMenu1.add(ViewMyGamesMenuItem);
+        jMenuItem2.setText("Quit");
+        jMenuItem2.setActionCommand("menuItemQuit");
+        jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Options");
-
-        optionHexNumbers.setText("Show hex coordinates");
-        optionHexNumbers.setSelected(true);
-        optionHexNumbers.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                optionHexNumbersActionPerformed(evt);
-            }
-        });
-        jMenu2.add(optionHexNumbers);
+        jMenu4.setText("Games");
 
         createNewGameMenuItem.setText("Create New Game");
         createNewGameMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -194,7 +183,29 @@ public class GameFrame extends javax.swing.JFrame {
                 createNewGameMenuItemActionPerformed(evt);
             }
         });
-        jMenu2.add(createNewGameMenuItem);
+        jMenu4.add(createNewGameMenuItem);
+
+        ViewMyGamesMenuItem.setText("View My Games");
+        ViewMyGamesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ViewMyGamesMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu4.add(ViewMyGamesMenuItem);
+
+        jMenuBar1.add(jMenu4);
+
+        jMenu2.setText("Options");
+
+        optionHexNumbers.setText("Show hex coordinates");
+        optionHexNumbers.setOpaque(true);
+        optionHexNumbers.setSelected(true);
+        optionHexNumbers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionHexNumbersActionPerformed(evt);
+            }
+        });
+        jMenu2.add(optionHexNumbers);
 
         jMenuBar1.add(jMenu2);
 
@@ -515,7 +526,9 @@ public class GameFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem2;
     public static ogre.OgrePanel ogrePanel1;
     private javax.swing.JMenuItem optionHexNumbers;
     public static javax.swing.JScrollPane outputArea;

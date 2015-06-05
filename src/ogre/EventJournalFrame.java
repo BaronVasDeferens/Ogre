@@ -32,6 +32,7 @@ public class EventJournalFrame extends javax.swing.JFrame {
         OKbutton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         textArea.setEditable(false);
         textArea.setColumns(20);

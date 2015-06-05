@@ -273,7 +273,10 @@ public class OgreUnit extends ogre.Unit
                returnList.add("-- WEAPON DESTROYED -- ");
         }
         
-        returnList.add(new String("Treads: " + treads.remainingTreads + "/" + treads.maxTreads));
+        if (treads.disabled)
+            returnList.add(new String("TREADS DESTROYED!"));
+        else
+            returnList.add(new String("Treads: " + treads.remainingTreads + "/" + treads.maxTreads));
         
         return returnList;
     }

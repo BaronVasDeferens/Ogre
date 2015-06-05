@@ -552,8 +552,8 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                             else
                             {
                                 //MOVE
-                                //Clicking a hex within movement range to move it there IF it hasn't already moved.
-                                if ((hexMap.adjacentHexes.contains(thisHex)) && (hexMap.selectedHexes.peek().getUnit().hasMoved == false))
+                                //Clicking a hex within movement range to move it there IF it hasn't already moved and is not disabled
+                                if ((hexMap.adjacentHexes.contains(thisHex)) && (hexMap.selectedHexes.peek().getUnit().hasMoved == false) && (hexMap.selectedHexes.peek().getUnit().disabled == false))
                                 {
                                         //A selected hex may not necessarily belong to the current player. Check for ownership
                                         if (gameMaster.currentPlayer.units.contains(hexMap.selectedHexes.peek().getUnit()))
@@ -600,7 +600,7 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                     if (thisHex.isOccupied())
                                     {
                                         
-                                        if (gameMaster.currentPlayer.units.contains(thisHex.occupyingUnit))
+                                        if ((gameMaster.currentPlayer.units.contains(thisHex.occupyingUnit)) && (thisHex.occupyingUnit.disabled == false))
                                         {    
                                             hexMap.select(thisHex);
                                             gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
@@ -880,10 +880,10 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 }
                                   
                                 //...is a valid post-shooting mover...
-                                else if (thisHex.occupyingUnit.movementPostShooting > 0)
+                                else if ((thisHex.occupyingUnit.movementPostShooting > 0) && (thisHex.occupyingUnit.disabled == false))
                                 {
-                                    //...which hasn't moved...
-                                    if ((thisHex.occupyingUnit.hasMoved == false) && (hexMap.selectedHexes.isEmpty()))
+                                    //...which hasn't moved AND belongs to the current player
+                                    if (((thisHex.occupyingUnit.hasMoved == false) && (hexMap.selectedHexes.isEmpty()) && (gameMaster.currentPlayer.units.contains(thisHex.occupyingUnit))))
                                     {
                                         hexMap.select(thisHex);
                                         gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
@@ -895,7 +895,6 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
                                 else
                                 {
                                     gameMaster.updateUnitReadouts(thisHex.occupyingUnit);
-                         
                                 }
                             }
                         

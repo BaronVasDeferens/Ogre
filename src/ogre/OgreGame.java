@@ -165,7 +165,13 @@ public class OgreGame
         else if (e.destination.isCrater)
             return false;
         
-        //TODO: test for unit ownership        
+        //Test for unit ownership
+        if (currentPlayer.units.contains(e.agent) == false)
+            return false;
+        
+        // Can it even move?
+        if ((e.agent.disabled) || (e.agent.movement == 0))
+            return false;
         
         //COLLAPSE INFANTRY
         if((e.agent.unitType == UnitType.Infantry) && (e.destination.isOccupied()))
@@ -365,7 +371,10 @@ public class OgreGame
         
         //Check to see if AP weapons are being used against hard targets
         //Infantry and CommandPosts are considered "soft targets" and are vulnerale to AP attack
-        if (((currentTarget.unitType != UnitType.Infantry) && (currentTarget.unitType != UnitType.CommandPost)) && (!selectedOgreWeapons.isEmpty()))
+        if (((currentTarget.unitType != UnitType.Infantry)
+                && (currentTarget.unitType != UnitType.CommandPost)
+                && (currentTarget.unitType != UnitType.MobileCommandPost)
+                && (!selectedOgreWeapons.isEmpty())))
         {
             iter = selectedOgreWeapons.iterator();
             Weapon thisWp;
@@ -816,8 +825,8 @@ public class OgreGame
                     gamePhase = 11;
                 case 11:
                     phaseType = PhaseType.MOVE;
-                    reportArea.append("Round " + gameRound);
-                    reportArea.append(": " + currentPlayer.name + "'s turn\n");
+                    reportArea.append("Turn " + gameRound + ": " + currentPlayer.name);
+                    //reportArea.append(": " + currentPlayer.name + "'s turn\n");
 
                     phaseLabel.setText("Phase: MOVE (" + currentPlayer.name + ")");
 
@@ -880,6 +889,8 @@ public class OgreGame
 
                     //Append a Turn End GameState....
                     //GameEvent(String tp, int phase, String msg, boolean undo)
+                    phaseType = PhaseType.SETUP;
+                    phaseLabel.setText("END OF TURN " + gameRound);
                     String msg = ">> " + currentGameState.currentPlayer.name + " ENDS TURN <<<";
                     GameEvent marker = new GameEvent("ENDTURN",currentGameState.turnNumber, msg, false);
                     currentGameState.eventQueue.add(marker);

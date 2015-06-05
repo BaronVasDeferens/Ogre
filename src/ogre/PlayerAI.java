@@ -71,7 +71,7 @@ public class PlayerAI extends Player {
                     gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
                     gameMaster.updateUnitReadouts(currentUnit);
 
-                    delay(1000);
+                    delay(500);
 
                     gameMaster.hexMap.highlightHex(me.destination);
                     gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
@@ -89,7 +89,7 @@ public class PlayerAI extends Player {
 
                     currentHex = null;
                     targetHex = null;
-                    delay(1000);
+                    delay(750);
                 }
             }
             
@@ -106,12 +106,12 @@ public class PlayerAI extends Player {
                 gameMaster.ogrePanel.hexMapRenderer.updateMapImage();
                 gameMaster.updateUnitReadouts(currentUnit);
                 
-                delay(1000);
+                
                    
                 // Show all viable moves
                 gameMaster.hexMap.adjacentHexes.addAll(gameMaster.hexMap.getHexesWithinRange(currentHex, currentUnit.movement, false, true, gameMaster.hexMap.getOccupiedHexes(gameMaster.passivePlayer)));
                 targetHex = gameMaster.hexMap.adjacentHexes.get(rando.nextInt(gameMaster.hexMap.adjacentHexes.size()));
-                
+                delay(500);
                 // If the hex is valid, try making a move
                 if (targetHex != null) {
                     
@@ -137,7 +137,7 @@ public class PlayerAI extends Player {
 
                 currentHex = null;
                 targetHex = null;
-                delay(1000);
+                delay(500);
             }
             
         }

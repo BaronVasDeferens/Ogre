@@ -63,9 +63,11 @@ class EverythingInSight extends AttackStrategy {
         LinkedList<Hex> enemyLocations = new <Hex>LinkedList();
         LinkedList<Unit> enemiesInRange = new <Unit>LinkedList();
         Random rando = new Random();
+        boolean OKtoFire = true;
         
         while (iter.hasNext()) {
             
+            OKtoFire = true;
             gm.currentTarget = null;
             gm.hexMap.adjacentHexes.clear();
             gm.hexMap.deselectAllSelectedHexes();
@@ -78,7 +80,7 @@ class EverythingInSight extends AttackStrategy {
                 gm.selectedOgreWeapons.add(currentWeapon);
             }
             // Sanity checks:
-            // Current weapon isn't treads, anti-infantry vs non-0infantry, etc
+            // Current weapon isn't treads, anti-infantry vs non-infantry, etc
             if ((currentWeapon.strength > 0) && (currentWeapon.disabled == false) && (currentWeapon.isDisabled() == false)) {
             
                 hexesWithinRange.clear();
@@ -106,6 +108,7 @@ class EverythingInSight extends AttackStrategy {
 
                     gm.updateUnitReadouts(thisHex.occupyingUnit);
 
+                    // Select a random target from within the range of this weapon
                     gm.currentTarget = enemyLocations.get(rando.nextInt(enemyLocations.size())).occupyingUnit;
                     
                     if (gm.currentTarget != null) {
@@ -117,8 +120,11 @@ class EverythingInSight extends AttackStrategy {
                             //gm.updateOgreWeaponSelectionList(gm.currentOgre);
                         }
                         
-                        else if (currentWeapon.softTargetsOnly && (gm.currentTarget.unitType != UnitType.Infantry)) {
-                            continue;
+                        if ((currentWeapon.softTargetsOnly == true) &&
+                                ((gm.currentTarget.unitType != UnitType.Infantry) || 
+                                (gm.currentTarget.unitType != UnitType.CommandPost) || 
+                                (gm.currentTarget.unitType != UnitType.MobileCommandPost))) {
+                            OKtoFire = false;
                         }
 
                         // If the selected target happens to be an Ogre, choose the first non-INOP weapon (for now)
@@ -126,18 +132,20 @@ class EverythingInSight extends AttackStrategy {
                             // TO DO
                         }
                         
-                        delay(1000);
-                        // Announce it:
-                        gm.reportArea.append(thisUnit.unitName + " attacks " + gm.currentTarget.unitName + "!\n");
-                        gm.reportArea.append("Firing " + currentWeapon.weaponName + "!\n");
+                        if (OKtoFire) {
+                            delay(500);
+                            // Announce it:
+                            gm.reportArea.append(thisUnit.unitName + " attacks " + gm.currentTarget.unitName + "!\n");
+                            gm.reportArea.append("Firing " + currentWeapon.weaponName + "!\n");
 
-                        gm.ogrePanel.hexMapRenderer.updateMapImage();
-                        delay(1000);
-                        gm.attack();
-                        gm.currentTarget = null;
-                        gm.hexMap.deselectAllSelectedHexes();
-                        gm.ogrePanel.hexMapRenderer.updateMapImage();
-                        delay(1000);
+                            gm.ogrePanel.hexMapRenderer.updateMapImage();
+                            delay(500);
+                            gm.attack();
+                            gm.currentTarget = null;
+                            gm.hexMap.deselectAllSelectedHexes();
+                            gm.ogrePanel.hexMapRenderer.updateMapImage();
+                            delay(500);
+                        }
                     }
                     
                     else {
