@@ -136,7 +136,7 @@ public class HexMap implements Serializable
         addRidge(4,14,2,5,13,5);
         addRidge(4,13,3,5,13,6);
         addRidge(5,12,4,5,13,1);
-        addRidge(6,13,2,2,12,5);
+        addRidge(1,12,2,2,12,5);
         addRidge(6,13,3,7,13,6);
         addRidge(6,15,3,7,15,6);
         addRidge(7,14,4,7,15,1);
