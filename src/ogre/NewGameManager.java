@@ -70,8 +70,9 @@ public class NewGameManager
             
             GameStateUploadManager gameUploader = new GameStateUploadManager(myMaster.server, myMaster.port, userCredentials);
             
-            // Temporarily disable game saving
+// Temporarily disable game saving
             //gameUploader.uploadGameState(newGameState); 
+            
         }
         
         else

@@ -1408,8 +1408,6 @@ public class OgreGame
                 gameEventJournal += aGameEvent.message + "\n";
             }
             
-
-
             hexMap = null;
             hexMap = loadState.hexMap;
 
@@ -1432,8 +1430,10 @@ public class OgreGame
 
             allUnits = loadState.scenario.allUnits;
 
+                        ogrePanel.setMaster(this);
             ogrePanel.setHexMap(hexMap);
-            ogrePanel.setMaster(this);
+
+            ogrePanel.begin();
             
             gameRound = loadState.turnNumber;
             gamePhase = loadState.gamePhase;

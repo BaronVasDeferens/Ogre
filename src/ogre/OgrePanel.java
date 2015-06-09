@@ -106,14 +106,13 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
     public void setMaster(OgreGame msr)
     {
         gameMaster = msr;
-        startGame();
     }
     
     public void setHexMap(HexMap hxmp)
     {
         hexMap = hxmp;
        
-        hexMapRenderer = new HexMapRenderer(hexMap);
+        hexMapRenderer = new HexMapRenderer(gameMaster, hexMap);
         hexMapRenderer.setMinimumMapSize(VIEW_WINDOW_WIDTH, VIEW_WINDOW_HEIGHT);
         hexMapRenderer.setHexSize(64);
         hexMapRenderer.setupMap();
@@ -121,6 +120,10 @@ public class OgrePanel extends javax.swing.JPanel implements Runnable, KeyListen
         if (hexMap != null)
             hexSide = hexMapRenderer.getHexSize();
 
+    }
+    
+    public void begin() {
+        startGame();
     }
     
     //*** ADD NOTIFY

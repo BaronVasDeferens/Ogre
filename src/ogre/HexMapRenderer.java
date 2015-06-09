@@ -19,6 +19,8 @@ import java.util.*;
 public class HexMapRenderer 
 {
     HexMap hexMap;
+    OgreGame gm;
+    GameState gameState;
     
     BufferedImage mapImage;
     BufferedImage offScreenDraw;
@@ -32,9 +34,10 @@ public class HexMapRenderer
     
     
     
-    HexMapRenderer(HexMap hxMap)
+    HexMapRenderer(OgreGame gm, HexMap hxMap)
     {
         hexMap = hxMap;
+        this.gm = gm;
         
         unitImages = new UnitImageLoader();
         mapImage = null;
@@ -95,7 +98,7 @@ public class HexMapRenderer
     //OriginX/Y are the coordinates from which drawing shall begin (the origin)
     public void setupMap()
     {
-
+        
         int rows = hexMap.rows;
         int cols = hexMap.cols;
         
@@ -185,8 +188,27 @@ public class HexMapRenderer
                         Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
                         imageSize = (int)(2 * (1.732 * Xoffset));
                         
-                        newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
-                        //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null); 
+                        //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
+                        
+                        // During the current player's turn, a small indicator should be used to show whether or not a unit
+                        // is eligable to move/fire during that phase.
+                        if (gm != null) {
+                            gameState = gm.currentGameState;
+                            if ((gameState.currentPlayer.units.contains(hexMap.hexArray[i][j].occupyingUnit)) 
+                                    && (hexMap.hexArray[i][j].occupyingUnit.disabled == false)
+                                    && (hexMap.hexArray[i][j].occupyingUnit.hasMoved == false)) {
+                                  newMapGraphics.setColor(Color.GREEN);
+
+                                switch (gm.phaseType) {
+                                    case MOVE:
+                                        newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
+                                        break;
+
+                                }
+                            }
+                        }
+                        
+                        newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null,null);
                     }
                
                }
@@ -317,6 +339,7 @@ public class HexMapRenderer
     //Updates the map image ONLY. Does not reconfigure polygon or hex lists
     public void updateMapImage()
     {                  
+        
         int rows = hexMap.rows;
         int cols = hexMap.cols;
         
@@ -408,8 +431,28 @@ public class HexMapRenderer
                         Yoffset = (int)(.66 * hexagonSize - (2 * hexagonSize)/5.464);
                         imageSize = (int)(2 * (1.732 * Xoffset));
                         
-                        newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
-                        //newMapGraphics.drawImage(unitImage, x+Xoffset, y+Yoffset, imageSize, imageSize, null);
+                        //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
+                        
+                        // During the current player's turn, a small indicator should be used to show whether or not a unit
+                        // is eligable to move/fire during that phase.
+                        if (gm != null) {
+                            gameState = gm.currentGameState;
+                            if ((gameState.currentPlayer.units.contains(hexMap.hexArray[i][j].occupyingUnit)) 
+                                    && (hexMap.hexArray[i][j].occupyingUnit.disabled == false)
+                                    && (hexMap.hexArray[i][j].occupyingUnit.hasMoved == false)) {
+                                  newMapGraphics.setColor(Color.GREEN);
+
+                                switch (gm.phaseType) {
+                                    case MOVE:
+                                        newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
+                                        break;
+
+                                }
+                            }
+                        }
+                        
+                        //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
+                        newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null ,null);
                     } 
                 }
 
