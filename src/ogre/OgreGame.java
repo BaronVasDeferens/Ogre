@@ -825,6 +825,8 @@ public class OgreGame
                     gamePhase = 11;
                 case 11:
                     phaseType = PhaseType.MOVE;
+                    ogrePanel.hexMapRenderer.updateMapImage();
+                    
                     reportArea.append("Turn " + gameRound + ": " + currentPlayer.name);
                     //reportArea.append(": " + currentPlayer.name + "'s turn\n");
 
@@ -839,6 +841,7 @@ public class OgreGame
                     currentTargetLabel.setText("");
                     ratioLabel.setText("");
                     
+                    // Move the AI (if any)
                     if (currentPlayer instanceof PlayerAI) {
                         PlayerAI ai = (PlayerAI)currentPlayer;
                         ai.act(this, currentGameState);
@@ -849,6 +852,8 @@ public class OgreGame
                 //Player 1 SHOOT
                 case 12:
                     phaseType = PhaseType.SHOOT;
+                    ogrePanel.hexMapRenderer.updateMapImage();
+                    
                     phaseLabel.setText("Phase: SHOOT (" + currentPlayer.name + ")");
 
                     undoButton.setEnabled(false);
@@ -869,6 +874,8 @@ public class OgreGame
                 //player 1 second move
                 case 13:
                     phaseType = PhaseType.SECONDMOVE;
+                    ogrePanel.hexMapRenderer.updateMapImage();
+                    
                     phaseLabel.setText("Phase: 2nd MOVE (" + currentPlayer.name + ")");
 
                     playerOne.readyForSecondMove();
@@ -886,7 +893,9 @@ public class OgreGame
                 //End of turn
                 //Commit the game state to the server here
                 case 14:
-
+                    
+                    ogrePanel.hexMapRenderer.updateMapImage();
+                    
                     //Append a Turn End GameState....
                     //GameEvent(String tp, int phase, String msg, boolean undo)
                     phaseType = PhaseType.SETUP;

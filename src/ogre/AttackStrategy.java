@@ -120,16 +120,47 @@ class EverythingInSight extends AttackStrategy {
                             //gm.updateOgreWeaponSelectionList(gm.currentOgre);
                         }
                         
-                        if ((currentWeapon.softTargetsOnly == true) &&
-                                ((gm.currentTarget.unitType != UnitType.Infantry) || 
-                                (gm.currentTarget.unitType != UnitType.CommandPost) || 
-                                (gm.currentTarget.unitType != UnitType.MobileCommandPost))) {
-                            OKtoFire = false;
+                        // "Soft Targets Only" weapons vs hard targets will need new targets
+                        if ((currentWeapon.softTargetsOnly == true) && (gm.currentTarget.isSoftTarget)){
+//                                ((gm.currentTarget.unitType != UnitType.Infantry) || 
+//                                (gm.currentTarget.unitType != UnitType.CommandPost) || 
+//                                (gm.currentTarget.unitType != UnitType.MobileCommandPost))) {
+                            
+                            // Clear current target
+                            gm.currentTarget = null;
+                            
+                            Iterator threatList = enemyLocations.iterator();
+                            Hex location;
+                            Unit possibleTarget;
+                            
+                            while ((threatList.hasNext()) && (gm.currentTarget == null)) {
+                                location = (Hex)threatList.next();
+                                possibleTarget = location.occupyingUnit;
+                                
+                                // IS it a soft target?
+                                if (possibleTarget.isSoftTarget) { 
+                                    
+                                    // Is it an infantry unit?    
+                                    if (possibleTarget instanceof Infantry) {
+                                            Infantry possibleInfantry = (Infantry)possibleTarget;
+                                            // Infantry units can be the target of a single APW per round 
+                                            if (possibleInfantry.targettedByAPthisRound == false) {
+                                                gm.currentTarget = possibleTarget;
+                                                possibleInfantry.targettedByAPthisRound = true;
+                                            }
+                                        }
+                                }
+                            }
+                            
+                            if (gm.currentTarget == null)
+                                OKtoFire = false;
                         }
 
                         // If the selected target happens to be an Ogre, choose the first non-INOP weapon (for now)
-                        if (gm.currentTarget instanceof OgreUnit) {
-                            // TO DO
+                        if (gm.currentTarget != null) {
+                            if (gm.currentTarget instanceof OgreUnit) {
+                                // TODO
+                            }
                         }
                         
                         if (OKtoFire) {
@@ -149,7 +180,8 @@ class EverythingInSight extends AttackStrategy {
                     }
                     
                     else {
-                        gm.currentTarget = null;
+                        // redundant
+                        //gm.currentTarget = null;
                         gm.hexMap.adjacentHexes.clear();
                         gm.hexMap.deselectAllSelectedHexes();
                         gm.ogrePanel.hexMapRenderer.updateMapImage();

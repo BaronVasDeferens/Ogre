@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.image.*;
 import java.util.*;
+import java.awt.*;
 
 
 /**
@@ -109,7 +110,11 @@ public class HexMapRenderer
         ridgeList.clear();
  
         offScreenDraw = createNewImage();
-        Graphics newMapGraphics = offScreenDraw.getGraphics();
+        //Graphics newMapGraphics = offScreenDraw.getGraphics();
+        
+        Graphics g = offScreenDraw.getGraphics();
+        Graphics2D newMapGraphics = (Graphics2D)g;
+        newMapGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
         //Clear background
         newMapGraphics.setColor(java.awt.Color.WHITE);
@@ -190,20 +195,40 @@ public class HexMapRenderer
                         
                         //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
                         
+                        // DRAW THE GREEN SQUARE
                         // During the current player's turn, a small indicator should be used to show whether or not a unit
                         // is eligable to move/fire during that phase.
                         if (gm != null) {
+                            
+                        
                             gameState = gm.currentGameState;
-                            if ((gameState.currentPlayer.units.contains(hexMap.hexArray[i][j].occupyingUnit)) 
-                                    && (hexMap.hexArray[i][j].occupyingUnit.disabled == false)
-                                    && (hexMap.hexArray[i][j].occupyingUnit.hasMoved == false)) {
-                                  newMapGraphics.setColor(Color.GREEN);
-
+                            
+                            Unit currentUnit = hexMap.hexArray[i][j].occupyingUnit;
+                            
+                            if ((gameState.currentPlayer.units.contains(currentUnit)) && (currentUnit.disabled == false)) {
+                             
                                 switch (gm.phaseType) {
+                                    // Units which have not yet moved and are not zero-movement units are highlighted witha green square
                                     case MOVE:
-                                        newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
+                                        if ((currentUnit.hasMoved == false) && (currentUnit.movement > 0)) {
+                                            newMapGraphics.setColor(Color.GREEN);
+                                            newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
+                                        }
                                         break;
-
+                                    // Non-Ogre units which have not yet discharged their weapons are highlighted with a red square
+                                    case SHOOT:
+                                        if ((currentUnit instanceof OgreUnit == false) && (currentUnit.unitWeapon.dischargedThisRound == false)) {
+                                            newMapGraphics.setColor(Color.RED);
+                                            newMapGraphics.fillRect(x + Xoffset + (int)(imageSize*.25), y+Yoffset + (int)(imageSize*.75), imageSize/4, imageSize/4);
+                                        }
+                                        break;
+                                    // GEVs are again highlighted with a green square
+                                    case SECONDMOVE:
+                                        if ((currentUnit instanceof GEV) && (currentUnit.hasMoved == false)) {
+                                            newMapGraphics.setColor(Color.GREEN);
+                                            newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
+                                        }
+                                    break;
                                 }
                             }
                         }
@@ -348,7 +373,10 @@ public class HexMapRenderer
        
         offScreenDraw = createNewImage();
         
-        Graphics newMapGraphics = offScreenDraw.getGraphics();
+        //Graphics newMapGraphics = offScreenDraw.getGraphics();
+        Graphics g = offScreenDraw.getGraphics();
+        Graphics2D newMapGraphics = (Graphics2D)g;
+        newMapGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
         //Clear background
         newMapGraphics.setColor(java.awt.Color.WHITE);
@@ -433,25 +461,43 @@ public class HexMapRenderer
                         
                         //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
                         
+                        // DRAW THE COLORED STATUS SQUARES
                         // During the current player's turn, a small indicator should be used to show whether or not a unit
-                        // is eligable to move/fire during that phase.
+                        // is eligable to move during that phase.
                         if (gm != null) {
+                            
                             gameState = gm.currentGameState;
-                            if ((gameState.currentPlayer.units.contains(hexMap.hexArray[i][j].occupyingUnit)) 
-                                    && (hexMap.hexArray[i][j].occupyingUnit.disabled == false)
-                                    && (hexMap.hexArray[i][j].occupyingUnit.hasMoved == false)) {
-                                  newMapGraphics.setColor(Color.GREEN);
-
+                            Unit currentUnit = hexMap.hexArray[i][j].occupyingUnit;
+                            
+                            if ((gameState.currentPlayer.units.contains(currentUnit)) && (currentUnit.disabled == false)) {
+                             
                                 switch (gm.phaseType) {
+                                    // Units which 
                                     case MOVE:
-                                        newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
+                                        if ((currentUnit.hasMoved == false) && (currentUnit.movement > 0)) {
+                                            newMapGraphics.setColor(Color.GREEN);
+                                            newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
+                                        }
                                         break;
-
+                                    case SHOOT:
+                                        if ((currentUnit instanceof OgreUnit == false) && (currentUnit.unitWeapon.dischargedThisRound == false)) {
+                                            newMapGraphics.setColor(Color.RED);
+                                            newMapGraphics.fillRect(x + Xoffset + (int)(imageSize*.25), y+Yoffset + (int)(imageSize*.75), imageSize/4, imageSize/4);
+                                        }
+                                        break;
+                                    // GEVs are again highlighted with a green square
+                                    case SECONDMOVE:
+                                        if ((currentUnit instanceof GEV) && (currentUnit.hasMoved == false)) {
+                                            newMapGraphics.setColor(Color.GREEN);
+                                            newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
+                                        }
+                                        break;
                                 }
                             }
                         }
                         
                         //newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, newMapGraphics.getColor(),null);
+                        //newMapGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
                         newMapGraphics.drawImage(unitImage,  x+Xoffset, y+Yoffset, imageSize, imageSize, null ,null);
                     } 
                 }

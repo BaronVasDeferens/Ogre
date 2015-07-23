@@ -42,6 +42,7 @@ public class Unit implements Serializable
     boolean disabled;
     int disabledTurns = 0;
     boolean isAlive;
+    boolean isSoftTarget;
     
     //Basic unit stats
     int defense;
@@ -65,6 +66,8 @@ public class Unit implements Serializable
         
         unitWeapon = null;
         movementPostShooting = 0;
+        
+        isSoftTarget = false;
     }
     
     //SET LOCATION (X,Y)
@@ -196,6 +199,7 @@ class CommandPost extends ogre.Unit
         
         movement = 0;
         defense = 1;
+        isSoftTarget = true;
         
         image = "command_post.png";
         imageAlternate = "command_post_b.png";
@@ -241,6 +245,7 @@ class MobileCommandPost extends ogre.Unit
         
         movement = 1;
         defense = 1;
+        isSoftTarget = true;
         
         image = "mobile_command_post.png";
         imageAlternate = "mobile_command_post_b.png";
@@ -321,15 +326,18 @@ class Howitzer extends ogre.Unit
 
 class Infantry extends ogre.Unit
 {
+    boolean targettedByAPthisRound;
     
     public Infantry(int def)
     {
         super();
         unitName = "Infantry";
         unitType = UnitType.Infantry;
+        targettedByAPthisRound = false;
         
         movement = 2;
         defense = def;
+        isSoftTarget = true;
         unitWeapon = new Weapon(def, 1, false, "anti-tank", 0);
         
         image = "infantry_" + def + ".png";
@@ -410,6 +418,14 @@ class Infantry extends ogre.Unit
         }
         
         return report;
+    }
+    
+    @Override
+    public void processEndOfTurn() {
+        
+        hasMoved = false;
+        targettedByAPthisRound = false;
+        
     }
 }
 
