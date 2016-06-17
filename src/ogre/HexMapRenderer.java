@@ -204,13 +204,13 @@ public class HexMapRenderer
                             gameState = gm.currentGameState;
                             
                             Unit currentUnit = hexMap.hexArray[i][j].occupyingUnit;
-                            
+                                                       
                             if ((gameState.currentPlayer.units.contains(currentUnit)) && (currentUnit.disabled == false)) {
                              
                                 switch (gm.phaseType) {
-                                    // Units which have not yet moved and are not zero-movement units are highlighted witha green square
+                                    // Units which have not yet moved and are not zero-movement units are highlighted with a green square
                                     case MOVE:
-                                        if ((currentUnit.hasMoved == false) && (currentUnit.movement > 0)) {
+                                        if ((currentUnit.hasMoved == false) && (currentUnit.movement > 0) && (currentUnit instanceof OgreUnit == false)) {
                                             newMapGraphics.setColor(Color.GREEN);
                                             newMapGraphics.fillRect(x+Xoffset+(int)(imageSize*.75), y+Yoffset, imageSize/4, imageSize/4);
                                         }
