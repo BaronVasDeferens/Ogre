@@ -62,7 +62,7 @@ public class OgreUnit extends ogre.Unit
                 maxMovement = 3;
                 movement = maxMovement;
                 
-                /*
+                
                 //ONE main battery
                 mainBattery.add(new Weapon(4,3,4,false, "Main Battery", 1));
                 
@@ -71,7 +71,7 @@ public class OgreUnit extends ogre.Unit
                 {
                     secondaryBattery.add(new Weapon(3,2,3,false,"Secondary Battery",i+2));
                 }
-                */
+                
                 
                 //EIGHT AP guns
                 for (int i = 0; i < 8; i++)
@@ -80,8 +80,8 @@ public class OgreUnit extends ogre.Unit
                 }
             
                 //TWO missiles (one use)
-                //missileBattery.add(new Weapon(6,5,3,false,"Missile",14,true));
-                //missileBattery.add(new Weapon(6,5,3,false,"Missile",15,true));
+                missileBattery.add(new Weapon(6,5,3,false,"Missile",14,true));
+                missileBattery.add(new Weapon(6,5,3,false,"Missile",15,true));
                 
                 //treadID = 16
                 treads = new Treads(45,15,16);

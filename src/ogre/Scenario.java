@@ -166,8 +166,8 @@ public class Scenario implements Serializable
                 //Add player two's single ogre unit
                 maker = new OgreUnit(3);
                 maker.setLocation(20,7);
-                maker.setMoveStrategy(new DirectRoute(maker,primaryTarget, null));
-                maker.setAttackStrategy(new EverythingInSight(maker));
+                //maker.setMoveStrategy(new DirectRoute(maker,primaryTarget, null));
+                //maker.setAttackStrategy(new EverythingInSight(maker));
                 player2.units.add(maker);
                 
                 // A few additional units for testing the AI

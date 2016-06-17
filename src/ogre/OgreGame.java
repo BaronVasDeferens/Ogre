@@ -918,14 +918,12 @@ public class OgreGame
                     
                     //Upload changes to gameState
                     //TOD: find a way to guarantee that moves made will be committed automatically
-                    
-                    /*
-                    
-                    uploader = new GameStateUploadManager(server, port, activePlayerCredentials);
+
                     currentGameState.gamePhase = 10;
                     currentGameState.turnNumber = gameRound;
                     currentGameState.isOpen = false;
                     
+                    uploader = new GameStateUploadManager(server, port, activePlayerCredentials);
                     uploader.uploadGameState(currentGameState);
 
                     
@@ -940,7 +938,7 @@ public class OgreGame
                     //Clear the board
                     loadGameState(null);
                     ogrePanel.gameOver = true;
-                    */
+                    
                     break;
                     /*
                     gamePhase = 21;

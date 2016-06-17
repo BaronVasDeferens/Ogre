@@ -16,7 +16,7 @@ import java.util.Iterator;
 public class Player implements Serializable
 {
     String name;
-    String password;        //TODO: fix this glaering security hole
+    String password;        //TODO: fix this glaring security hole
     String emailAddress;
     LinkedList<Unit> units;
     

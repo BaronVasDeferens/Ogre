@@ -91,7 +91,7 @@ public class ServerThread implements Runnable
                 }
                 catch (ClassNotFoundException | IOException e)
                 {
-                    //e.printStackTrace(System.out);
+                    System.out.println(e.toString());
                     active = false;
                     //System.out.println("ServerThread ERROR: problem reading object"); 
                 }
@@ -103,7 +103,7 @@ public class ServerThread implements Runnable
                 }
                 catch (IOException e)
                 {
-                    
+                    System.out.println(e.toString());
                 }
                 
                 //ERROR CHECKING

@@ -56,7 +56,7 @@ public class CreateNewGameFrame extends javax.swing.JFrame {
             index++;
         }
         
-        listModel.add(index, new PlayerAI("Ogre AI").name);
+        //listModel.add(index, new PlayerAI("Ogre AI").name);
         
               
         OpponentList.setModel(listModel);
