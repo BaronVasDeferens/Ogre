@@ -17,6 +17,7 @@ public class ServerThread implements Runnable
 {
     ServerThreadHandler master;
     Socket socket;
+    int id;
     
     Player player;
 
@@ -32,12 +33,13 @@ public class ServerThread implements Runnable
     //CONSTRUCTOR
     //Accepts a socket (a new connection to the client) and a rference to the
     //ServerThreadHandler (neeed to trigger message dispatch)
-    public ServerThread(Socket sckt, ServerThreadHandler mstr)
+    public ServerThread(int id, Socket sckt, ServerThreadHandler mstr)
     {
         socket = sckt;
         master = mstr;
         player = null;
-       
+        this.id = id;
+        
         t = new Thread(this);
     }
     
@@ -71,6 +73,8 @@ public class ServerThread implements Runnable
             catch (IOException e)
             {
                 System.out.println("ClientThread: error opening streams and sockets");
+                master.addLogEntry("ServerThread " + id + " FAILURE: socket/thread broken");
+                master.addLogEntry(e.toString());
                 active = false;
             }
         }
@@ -91,6 +95,9 @@ public class ServerThread implements Runnable
                 }
                 catch (ClassNotFoundException | IOException e)
                 {
+                    master.addLogEntry("Exeption ServerThread " + id + " readObject FAILURE");
+                    master.addLogEntry(e.toString());
+                    
                     System.out.println(e.toString());
                     active = false;
                     //System.out.println("ServerThread ERROR: problem reading object"); 
@@ -104,6 +111,8 @@ public class ServerThread implements Runnable
                 catch (IOException e)
                 {
                     System.out.println(e.toString());
+                    master.addLogEntry("Exception in ServerThread " + id + " FAILURE: no byte available from connection...");
+                    master.addLogEntry(e.toString());
                 }
                 
                 //ERROR CHECKING
@@ -118,6 +127,7 @@ public class ServerThread implements Runnable
                 {
                     //do nothing
                     System.out.println("Message was null...");
+                    master.addLogEntry("ServerThread " + id + " received NULL transportObject...");
 
                 }
                 
@@ -141,7 +151,6 @@ public class ServerThread implements Runnable
                             thisDate = Calendar.getInstance().getTime();
                             timeNow = df.format(thisDate);
                             System.out.println(timeNow + " " + player.name + " has registered.");
-                            
                             System.out.print("USERNAME: " + player.name);
                             System.out.print("\t\t EMAIL: " + player.emailAddress);
                             System.out.println("\t PASSWORD: " + player.password);
@@ -151,7 +160,7 @@ public class ServerThread implements Runnable
                             
                             //Attach the password: kludge
                             loginObj.password = master.registeredPlayers.getPlayerMatching(player).password;
-                            
+                                                       
                             send(loginObj);  
                         }
                         
@@ -160,6 +169,7 @@ public class ServerThread implements Runnable
                         else
                         {
                             TransportObject loginFail = new TransportObject(transObj.username, "Login FAILED!");
+                            master.addLogEntry(regObj.username + " login FAILED!");
                             send(loginFail);
                         }
                     }
@@ -169,6 +179,7 @@ public class ServerThread implements Runnable
                     else
                     {
                         TransportObject loginFail = new TransportObject(transObj.username, transObj.username +  "is already registered. Registration failed.");
+                        master.addLogEntry(regObj.username + " registration FAILED!");
                         send(loginFail);
                     }
                     
@@ -222,10 +233,7 @@ public class ServerThread implements Runnable
                 //Accepts a GameUploadObject and either stores or updates a gamestate with those same properties
                 else if (transObj.commitGameStateRequest)
                 {
-                    //System.out.println("UPLOAD REQUEST");
-                    
                     GameStateUploadObject gameUpload = null;
-                    
                     gameUpload = (GameStateUploadObject)transObj;
                     
                     if (gameUpload != null)
@@ -235,6 +243,7 @@ public class ServerThread implements Runnable
                         timeNow = df.format(thisDate);
                         System.out.print(timeNow + "  ");
                         master.updateGameState(gameUpload.gameStateToCommit);
+                        master.addLogEntry("gameState " + gameUpload.gameStateToCommit.idNumber + " uploaded");
                     }
                     
                     //transObj = null;
@@ -267,7 +276,7 @@ public class ServerThread implements Runnable
         }
         catch (IOException e)
         {
-            
+            master.addLogEntry("ServerThread " + id + " : failed to send()");
         }
     }
 
@@ -298,10 +307,12 @@ public class ServerThread implements Runnable
             active = false;
             
             //System.out.println("ServerThread ended.");
+            master.addLogEntry("ServerThread " + id + " resources closed successfully");
         }
         catch (IOException e)
         {
             System.out.println("ServerThread: problems closing streams");
+            master.addLogEntry("ServerThread " + id + " : socket/stream ERROR");
             System.out.println(e.toString());
         }        
     }

@@ -10,6 +10,8 @@ Maintains and serves the player lists and gamestates.
 import java.util.*;
 import java.net.*;
 import java.io.*;
+import java.io.PrintWriter;
+import java.time.*;
 /**
  *
  * @author Skot
@@ -24,7 +26,9 @@ public class ServerThreadHandler
     
     String playerFile = "players.dat";
     String gameFile = "games.dat";
-    
+    String logFileName = "logfile.txt";
+
+    int nextThreadId = 0;
     
     public ServerThreadHandler()
     {
@@ -41,15 +45,21 @@ public class ServerThreadHandler
         registeredPlayers = new PlayerIOList(playerFile);
         registeredPlayers.readFromDisk();
         registeredPlayers.displayAll();
+        
+        addLogEntry(lineSeperator());
     }
     
     //ADD
     //Create and begin a new serverThread; add it to the list
     public void addServerThread(Socket sock)
     {
-        ServerThread client = new ServerThread(sock, this);
-        client.t.start();
+        nextThreadId++;
         
+        addLogEntry("connection from: " + sock.getInetAddress().toString());
+        addLogEntry("created new ServerThread id: " + nextThreadId);
+
+        ServerThread client = new ServerThread(nextThreadId, sock, this);
+        client.t.start();
         serverThreadList.add(client);
     }
     
@@ -58,6 +68,7 @@ public class ServerThreadHandler
     {
         currentClient.killThread();
         serverThreadList.remove(currentClient);
+        
     }
     
 
@@ -65,6 +76,7 @@ public class ServerThreadHandler
     public boolean registerPlayer(RegistrationObject thisOne)
     {
         Player addMe = new Player(thisOne.username, thisOne.password, thisOne.emailAddress);
+        addLogEntry("player registered: " + thisOne.username + " PW: " + thisOne.password + " EMAIL: " + thisOne.emailAddress);
         return (registeredPlayers.addPlayer(addMe));
     }
     
@@ -77,7 +89,10 @@ public class ServerThreadHandler
         if (returnMe != null)
         {
             onlinePlayers.add(returnMe);
+            addLogEntry("player " + thisOne.username + " logged in");
         }
+        else
+           addLogEntry(thisOne.username + " NOT FOUND");
         
         return (returnMe);
 
@@ -119,8 +134,6 @@ public class ServerThreadHandler
                 }
             }
             
-
-            
             return(userList);
         }
     }
@@ -161,6 +174,7 @@ public class ServerThreadHandler
     public void updateGameState(GameState updateMe)
     {
         currentGames.updateGameState(updateMe);
+        addLogEntry("updating currentGames");
         sendNotificationEmail(updateMe);
     }
     
@@ -217,10 +231,13 @@ public class ServerThreadHandler
                 br.close();
                 isr.close();
                 in.close();
+                
+                addLogEntry("email dispatched to: " + recipient);
             }
             catch (IOException | InterruptedException e)
             {
                 System.out.print(e.toString());
+                addLogEntry("email dispatch FAILED ;" + recipient);
             }  
         }
     }
@@ -243,6 +260,50 @@ public class ServerThreadHandler
         //System.out.println("Removed " + deadThreads.size() + " dead threads");
         serverThreadList.removeAll(deadThreads);
         deadThreads.clear();
+        
+        addLogEntry("dead threads cleared");
     }
 
+    
+    // Opens and appends a log to a logfile
+    public synchronized void addLogEntry(String newEntry) {
+        
+        File logFile = new File(logFileName);
+        
+        if (!logFile.exists()) {
+            try {
+                logFile.createNewFile();
+            }
+            catch (IOException e) {
+                System.out.println("SYSTEM FAILURE: failed to create logfile.txt");
+                System.out.println(e.toString());
+            }    
+        }
+        
+        try {
+            PrintWriter PW = new PrintWriter(new FileOutputStream(logFile, true));
+            PW.write(LocalDateTime.now() + " : " + newEntry + "\n");
+            PW.close();
+        }
+        catch (IOException e) {
+            System.out.println(e.toString());
+        }
+        
+        
+    }
+    
+    
+    
+    // Adds a seperator fr a new instance and a timestamp
+    private String lineSeperator() {
+        
+        String returnString =
+            "\n"+ 
+            "*******************************************" + 
+            " OGRE SERVER STARTED " + 
+            "******************************************* \n";  
+        
+        return returnString;
+    }
+    
 }

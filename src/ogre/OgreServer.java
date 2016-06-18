@@ -69,7 +69,6 @@ public class OgreServer
         }
         
         serverSocket = new ServerSocket(port);
-        //serverSocket.setReceiveBufferSize(87380);
         
         System.out.println("Standing by...");
         
@@ -82,7 +81,6 @@ public class OgreServer
             if (socket.isConnected() == true)
             {
                 serverThreadHandler.addServerThread(socket);
-                //System.out.println("Incoming connection...");
             }
             
             serverThreadHandler.cullDeadThreads();

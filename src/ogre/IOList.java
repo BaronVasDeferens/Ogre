@@ -132,6 +132,7 @@ public class IOList implements Serializable
         catch(IOException | ClassNotFoundException e)
         {
             System.out.println("IOList ERROR: problem reading " + file);
+            System.out.println(e.toString());
             return (false);
         }
        
@@ -168,6 +169,7 @@ public class IOList implements Serializable
         catch(IOException e)
         {
             System.out.println("IOList: error writing to " + file);
+            System.out.println(e.toString());
             return (false);
         }
         
@@ -542,6 +544,7 @@ class GameStateIOList extends IOList
         catch(IOException | ClassNotFoundException e)
         {
             System.out.println("IOList ERROR: problem reading " + file);
+            System.out.println(e.toString());
             return (false);
         }
        
