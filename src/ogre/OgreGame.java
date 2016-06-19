@@ -15,7 +15,8 @@ import javax.swing.*;
 public class OgreGame
 {
     //Version info:
-    String version = "1.0.0.3 AI v0.5.0";
+    final String version = "1.0.0.4";
+    final String aboutText = "contact: baronvasdeferens@gmail.com";
 
     /*
     VERSION:
@@ -35,6 +36,10 @@ public class OgreGame
                 Implemented a direct-movement AI and a fire-at-everything firing AI
                 Yes, it's dumb, but it works. Not especially enjoyable without a smarter
                 opponent, sound, and effects.
+    
+    10.0.0.4:   Removed the AI stuff for now; graphics migrated to Graphics2D; added server
+                logging to "logfile.txt"   
+    
     */
     
     //Network resources

@@ -70,7 +70,6 @@
             <MenuItem class="javax.swing.JMenuItem" name="optionHexNumbers">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Show hex coordinates"/>
-                <Property name="opaque" type="boolean" value="true"/>
                 <Property name="selected" type="boolean" value="true"/>
               </Properties>
               <Events>
@@ -99,7 +98,9 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="resizable" type="boolean" value="false"/>
+    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+      <Dimension value="[1148, 645]"/>
+    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="jMenuBar1"/>
@@ -150,7 +151,7 @@
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="ogrePanel1" min="-2" max="-2" attributes="0"/>
+              <Component id="ogrePanel1" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -186,7 +187,7 @@
                           <Component id="undoButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="ogrePanel1" min="-2" max="-2" attributes="0"/>
+                  <Component id="ogrePanel1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -227,6 +228,12 @@
           <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
             <LineBorder thickness="2"/>
           </Border>
+        </Property>
+        <Property name="hexMap" type="ogre.HexMap" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="default"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[800, 600]"/>
         </Property>
       </Properties>
       <AuxValues>

@@ -78,7 +78,7 @@ public class GameFrame extends javax.swing.JFrame {
         jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
+        setMinimumSize(new java.awt.Dimension(1148, 645));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 GameFrame.this.windowClosing(evt);
@@ -103,6 +103,7 @@ public class GameFrame extends javax.swing.JFrame {
         });
 
         ogrePanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
+        ogrePanel1.setMinimumSize(new java.awt.Dimension(800, 600));
 
         javax.swing.GroupLayout ogrePanel1Layout = new javax.swing.GroupLayout(ogrePanel1);
         ogrePanel1.setLayout(ogrePanel1Layout);
@@ -198,7 +199,6 @@ public class GameFrame extends javax.swing.JFrame {
         jMenu2.setText("Options");
 
         optionHexNumbers.setText("Show hex coordinates");
-        optionHexNumbers.setOpaque(true);
         optionHexNumbers.setSelected(true);
         optionHexNumbers.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -249,7 +249,7 @@ public class GameFrame extends javax.swing.JFrame {
                         .addComponent(unitStatLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ogrePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(ogrePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -280,7 +280,7 @@ public class GameFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(advancePhaseButton)
                             .addComponent(undoButton)))
-                    .addComponent(ogrePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ogrePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -473,7 +473,7 @@ public class GameFrame extends javax.swing.JFrame {
 
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
         //Spawn a pop-up with info
-        JOptionPane.showMessageDialog(this, ("OGRE v" + ogreGame.version + "\n info at web.pdx.edu/~scowest/ogre"),
+        JOptionPane.showMessageDialog(this, ("OGRE v" + ogreGame.version + "\n " + ogreGame.aboutText),
             "OGRE VERSION", JOptionPane.WARNING_MESSAGE);
         
     }//GEN-LAST:event_aboutMenuItemActionPerformed
